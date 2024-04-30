@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  server:
+    build:
+      dockerfile: Dockerfile.main
+      context: .
+      target: dev
+    ports:
+      - 3000:3000
+    # environment:
+    #   NODE_ENV: dev
+      # POSTGRES_HOST: db
+      # POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD_FILE: /run/secrets/db-password
+      # POSTGRES_DB: example
+    volumes:
+      - ./main-service:/usr/src/app
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - 27017:27017
+      - 9229:9229
+    volumes:
+      - ./data/mongo:/data/db
+      - ./data/mongo_config:/data/configdb
+ 
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
