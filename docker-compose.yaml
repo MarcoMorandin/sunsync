@@ -2,8 +2,8 @@ version: '3.9'
 services:
   server:
     build:
-      dockerfile: Dockerfile.main
-      context: .
+      dockerfile: Dockerfile
+      context: ./main-service
       target: dev
     ports:
       - 3000:3000
