@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const PvSystem = require( '../schemas/PvSystem');
 
 router.get('/info', async (req, res) => {
-
+    let pvSystems = await PvSystem.find({})
+    res.status(200).json(pvSystems)
 })
 
 router.get('/info/id/:id', async (req, res) => {

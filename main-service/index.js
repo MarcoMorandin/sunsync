@@ -9,7 +9,7 @@ app.locals.db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${pro
     console.log("Connected to Database");
     
     app.listen(3000, () => {
-        console.log(`Server listening on port ${port}`);
+        console.log(`Server listening on port 3000`);
     });
     
 });
