@@ -1,14 +1,15 @@
 const app = require('./app/app.js');
 const mongoose = require('mongoose');
+require("dotenv").config();
 
-app.locals.db = mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.set('strictQuery', true);
+app.locals.db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
 .then ( () => {
     
     console.log("Connected to Database");
     
-    app.listen(port, () => {
+    app.listen(3000, () => {
         console.log(`Server listening on port ${port}`);
     });
     
 });
-

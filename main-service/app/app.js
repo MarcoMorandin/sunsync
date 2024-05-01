@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 const cors = require('cors')
 
-const pvSystem = require('./endpoint/pvSystem.js')
-const weatherStation = require('./endpoint/weatherStation.js')
-const user = require('./endpoint/user.js')
-const citizen = require('./endpoint/citizen.js')
+const pvSystem = require('./endpoints/pvSystem.js')
+const weatherStation = require('./endpoints/weatherStation.js')
+const user = require('./endpoints/user.js')
+const citizen = require('./endpoints/citizen.js')
 
 app.use(cors())
 

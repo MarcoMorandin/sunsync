@@ -32,3 +32,5 @@ router.get('/money/year/:year/month', async (req, res) => {
 router.get('/number', async (req, res) => {
     
 })
+
+module.exports = router;
