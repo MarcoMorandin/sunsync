@@ -13,11 +13,11 @@ app.listen(port, () => {
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const User = require("./schemas/User");
-const PvData = require("./schemas/PvData");
-const PvSystem = require("./schemas/PvSystem");
-const WeatherData = require("./schemas/WeatherData");
-const WeatherStation = require("./schemas/WeatherStation");
+const User = require("./app/schemas/User");
+const PvData = require("./app/schemas/PvData");
+const PvSystem = require("./app/schemas/PvSystem");
+const WeatherData = require("./app/schemas/WeatherData");
+const WeatherStation = require("./app/schemas/WeatherStation");
 
 const main = async () => {
   mongoose.set('strictQuery', true);

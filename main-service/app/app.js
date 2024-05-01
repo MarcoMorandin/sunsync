@@ -14,16 +14,17 @@ app.use((req,res,next) => {
     next()
 })
 
-app.use((req, res) => {
-    res.status(404);
-    res.json({ error: 'Not found' });
-});
-
 
 app.use('/api/v1/pv', pvSystem)
 app.use('/api/v1/ws', weatherStation)
 app.use('/api/v1/user', user)
 app.use('/api/v1/citizen', citizen)
+
+
+app.use((req, res) => {
+    res.status(404);
+    res.json({ error: 'Not found' });
+});
 
 
 module.exports = app;

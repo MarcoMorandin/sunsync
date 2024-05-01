@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/info', async (req, res) => {
+const WeatherData = require("../schemas/WeatherData");
+const WeatherStation = require("../schemas/WeatherStation");
 
+router.get('/info', async (req, res) => {
+    let infos = await WeatherStation.find({});
+    res.status(200).json(infos);
 })
 
 router.get('/info/id/:id', async (req, res) => {
