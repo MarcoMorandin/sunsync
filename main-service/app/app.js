@@ -3,9 +3,10 @@ const app = express();
 const cors = require('cors')
 
 const pvSystem = require('./endpoints/pvSystem.js')
-const weatherStation = require('./endpoints/weatherStation.js')
+const wsInfo = require('./endpoints/wsInfo.js')
+const wsData = require('./endpoints/wsData.js')
 const user = require('./endpoints/user.js')
-const citizen = require('./endpoints/citizen.js')
+const reports = require('./endpoints/reports.js')
 
 app.use(cors())
 
@@ -16,9 +17,10 @@ app.use((req,res,next) => {
 
 
 app.use('/api/v1/pv', pvSystem)
-app.use('/api/v1/ws', weatherStation)
+app.use('/api/v1/wsInfo', wsInfo)
+app.use('/api/v1/wsData', wsData)
 app.use('/api/v1/user', user)
-app.use('/api/v1/citizen', citizen)
+app.use('/api/v1/reports', reports)
 
 
 app.use((req, res) => {
