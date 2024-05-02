@@ -7,6 +7,7 @@ const User = new Schema({
     forecast_notification: Boolean,
     maintenance_notification: Boolean,
     role: Number,
+    disabled: Boolean
 });
 
 module.exports = model("user", User);

@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const PvData = require( '../schemas/PvData');
 const dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
-const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
+const { param, body, validationResult } = require('express-validator')
 
 
 router.get('', async (req, res) => {
