@@ -2,10 +2,13 @@ const express = require('express');
 const app = express();
 const cors = require('cors')
 
-const pvSystem = require('./endpoints/pvSystem.js')
+const pvInfo = require('./endpoints/pvInfo.js')
+const pvData = require('./endpoints/pvData.js')
+
 const weatherStation = require('./endpoints/weatherStation.js')
 const user = require('./endpoints/user.js')
 const citizen = require('./endpoints/citizen.js')
+const bodyParser = require('body-parser')
 
 app.use(cors())
 
@@ -14,8 +17,12 @@ app.use((req,res,next) => {
     next()
 })
 
+app.use(bodyParser.json());
 
-app.use('/api/v1/pv', pvSystem)
+
+app.use('/api/v1/pvinfo', pvInfo)
+app.use('/api/v1/pvdata', pvData)
+
 app.use('/api/v1/ws', weatherStation)
 app.use('/api/v1/user', user)
 app.use('/api/v1/citizen', citizen)
