@@ -71,4 +71,24 @@ router.delete('/:user_id', param("user_id").isMongoId(), async (req, res) => {
     res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
 })
 
+router.patch('', [
+    body('username', 'username must be a valid email').isEmail(),
+    body('username', 'username must be filled').notEmpty(),
+
+    body('password', 'password must be filled').notEmpty(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // TODO : Implement password hashing
+    let user = await User.findOneAndUpdate({username: req.body.username}, {password: req.body.password, disabled: false}, {includeResultMetadata: true}) 
+    if(!user.lastErrorObject.updatedExisting)
+        return res.status(404).json({ "404 Not Found": "No user found with the given username"})
+
+    return res.status(200).json({"info" : "Operazione completata"}).send()   
+})
+
 module.exports = router;
