@@ -9,3 +9,13 @@ services:
       - 3000:3000
     volumes:
       - ./main-service:/usr/src/app
+  front-end:
+    build: 
+      dockerfile: Dockerfile
+      context: ./front-end
+    ports:
+      - 5173:5173
+      - 8080:8080
+    volumes:
+      - ./front-end:/usr/src/app
+    
