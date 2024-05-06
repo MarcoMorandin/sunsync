@@ -13,11 +13,8 @@ const tokenChecker = async (req, res, next) => {
                 return res.status(401).json({ "401 Unauthorized": "The token is expired"})
             return res.status(403).json({ "403 Forbidden": "You are not authorized"})
         }
-
         user = await User.findById(decoded.user_id)
-        if (user.disabled) {
-            return res.status(401).json({ "401 Unauthorized": "You have to authenticate to use this endpoint"})
-        }
+    
         req.user = user
         next()
     });

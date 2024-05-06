@@ -6,6 +6,7 @@ const User = require('../schemas/User')
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const tokenChecker = require('../middlewares/tockenChecker')
+const tokenCheckerChangePassword = require('../middlewares/tockenCheckerChangePassword')
 
 router.get('', tokenChecker, async (req, res) => {
     if(req.user.role == 1)
@@ -88,7 +89,7 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
 })
 
-router.patch('', tokenChecker, [
+router.patch('', tokenCheckerChangePassword, [
     body('password', 'password must be filled').notEmpty(),
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -98,7 +99,7 @@ router.patch('', tokenChecker, [
     }
 
     // TODO : Implement password hashing
-    let user = await User.findOneAndUpdate({user_id: req.user.user_id}, {password: req.body.password, disabled: false}, {includeResultMetadata: true}) 
+    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: req.body.password, disabled: false}, {includeResultMetadata: true}) 
     if(!user.lastErrorObject.updatedExisting)
         return res.status(404).json({ "404 Not Found": "No user found with the given username"})
 
