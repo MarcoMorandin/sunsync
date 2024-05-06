@@ -8,6 +8,7 @@ const wsInfo = require('./endpoints/wsInfo.js')
 const wsData = require('./endpoints/wsData.js')
 const user = require('./endpoints/user.js')
 const reports = require('./endpoints/reports.js')
+const tokenChecker = require('./middlewares/tockenChecker.js')
 
 const bodyParser = require('body-parser')
 
@@ -19,6 +20,7 @@ app.use((req,res,next) => {
 })
 
 app.use(bodyParser.json());
+
 
 
 app.use('/api/v1/pvinfo', pvInfo)

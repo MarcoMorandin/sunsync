@@ -4,13 +4,14 @@ const PvSystem = require( '../schemas/PvSystem')
 const PvData = require( '../schemas/PvData')
 const { param, body, validationResult } = require('express-validator')
 const { ObjectId } = require('mongodb');
+const tokenChecker = require('../middlewares/tockenChecker')
 
-router.get('', async (req, res) => {
+router.get('', tokenChecker, async (req, res) => {  
     let pvSystems = await PvSystem.find({})
     res.status(200).json(pvSystems)
 })
 
-router.get('/:pvinfo_id', param("pvinfo_id").isMongoId(), async (req, res) => {
+router.get('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         res.status(400).json({ errors: errors.array() });
@@ -27,7 +28,7 @@ router.get('/:pvinfo_id', param("pvinfo_id").isMongoId(), async (req, res) => {
     res.status(200).json(pvSystem)
 })
 
-router.post('', [
+router.post('', tokenChecker, [
     body('description', 'description must be a string').isString(),
     body('description', 'description cannot contains $').not().contains('$'),
     body('description', 'Description must be filled').notEmpty(),
@@ -44,11 +45,12 @@ router.post('', [
     body('location', 'location must follow this structure: {lat: Number, long: Number, alt: Number}').isObject({lat: Number, long: Number, alt: Number}),
     body('location', 'location must be filled').notEmpty(),
 ], async (req, res) => {
+    if(req.user.role == 1)
+        return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
+
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        res.status(400).json({ errors: errors.array() });
-        return;
-    }
+    if(!errors.isEmpty())
+        return res.status(400).json({ errors: errors.array() })
 
     let a = await PvSystem.create({
         _id: new ObjectId(),
@@ -62,12 +64,16 @@ router.post('', [
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
 })
 
-router.delete('/:pvinfo_id', param("pvinfo_id").isMongoId(), async (req, res) => {
+router.delete('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
+    if(req.user.role == 1)
+        return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
+    
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         res.status(400).json({ errors: errors.array() });
         return;
     }
+
     let pvSystemNum = await PvSystem.countDocuments({ _id: req.params.pvinfo_id })
     if (!pvSystemNum || pvSystemNum === 0){
         res.status(404).json({ "404 Not Found": "No pv system found with the given ID"})
