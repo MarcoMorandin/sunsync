@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const PvSystem = require( '../schemas/PvSystem');
 const PvData = require( '../schemas/PvData');
 const dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
-const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
+const { param, body, validationResult } = require('express-validator')
+const tokenChecker = require('../middlewares/tockenChecker')
 
 
-router.get('', async (req, res) => {
+router.get('', tokenChecker, async (req, res) => {
     query = {}
     if(req.query.startdate){
         if(req.query.startdate.match(dateRegex))
@@ -46,9 +46,10 @@ router.get('', async (req, res) => {
     res.status(200).json(pvData)
 })
 
-router.get('/:pvdata_id', async (req, res) => {
-    if(!mongoose.Types.ObjectId.isValid(req.params.pvdata_id)){
-        res.status(400).json({ "400 Bad Request": "Wrong id format"})
+router.get('/:pvdata_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        res.status(400).json({ errors: errors.array() });
         return;
     }
     

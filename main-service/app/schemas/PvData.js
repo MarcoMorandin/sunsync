@@ -5,12 +5,12 @@ const PvData = new Schema(
         time: Date,
         power: Number,
         metadata: {
-            pv_id: Number,
+            pv_id: Schema.ObjectId,
             description: String,
             installed_power: Number,
             price: Number,
             location: {alt: Number, lat: Number, long: Number},
-            ws_id: Number
+            ws_id: Schema.ObjectId,
         }
     },
     {
