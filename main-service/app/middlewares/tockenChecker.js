@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 const User = require( '../schemas/User')
 
-const tokenChecker = async (req, res, next) => {	
+const tokenChecker = async (req, res, next) => {
+    if(!req.headers.hasOwnProperty("authorization"))
+        return res.status(401).json({ "401 Unauthorized": "You have to authenticate to use this endpoint"})
     let token = req.headers.authorization.split(' ')[1];
+    console.log(req.headers)
     if (!token) {
         return res.status(401).json({ "401 Unauthorized": "You have to authenticate to use this endpoint"})
     }
