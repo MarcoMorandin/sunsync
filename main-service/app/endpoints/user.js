@@ -121,12 +121,12 @@ router.put('', [
     // TODO : Implement password hashing
     let user = await User.findOne({username: req.body.username, password: req.body.password}) 
     if(!user)
-        return res.status(404).json({ "404 Not Found": "Authentication failed, username or password error"})
+        return res.status(401).json({ "401 Unauthorized": "Authentication failed, username or password error"})
 
     let token = jwt.sign({
         user: user.username,
         user_id: user._id,
-    }, 'test', {expiresIn: 86400});
+    }, process.env.SUPER_SECRET, {expiresIn: 86400});
 
     return res.status(200).json({"info" : "Correctly authenticated", "token": token}).send()   
 })
