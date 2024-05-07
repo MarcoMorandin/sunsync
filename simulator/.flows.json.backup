@@ -1,0 +1,446 @@
+[
+    {
+        "id": "545205962306f513",
+        "type": "tab",
+        "label": "Send Pv data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c0d06e67e96fa55d",
+        "type": "tab",
+        "label": "Send Weather data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f11f65e23161664a",
+        "type": "http response",
+        "z": "545205962306f513",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1290,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "b3590d36dfdd4b64",
+        "type": "csv",
+        "z": "545205962306f513",
+        "name": "",
+        "sep": ";",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\n",
+        "temp": "#Date,Inv,Psum,Pmax",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 790,
+        "y": 200,
+        "wires": [
+            [
+                "b37f474abdc3bebd",
+                "cdf90ac8aadd5021"
+            ]
+        ]
+    },
+    {
+        "id": "157ba334b35897f9",
+        "type": "file in",
+        "z": "545205962306f513",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 640,
+        "y": 240,
+        "wires": [
+            [
+                "b3590d36dfdd4b64"
+            ]
+        ]
+    },
+    {
+        "id": "2a5eb9edd56d2e87",
+        "type": "http in",
+        "z": "545205962306f513",
+        "name": "",
+        "url": "/api/v1/pvdata/:location/:date",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 220,
+        "y": 360,
+        "wires": [
+            [
+                "364ed9992e145415",
+                "b56f07521546999f"
+            ]
+        ]
+    },
+    {
+        "id": "364ed9992e145415",
+        "type": "debug",
+        "z": "545205962306f513",
+        "name": "getInfo",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req.params",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "b56f07521546999f",
+        "type": "function",
+        "z": "545205962306f513",
+        "name": "getLocation",
+        "func": "msg.filename = \"/data/data/\" + msg.req.params.location + \"_days.csv\";\nmsg.topic = \"date\";\nmsg.payload = msg.req.params.date;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 360,
+        "wires": [
+            [
+                "157ba334b35897f9",
+                "7532a60c62572f99"
+            ]
+        ]
+    },
+    {
+        "id": "b37f474abdc3bebd",
+        "type": "debug",
+        "z": "545205962306f513",
+        "name": "print csv",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "6c131ced33027a22",
+        "type": "function",
+        "z": "545205962306f513",
+        "name": "parseToSend",
+        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet sum = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['#Date'].split(\"/\");\n    let dateEl = new Date(Date.parse( \"20\" + parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\" ));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        sum += el[\"Psum\"];\n    }\n});\n\nmsg.payload = {\n    time: date.toISOString(),\n    power: sum\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 360,
+        "wires": [
+            [
+                "f11f65e23161664a",
+                "2ff7eed36210cc0f"
+            ]
+        ]
+    },
+    {
+        "id": "2ff7eed36210cc0f",
+        "type": "debug",
+        "z": "545205962306f513",
+        "name": "sentRecord",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1260,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7532a60c62572f99",
+        "type": "join",
+        "z": "545205962306f513",
+        "name": "joinParts",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 870,
+        "y": 360,
+        "wires": [
+            [
+                "6c131ced33027a22"
+            ]
+        ]
+    },
+    {
+        "id": "cdf90ac8aadd5021",
+        "type": "function",
+        "z": "545205962306f513",
+        "name": "addTopic",
+        "func": "msg.topic = \"file\";\nmsg.payload = msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 280,
+        "wires": [
+            [
+                "7532a60c62572f99"
+            ]
+        ]
+    },
+    {
+        "id": "a5ef664f9fb0b737",
+        "type": "http response",
+        "z": "c0d06e67e96fa55d",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1210,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "b8d0718d9aaec3ec",
+        "type": "csv",
+        "z": "c0d06e67e96fa55d",
+        "name": "",
+        "sep": ",",
+        "hdrin": false,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\n",
+        "temp": "Date,Pioggia,,Temp. aria,,Umid.relat. aria,,Dir. Vento,,Vel. Vento,,Pressione atm.,,Rad.Sol.Tot.,",
+        "skip": "1",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 710,
+        "y": 220,
+        "wires": [
+            [
+                "4f991f1668023189",
+                "22e8dbba547a2dfe"
+            ]
+        ]
+    },
+    {
+        "id": "b224d5666a8a4506",
+        "type": "file in",
+        "z": "c0d06e67e96fa55d",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 560,
+        "y": 260,
+        "wires": [
+            [
+                "b8d0718d9aaec3ec"
+            ]
+        ]
+    },
+    {
+        "id": "1bbebf831cb8e738",
+        "type": "http in",
+        "z": "c0d06e67e96fa55d",
+        "name": "",
+        "url": "/api/v1/wsdata/:location/:date",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "8d1d1c994848cc27",
+                "4bcc3080310ea691"
+            ]
+        ]
+    },
+    {
+        "id": "8d1d1c994848cc27",
+        "type": "debug",
+        "z": "c0d06e67e96fa55d",
+        "name": "getInfo",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req.params",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "4bcc3080310ea691",
+        "type": "function",
+        "z": "c0d06e67e96fa55d",
+        "name": "getLocation",
+        "func": "msg.filename = \"/data/data/\" + msg.req.params.location + \"_days.csv\";\nmsg.topic = \"date\";\nmsg.payload = msg.req.params.date;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "b224d5666a8a4506",
+                "8147bd5f70777d0c"
+            ]
+        ]
+    },
+    {
+        "id": "4f991f1668023189",
+        "type": "debug",
+        "z": "c0d06e67e96fa55d",
+        "name": "print csv",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1000,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f8c86c6f5db15d26",
+        "type": "function",
+        "z": "c0d06e67e96fa55d",
+        "name": "parseToSend",
+        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet rain = 0;\nlet temp = 0;\nlet umid = 0;\nlet dirVen = 0;\nlet velVen = 0;\nlet pres = 0;\nlet rad = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['Date'].split(\" \")[1].split(\"/\");\n    let dateEl = new Date(Date.parse(parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\"));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        rain = el[\"Pioggia\"];\n        temp = el[\"Temp. aria\"];\n        umid = el[\"Umid.relat. aria\"];\n        dirVen = el[\"Dir. Vento\"];\n        velVen = el[\"Vel. Vento\"];\n        pres = el[\"Pressione atm.\"];\n        rad = el[\"Rad.Sol.Tot.\"];\n    }\n});\n\nmsg.payload = {\n    time: date.toISOString(),\n    rain: rain,\n    temp: temp,\n    umid: umid,\n    dirVen: dirVen,\n    velVen: velVen,\n    pres: pres,\n    rad: rad\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 380,
+        "wires": [
+            [
+                "a5ef664f9fb0b737",
+                "b17d581d2aace620"
+            ]
+        ]
+    },
+    {
+        "id": "b17d581d2aace620",
+        "type": "debug",
+        "z": "c0d06e67e96fa55d",
+        "name": "sentRecord",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1180,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "8147bd5f70777d0c",
+        "type": "join",
+        "z": "c0d06e67e96fa55d",
+        "name": "joinParts",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 790,
+        "y": 380,
+        "wires": [
+            [
+                "f8c86c6f5db15d26"
+            ]
+        ]
+    },
+    {
+        "id": "22e8dbba547a2dfe",
+        "type": "function",
+        "z": "c0d06e67e96fa55d",
+        "name": "addTopic",
+        "func": "msg.topic = \"file\";\nmsg.payload = msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 300,
+        "wires": [
+            [
+                "8147bd5f70777d0c"
+            ]
+        ]
+    }
+]
