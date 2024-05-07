@@ -7,11 +7,17 @@ const { ObjectId } = require('mongodb');
 const tokenChecker = require('../middlewares/tockenChecker')
 
 router.get('', tokenChecker, async (req, res) => {  
+    if(req.user.role == 1)
+        return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
+
     let pvSystems = await PvSystem.find({})
     res.status(200).json(pvSystems)
 })
 
 router.get('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
+    if(req.user.role == 1)
+        return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
+    
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         res.status(400).json({ errors: errors.array() });
