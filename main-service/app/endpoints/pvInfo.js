@@ -28,7 +28,7 @@ router.get('/:pvinfo_id', async (req, res) => {
 router.post('', [
     body('description', 'description must be a string').isString(),
     body('description', 'description cannot contains $').not().contains('$'),
-    body('description', 'Description must be filled').notEmpty(),
+    body('description', 'description must be filled').notEmpty(),
 
     body('url', 'url must be a valid URL').isURL(),
     body('url', 'url must be filled').notEmpty(),
@@ -36,7 +36,7 @@ router.post('', [
     body('ws_id', 'ws_id must be a valid Mongo ObjectId').isMongoId(),
     body('ws_id', 'ws_id must be filled').notEmpty(),
 
-    body('installed_power', 'installed_power must be an int between 0 and 1000000').isInt({ min:0, max: 1000000}),
+    body('installed_power', 'installed_power must be an int between 0 and 1000000').isInt({ min:0, max: 1000000 }),
     body('installed_power', 'installed_power must be filled').notEmpty(),
 
     body('location', 'location must follow this structure: {lat: Number, long: Number, alt: Number}').isObject({lat: Number, long: Number, alt: Number}),

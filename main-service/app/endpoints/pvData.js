@@ -20,7 +20,7 @@ router.get('', async (req, res) => {
 
     if(req.query.enddate){
         if(req.query.enddate.match(dateRegex)){
-            query['time'] = {...query['time'], "$lte": new Date(req.query.enddate + "T00:00:00.000Z")}
+            query['time'] = {...query['time'], "$lte": new Date(req.query.enddate + "T23:59:59.999Z")}
         }else{
             res.status(400).json({ "400 Bad Request": "Wrong params format"})
             return;

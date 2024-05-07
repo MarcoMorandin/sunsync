@@ -8,6 +8,7 @@ const PvData = new Schema(
             pv_id: Number,
             description: String,
             installed_power: Number,
+            price: Number,
             location: {alt: Number, lat: Number, long: Number},
             ws_id: Number
         }
