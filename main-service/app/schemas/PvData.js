@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const PvData = new Schema(
     {
+        _id: Schema.ObjectId,
         time: Date,
         power: Number,
         metadata: {

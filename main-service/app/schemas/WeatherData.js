@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const PvData = new Schema(
     {
+        _id: Schema.ObjectId,
         time: Date,
         rain: Number,
         temperature: Number,
@@ -11,7 +12,7 @@ const PvData = new Schema(
         pressure: Number,
         solar_power: Number,
         metadata: {
-            ws_id: Number,
+            ws_id: Schema.ObjectId,
             description: String,
             location: {alt: Number, lat: Number, long: Number},
         }
