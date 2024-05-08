@@ -1,12 +1,11 @@
 <script setup>
-import { useMainStore } from '@/stores/main'
 import UserAvatar from '@/components/UserAvatar.vue'
 
-const mainStore = useMainStore()
 </script>
 
+<!-- TODO: Inserire dati da api me -->
 <template>
-  <UserAvatar :username="mainStore.userName" :avatar="mainStore.userAvatar">
+  <UserAvatar username="John Doe" avatar="">
     <slot />
   </UserAvatar>
 </template>

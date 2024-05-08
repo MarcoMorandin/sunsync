@@ -1,35 +1,35 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import {
-  mdiAccountMultiple,
-  mdiCartOutline,
+  mdiSolarPowerVariantOutline,
+  mdiCashMultiple,
   mdiChartTimelineVariant,
+  mdiLightningBoltOutline,
   mdiSolarPanel
 } from '@mdi/js'
-import * as chartConfig from '@/components/Charts/chart.config.js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBoxWidget from '@/components/CardBoxWidget.vue'
 import CardBox from '@/components/CardBox.vue'
-import TableSampleClients from '@/components/TableSampleClients.vue'
+import TablePv from '@/components/TablePv.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
+import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore'
 
-import { useTokenStore } from '@/stores/tokenStore'
+const authStore = useAuthStore()
 
-const tokenStore = useTokenStore()
+const tile = ref({})
 
-
-const chartData = ref(null)
-
-const fillChartData = () => {
-  chartData.value = chartConfig.sampleChartData()
+const fillTile = () => {
+  axios.get('http://localhost:3000/api/v1/reports/pvnumber', { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}})
+    .then((response) => {
+      tile.value.pvNumber = response.data.number_of_pv_systems
+    })
 }
 
 onMounted(() => {
-  fillChartData()
+  fillTile()
 })
-
-console.log("token: " + tokenStore.getToken.value)
 
 </script>
 
@@ -40,37 +40,37 @@ console.log("token: " + tokenStore.getToken.value)
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
         <CardBoxWidget
-          trend="12%"
+          trend=""
           trend-type="up"
           color="text-emerald-500"
-          :icon="mdiAccountMultiple"
-          :number="512"
-          label="Clients"
+          :icon="mdiSolarPowerVariantOutline"
+          :number="tile.pvNumber"
+          label="Impianti Fotovoltaici"
         />
         <CardBoxWidget
-          trend="12%"
-          trend-type="down"
+          trend=""
+          trend-type="up"
           color="text-blue-500"
-          :icon="mdiCartOutline"
+          :icon="mdiCashMultiple"
           :number="7770"
-          prefix="$"
-          label="Sales"
+          prefix="€ "
+          label="Soldi Risparmiati"
         />
         <CardBoxWidget
-          trend="Overflow"
-          trend-type="alert"
+          trend=""
+          trend-type="up"
           color="text-red-500"
-          :icon="mdiChartTimelineVariant"
+          :icon="mdiLightningBoltOutline"
           :number="256"
-          suffix="%"
-          label="Performance"
+          suffix=" KW/h"
+          label="Energia Prodotta"
         />
       </div>
       
-      <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Solar panel system" />
+      <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Solar panel system" main></SectionTitleLineWithButton>
 
       <CardBox has-table>
-        <TableSampleClients />
+        <TablePv />
       </CardBox>
 
     </SectionMain>

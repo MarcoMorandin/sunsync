@@ -32,10 +32,10 @@ onMounted(() => {
       maintainAspectRatio: false,
       scales: {
         y: {
-          display: false
+          display: true,
         },
         x: {
-          display: true
+          display: true,
         }
       },
       plugins: {
@@ -49,7 +49,7 @@ onMounted(() => {
 
 const chartData = computed(() => props.data)
 
-watch(chartData, (data) => {
+watch(chartData, async (data) => {
   if (chart) {
     chart.data = data
     chart.update()

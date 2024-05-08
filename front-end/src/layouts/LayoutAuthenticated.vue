@@ -1,14 +1,14 @@
 <script setup>
-import { mdiForwardburger, mdiBackburger } from '@mdi/js'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import menuAside from '@/menuAside.js'
 import menuNavBar from '@/menuNavBar.js'
 import { useDarkModeStore } from '@/stores/darkMode.js'
-import BaseIcon from '@/components/BaseIcon.vue'
 import NavBar from '@/components/NavBar.vue'
-import NavBarItemPlain from '@/components/NavBarItemPlain.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
 
 const layoutAsidePadding = 'xl:pl-60'
 
@@ -30,7 +30,10 @@ const menuClick = (event, item) => {
   }
 
   if (item.isLogout) {
-    //
+    authStore.setToken('')
+    authStore.setExpire('')
+    authStore.setUserId('')
+    router.push({name: 'home'})
   }
 }
 </script>

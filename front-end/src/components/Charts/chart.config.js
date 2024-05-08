@@ -6,16 +6,6 @@ export const chartColors = {
   }
 }
 
-const randomChartData = (n) => {
-  const data = []
-
-  for (let i = 0; i < n; i++) {
-    data.push(Math.round(Math.random() * 200))
-  }
-
-  return data
-}
-
 const datasetObject = (color, points) => {
   return {
     fill: false,
@@ -29,26 +19,42 @@ const datasetObject = (color, points) => {
     pointBorderWidth: 20,
     pointHoverRadius: 4,
     pointHoverBorderWidth: 15,
-    pointRadius: 4,
-    data: randomChartData(points),
+    pointRadius: 0,
+    data: points,
     tension: 0.5,
-    cubicInterpolationMode: 'default'
+    cubicInterpolationMode: 'default',
   }
 }
+import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore'
 
-export const sampleChartData = (points = 9) => {
+const authStore = useAuthStore()
+
+export const chartData = async (endpoint, start_date, end_date, aggregation) => {
   const labels = []
-
-  for (let i = 1; i <= points; i++) {
-    labels.push(`0${i}`)
-  }
-
+  const dataset = []
+  await axios.get(endpoint, {
+    headers: {"Authorization" : `Bearer ${authStore.getToken.value}`},
+    params: {
+      startdate : start_date,
+      enddate : end_date
+    }
+  })
+    .then((response) => {
+      response.data.forEach(pvData => {
+        pvData.time = new Date(pvData.time)
+        labels.push(pvData.time.toISOString().split('T')[0])
+        dataset.push(pvData.power/1000)
+      });
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  
   return {
     labels,
     datasets: [
-      datasetObject('primary', points),
-      datasetObject('info', points),
-      datasetObject('danger', points)
+      datasetObject('info', dataset)
     ]
   }
 }
