@@ -9,7 +9,7 @@ const PvInfo = require('../schemas/PvSystem');
 router.get('/production', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
     query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId() ,
-    query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month'])
+    query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month', 'all'])
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -43,6 +43,12 @@ router.get('/production', [
             projectObj = {...projectObj, month: { $month: "$time" } };
             groupObj['_id'] = {...groupObj['_id'],  month: "$month"};
         }
+        else if(req.query.aggregation === "all") {
+            groupObj = {
+                _id: 0,
+                total_power: { $sum: "$power" }
+            };
+        }
     } else {
         projectObj = {...projectObj, month: { $month: "$time" }, day: { $dayOfMonth: "$time" } };
         groupObj['_id'] = {...groupObj['_id'], month: "$month", day: "$day", };
@@ -61,7 +67,7 @@ router.get('/production', [
 router.get('/money', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
     query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId(),
-    query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month'])
+    query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month', 'all'])
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -96,6 +102,12 @@ router.get('/money', [
     if(req.query.aggregation) {
         if(req.query.aggregation === "month") {
             groupObj['_id'] = {...groupObj['_id'],  month: "$month"};
+        }
+        else if(req.query.aggregation === "all") {
+            groupObj = {
+                _id: 0,
+                total_money: { $sum: "$money" }
+            };
         }
     } else {
         groupObj['_id'] = {...groupObj['_id'], month: "$month", day: "$day", };
