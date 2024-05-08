@@ -16,6 +16,10 @@ router.get('', tokenChecker, async (req, res) => {
     res.status(200).json(users)
 })
 
+router.get('/me', tokenChecker, async (req, res) => {    
+    res.status(200).json(req.user)
+})
+
 router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
@@ -35,6 +39,8 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
     
     res.status(200).json(user)
 })
+
+
 
 router.post('', tokenChecker, [
     body('username', 'username must be a valid email').isEmail(),
