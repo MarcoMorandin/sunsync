@@ -16,6 +16,14 @@
         "env": []
     },
     {
+        "id": "502c05bf4b1e6782",
+        "type": "tab",
+        "label": "Send PUN data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "f11f65e23161664a",
         "type": "http response",
         "z": "545205962306f513",
@@ -148,7 +156,7 @@
         "type": "function",
         "z": "545205962306f513",
         "name": "parseToSend",
-        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet sum = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['#Date'].split(\"/\");\n    let dateEl = new Date(Date.parse( \"20\" + parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\" ));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        sum += el[\"Psum\"];\n    }\n});\n\nmsg.payload = {\n    time: date.toISOString(),\n    power: sum\n}\n\nreturn msg;\n",
+        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet ref = date;\nlet sum = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['#Date'].split(\"/\");\n    let dateEl = new Date(Date.parse( \"20\" + parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\" ));\n\n    if(needed.getTime() == dateEl.getTime()) {\n        date = dateEl;\n        sum += el[\"Psum\"];\n    }\n});\n\nif(date.getTime() == ref.getTime()) {\n    msg.payload = {\n        time: date.toISOString(),\n        power: sum\n    }\n}\nelse {\n    msg.payload = {\n        error: \"404 not found\"\n    }\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -362,7 +370,7 @@
         "type": "function",
         "z": "c0d06e67e96fa55d",
         "name": "parseToSend",
-        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet rain = 0;\nlet temp = 0;\nlet umid = 0;\nlet dirVen = 0;\nlet velVen = 0;\nlet pres = 0;\nlet rad = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['Date'].split(\" \")[1].split(\"/\");\n    let dateEl = new Date(Date.parse(parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\"));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        rain = el[\"Pioggia\"];\n        temp = el[\"Temp. aria\"];\n        umid = el[\"Umid.relat. aria\"];\n        dirVen = el[\"Dir. Vento\"];\n        velVen = el[\"Vel. Vento\"];\n        pres = el[\"Pressione atm.\"];\n        rad = el[\"Rad.Sol.Tot.\"];\n    }\n});\n\nmsg.payload = {\n    time: date.toISOString(),\n    rain: rain,\n    temp: temp,\n    umid: umid,\n    dirVen: dirVen,\n    velVen: velVen,\n    pres: pres,\n    rad: rad\n}\n\nreturn msg;\n",
+        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet ref = date;\nlet rain = 0;\nlet temp = 0;\nlet umid = 0;\nlet dirVen = 0;\nlet velVen = 0;\nlet pres = 0;\nlet rad = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let parts = el['Date'].split(\" \")[1].split(\"/\");\n    let dateEl = new Date(Date.parse(parts[2] + \"-\" + parts[1] + \"-\" + parts[0] + \"T00:00:00.000Z\"));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        rain = el[\"Pioggia\"];\n        temp = el[\"Temp. aria\"];\n        umid = el[\"Umid.relat. aria\"];\n        dirVen = el[\"Dir. Vento\"];\n        velVen = el[\"Vel. Vento\"];\n        pres = el[\"Pressione atm.\"];\n        rad = el[\"Rad.Sol.Tot.\"];\n    }\n});\n\n\nif(date.getTime() != ref.getTime()) {\n    msg.payload = {\n        time: date.toISOString(),\n        rain: rain,\n        temp: temp,\n        umid: umid,\n        dirVen: dirVen,\n        velVen: velVen,\n        pres: pres,\n        rad: rad\n    }\n}\nelse {\n    msg.payload = {\n        error: \"404 not found\"\n    }\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -440,6 +448,213 @@
         "wires": [
             [
                 "8147bd5f70777d0c"
+            ]
+        ]
+    },
+    {
+        "id": "fe13edea70cee7ab",
+        "type": "http response",
+        "z": "502c05bf4b1e6782",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1250,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "2ec3f9bfc134fa26",
+        "type": "file in",
+        "z": "502c05bf4b1e6782",
+        "name": "",
+        "filename": "/data/data/pun.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 550,
+        "y": 380,
+        "wires": [
+            [
+                "8780eb657b31dd94"
+            ]
+        ]
+    },
+    {
+        "id": "08394e138fc5eb55",
+        "type": "http in",
+        "z": "502c05bf4b1e6782",
+        "name": "",
+        "url": "/api/v1/pun/:date",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 500,
+        "wires": [
+            [
+                "d34717d9071f0f05",
+                "e3a2e3a90badd18a"
+            ]
+        ]
+    },
+    {
+        "id": "d34717d9071f0f05",
+        "type": "debug",
+        "z": "502c05bf4b1e6782",
+        "name": "getInfo",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req.params",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "e3a2e3a90badd18a",
+        "type": "function",
+        "z": "502c05bf4b1e6782",
+        "name": "getLocation",
+        "func": "msg.topic = \"date\";\nmsg.payload = msg.req.params.date;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 500,
+        "wires": [
+            [
+                "2ec3f9bfc134fa26",
+                "2ea14ea2c61838d6"
+            ]
+        ]
+    },
+    {
+        "id": "fcfeb8dab8111bce",
+        "type": "debug",
+        "z": "502c05bf4b1e6782",
+        "name": "print json",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "8bc168ee0551927a",
+        "type": "function",
+        "z": "502c05bf4b1e6782",
+        "name": "parseToSend",
+        "func": "let data = msg.payload[\"file\"];\nlet dateSearch = msg.payload[\"date\"];\n\nlet date = new Date();\nlet ref = date;\nlet price = 0;\ndata.forEach(function(el) {\n    let needed = new Date(Date.parse(dateSearch + \"T00:00:00.000Z\"));\n\n    let dateEl = new Date(Date.parse(el['time']));\n\n    if(needed.getTime() == dateEl.getTime()){\n        date = dateEl;\n        price = el[\"price\"];\n    }\n});\n\n\nif(date.getTime() != ref.getTime()) {\n    msg.payload = {\n        time: date.toISOString(),\n        price: price\n    }\n}\nelse {\n    msg.payload = {\n        error: \"404 not found\"\n    }\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 500,
+        "wires": [
+            [
+                "fe13edea70cee7ab",
+                "7fc19bb9a6fc44ae"
+            ]
+        ]
+    },
+    {
+        "id": "7fc19bb9a6fc44ae",
+        "type": "debug",
+        "z": "502c05bf4b1e6782",
+        "name": "sentRecord",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1220,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "2ea14ea2c61838d6",
+        "type": "join",
+        "z": "502c05bf4b1e6782",
+        "name": "joinParts",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 830,
+        "y": 500,
+        "wires": [
+            [
+                "8bc168ee0551927a"
+            ]
+        ]
+    },
+    {
+        "id": "50c1c0bc3abea6b2",
+        "type": "function",
+        "z": "502c05bf4b1e6782",
+        "name": "addTopic",
+        "func": "msg.topic = \"file\";\nmsg.payload = msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 420,
+        "wires": [
+            [
+                "2ea14ea2c61838d6"
+            ]
+        ]
+    },
+    {
+        "id": "8780eb657b31dd94",
+        "type": "json",
+        "z": "502c05bf4b1e6782",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 790,
+        "y": 340,
+        "wires": [
+            [
+                "fcfeb8dab8111bce",
+                "50c1c0bc3abea6b2"
             ]
         ]
     }
