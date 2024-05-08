@@ -1,5 +1,4 @@
 import {
-  mdiAccount,
   mdiCogOutline,
   mdiLogout,
   mdiThemeLightDark,
@@ -11,16 +10,9 @@ export default [
     isCurrentUser: true,
     menu: [
       {
-        icon: mdiAccount,
-        label: 'My Profile',
-        to: '/profile'
-      },
-      {
         icon: mdiCogOutline,
-        label: 'Settings'
-      },
-      {
-        isDivider: true
+        label: 'Settings',
+        to: '/profile'
       }
     ]
   },
