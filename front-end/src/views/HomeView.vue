@@ -18,17 +18,42 @@ import { useAuthStore } from '@/stores/authStore'
 
 const authStore = useAuthStore()
 
-const tile = ref({})
+const tile = ref({
+  pvNumber: 0,
+  money: 0.0
+})
 
-const fillTile = () => {
+const fillTileNumber = () => {
   axios.get('http://localhost:3000/api/v1/reports/pvnumber', { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}})
     .then((response) => {
       tile.value.pvNumber = response.data.number_of_pv_systems
     })
 }
 
+const fillTileMoney = () => {
+  axios.get('http://localhost:3000/api/v1/reports/money', {
+    headers: {"Authorization" : `Bearer ${authStore.getToken.value}`},
+    params: {"aggregation": "all"}
+  })
+    .then((response) => {
+      tile.value.money = Math.floor(response.data[0].total_money)
+    })
+}
+
+const fillTileProduction = () => {
+  axios.get('http://localhost:3000/api/v1/reports/production', { 
+    headers: {"Authorization" : `Bearer ${authStore.getToken.value}`},
+    params: {"aggregation": "all"}
+  })
+    .then((response) => {
+      tile.value.production = Math.floor(response.data[0].total_power/1000)
+    })
+}
+
 onMounted(() => {
-  fillTile()
+  fillTileNumber()
+  fillTileMoney()
+  fillTileProduction()
 })
 
 </script>
@@ -44,7 +69,7 @@ onMounted(() => {
           trend-type="up"
           color="text-emerald-500"
           :icon="mdiSolarPowerVariantOutline"
-          :number="tile.pvNumber"
+          :number=tile.pvNumber
           label="Impianti Fotovoltaici"
         />
         <CardBoxWidget
@@ -52,7 +77,7 @@ onMounted(() => {
           trend-type="up"
           color="text-blue-500"
           :icon="mdiCashMultiple"
-          :number="7770"
+          :number=tile.money
           prefix="€ "
           label="Soldi Risparmiati"
         />
@@ -61,7 +86,7 @@ onMounted(() => {
           trend-type="up"
           color="text-red-500"
           :icon="mdiLightningBoltOutline"
-          :number="256"
+          :number=tile.production
           suffix=" KW/h"
           label="Energia Prodotta"
         />

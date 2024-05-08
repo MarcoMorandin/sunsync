@@ -14,7 +14,9 @@ const chartData = ref({})
 
 
 const fillChartData = async () => {
-  chartData.value = await chartConfig.chartData('http://localhost:3000/api/v1/pvdata', '2012-10-23', '2013-11-24', 'ok')
+  //TODO: Add filters
+  chartData.value.production = await chartConfig.chartData('info', 'http://localhost:3000/api/v1/reports/production', '', '', '')
+  chartData.value.money = await chartConfig.chartData('primary', 'http://localhost:3000/api/v1/reports/money', '', '', '')
 }
 
 onMounted(async () => {
@@ -28,13 +30,13 @@ onMounted(async () => {
     <SectionMain>      
       <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Produzione Energetica" main></SectionTitleLineWithButton>
       <CardBox class="mb-6">
-          <line-chart :data="chartData" class="h-96" />
+          <line-chart :data="chartData.production" class="h-72" />
       </CardBox>
 
       <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Soldi Risparmiati" main></SectionTitleLineWithButton>
 
       <CardBox class="mb-6">
-          <!-- <line-chart :data="chartData" class="h-80" /> -->
+          <line-chart :data="chartData.money" class="h-72" />
       </CardBox>
 
     </SectionMain>

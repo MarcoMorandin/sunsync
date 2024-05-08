@@ -24,7 +24,7 @@ router.get('/production', [
     };
     let groupObj = {
         _id: { year: "$year" },
-        total_power: { $sum: "$power" }
+        total: { $sum: "$power" }
     };
 
     if(req.query.year) {
@@ -46,7 +46,7 @@ router.get('/production', [
         else if(req.query.aggregation === "all") {
             groupObj = {
                 _id: 0,
-                total_power: { $sum: "$power" }
+                total: { $sum: "$power" }
             };
         }
     } else {
@@ -86,7 +86,7 @@ router.get('/money', [
     };
     let groupObj = {
         _id: { year: "$year" },
-        total_money: { $sum: "$money" }
+        total: { $sum: "$money" }
     };
 
     if(req.query.year) {
@@ -106,7 +106,7 @@ router.get('/money', [
         else if(req.query.aggregation === "all") {
             groupObj = {
                 _id: 0,
-                total_money: { $sum: "$money" }
+                total: { $sum: "$money" }
             };
         }
     } else {

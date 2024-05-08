@@ -30,21 +30,26 @@ import { useAuthStore } from '@/stores/authStore'
 
 const authStore = useAuthStore()
 
-export const chartData = async (endpoint, start_date, end_date, aggregation) => {
+export const chartData = async (color, endpoint, year, aggregation, pv_id) => {
   const labels = []
   const dataset = []
+  let params = {}
+  if(year !== '' && year)
+    params.year = year
+  if(aggregation !== '' && aggregation)
+    params.aggregation = aggregation
+  if(pv_id !== '' && pv_id)
+    params.pv_id = pv_id
+
   await axios.get(endpoint, {
     headers: {"Authorization" : `Bearer ${authStore.getToken.value}`},
-    params: {
-      startdate : start_date,
-      enddate : end_date
-    }
+    params: params
   })
     .then((response) => {
       response.data.forEach(pvData => {
-        pvData.time = new Date(pvData.time)
+        pvData.time = new Date(pvData._id.year + "-" + pvData._id.month + "-" + pvData._id.day)
         labels.push(pvData.time.toISOString().split('T')[0])
-        dataset.push(pvData.power/1000)
+        dataset.push(pvData.total)
       });
     })
     .catch((error) => {
@@ -54,7 +59,7 @@ export const chartData = async (endpoint, start_date, end_date, aggregation) => 
   return {
     labels,
     datasets: [
-      datasetObject('info', dataset)
+      datasetObject(color, dataset)
     ]
   }
 }

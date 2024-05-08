@@ -24,7 +24,7 @@ onMounted(async () => {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
-            items.value = response.data
+            items.value = response.data            
         })
         .catch((error) => {
             console.log(error)
@@ -65,7 +65,7 @@ function showModal(i) {
             Nome: <strong>{{ currentModal.description }}</strong>
         </p>
         <p>
-            Potenza Installata: <strong>{{ currentModal.installed_power }} kW</strong>
+            Potenza Installata: <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
         </p>
         <GMapMap
             v-if="isModalActive"
@@ -105,7 +105,7 @@ function showModal(i) {
                     {{ pvInfo.description }}
                 </td>
                 <td data-label="installed_power">
-                    {{ pvInfo.installed_power }}
+                    {{ (pvInfo.installed_power / 1000).toFixed(2) }} kW
                 </td>
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
