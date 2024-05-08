@@ -4,16 +4,17 @@ import { useRouter } from 'vue-router'
 import { mdiAccount, mdiAsterisk } from '@mdi/js'
 import SectionFullScreen from '@/components/SectionFullScreen.vue'
 import CardBox from '@/components/CardBox.vue'
-import FormCheckRadio from '@/components/FormCheckRadio.vue'
 import FormField from '@/components/FormField.vue'
 import FormControl from '@/components/FormControl.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
-import { useTokenStore } from '@/stores/tokenStore'
+import VueJwtDecode from 'vue-jwt-decode'
 
-const tokenStore = useTokenStore()
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
 
 const form = reactive({
     login: '',
@@ -30,13 +31,15 @@ const submit = async () => {
 		password: form.pass
 	})
 	.then((response) => {
-		tokenStore.setToken(response.data.token)
+        authStore.setToken(response.data.token)
+        let decoded_token = VueJwtDecode.decode(response.data.token)
+        authStore.setUserId(decoded_token.user_id)
+        authStore.setExpire(decoded_token.exp)
+        router.push('/dashboard')
 	})
 	.catch((error) => {
 		console.error(error);
 	});
-
-	router.push('/dashboard')
 }
 </script>
 
@@ -63,12 +66,12 @@ const submit = async () => {
                     />
                 </FormField>
 
-                <FormCheckRadio
+                <!-- <FormCheckRadio
                     v-model="form.remember"
                     name="remember"
                     label="Remember"
                     :input-value="true"
-                />
+                /> -->
 
                 <template #footer>
                     <BaseButtons>
@@ -77,6 +80,7 @@ const submit = async () => {
                     </BaseButtons>
                 </template>
             </CardBox>
-        </SectionFullScreen>
+        </SectionFullScreen>@/stores/authStore
     </LayoutGuest>
 </template>
+@/stores/auth.store

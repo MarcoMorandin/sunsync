@@ -126,6 +126,7 @@ router.put('', [
     let token = jwt.sign({
         user: user.username,
         user_id: user._id,
+        role: user.role
     }, process.env.SUPER_SECRET, {expiresIn: 86400});
 
     return res.status(200).json({"info" : "Correctly authenticated", "token": token}).send()   
