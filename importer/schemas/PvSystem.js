@@ -1,10 +1,12 @@
 const { Schema, model } = require("mongoose");
 
-const WeatherStation = new Schema({
+const PvSystem = new Schema({
     _id: Schema.ObjectId,
     description: String,
+    installed_power: Number,
     location: {alt: Number, lat: Number, long: Number,},
     url: String,
+    ws_id: Schema.ObjectId,
 });
 
-module.exports = model("weather_info", WeatherStation);
+module.exports = model("pv_info", PvSystem);

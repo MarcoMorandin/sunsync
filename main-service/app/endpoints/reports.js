@@ -8,7 +8,7 @@ const PvInfo = require('../schemas/PvSystem');
 
 router.get('/production', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
-    query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isInt({ min:0 }),
+    query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId() ,
     query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month'])
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -32,7 +32,7 @@ router.get('/production', [
     }
 
     if(req.query.pvinfo_id) {
-        matchObj= { ...matchObj, 'metadata.pv_id': parseInt(req.query.pvinfo_id)};
+        matchObj= { ...matchObj, 'metadata.pv_id': ObjectId.createFromHexString(req.params.pvinfo_id)};
         projectObj = {...projectObj, pv_id: "$metadata.pv_id" };
         groupObj['_id'] = {pv_id: "$pv_id", ...groupObj['_id']};
     }
@@ -60,7 +60,7 @@ router.get('/production', [
 
 router.get('/money', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
-    query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isInt({ min:0 }),
+    query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId(),
     query('aggregation', 'aggregation must be a value between year, month and day').optional().isIn(['year', 'month'])
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -88,7 +88,7 @@ router.get('/money', [
     }
 
     if(req.query.pvinfo_id) {
-        matchObj= { ...matchObj, 'metadata.pv_id': parseInt(req.query.pvinfo_id)};
+        matchObj= { ...matchObj, 'metadata.pv_id': ObjectId.createFromHexString(req.params.pvinfo_id)};
         projectObj = {...projectObj, pv_id: "$metadata.pv_id" };
         groupObj['_id'] = {pv_id: "$pv_id", ...groupObj['_id']};
     }

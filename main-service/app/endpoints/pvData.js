@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const PvData = require( '../schemas/PvData');
+const PvData = require('../schemas/PvData');
 const dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
 const { ObjectId } = require('mongodb');
 const { param, body, validationResult } = require('express-validator')
 const tokenChecker = require('../middlewares/tockenChecker')
-
 
 router.get('', tokenChecker, async (req, res) => {
     query = {}
@@ -28,12 +27,7 @@ router.get('', tokenChecker, async (req, res) => {
     }
 
     if(req.query.pvinfo_id){
-        if(!isNaN(req.query.pvinfo_id)){
-            query = { ...query, "metadata.pv_id": req.query.pvinfo_id}
-        }else{
-            res.status(400).json({ "400 Bad Request": "Wrong params format"})
-            return;
-        }
+        query = { ...query, "metadata.pv_id": ObjectId.createFromHexString(req.params.pvinfo_id)}
     }
 
     let pvData = await PvData.find(query).exec()
@@ -46,14 +40,14 @@ router.get('', tokenChecker, async (req, res) => {
     res.status(200).json(pvData)
 })
 
-router.get('/:pvdata_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
+router.get('/:pvdata_id', tokenChecker, param("pvdata_id").isMongoId(), async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         res.status(400).json({ errors: errors.array() });
         return;
     }
     
-    let pvData = await PvData.findById(ObjectId.createFromHexString(req.params.pvdata_id)).exec()
+    let pvData = await PvData.findById(req.params.pvdata_id).exec()
 
     if(!pvData  || pvData.length == 0){
         res.status(404).json({ "404 Not Found": "No pv system data found with the given ID"})

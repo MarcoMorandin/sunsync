@@ -62,7 +62,7 @@ router.post('', tokenChecker, [
         _id: new ObjectId(),
         description: req.body.description,
         url: req.body.url,
-        ws_id: req.body.ws_id,
+        ws_id: ObjectId.createFromHexString(req.body.ws_id),
         installed_power: req.body.installed_power,
         location: req.body.location
     });
@@ -80,7 +80,7 @@ router.delete('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async
         return;
     }
 
-    let pvSystemNum = await PvSystem.countDocuments({ _id: req.params.pvinfo_id })
+    let pvSystemNum = await PvSystem.countDocuments({ _id: ObjectId.createFromHexString(req.params.pvinfo_id) })
     if (!pvSystemNum || pvSystemNum === 0){
         res.status(404).json({ "404 Not Found": "No pv system found with the given ID"})
         return;
