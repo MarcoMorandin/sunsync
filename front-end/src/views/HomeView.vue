@@ -36,7 +36,7 @@ const fillTileMoney = () => {
     params: {"aggregation": "all"}
   })
     .then((response) => {
-      tile.value.money = Math.floor(response.data[0].total_money)
+      tile.value.money = Math.floor(response.data[0].total)
     })
 }
 
@@ -46,7 +46,7 @@ const fillTileProduction = () => {
     params: {"aggregation": "all"}
   })
     .then((response) => {
-      tile.value.production = Math.floor(response.data[0].total_power/1000)
+      tile.value.production = Math.floor(response.data[0].total/1000)
     })
 }
 
