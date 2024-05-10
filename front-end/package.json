@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fawmi/vue-google-maps": "^0.9.79",
+    "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.0.96",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",

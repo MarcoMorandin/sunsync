@@ -1,11 +1,13 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { mdiEye } from '@mdi/js'
+import { mdiEye, mdiWeatherPartlyCloudy, mdiSolarPanel } from '@mdi/js'
 import CardBoxModal from '@/components/CardBoxModal.vue'
 import BaseLevel from '@/components/BaseLevel.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import axios from 'axios'
+import SvgIcon from '@jamescoyle/vue-icon';
+
 
 import { useAuthStore } from '@/stores/authStore'
 
@@ -43,6 +45,7 @@ const itemsPaginated = computed(() =>
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
 
+
 const pagesList = computed(() => {
     const pagesList = []
 
@@ -53,8 +56,20 @@ const pagesList = computed(() => {
     return pagesList
 })
 
-function showModal(i) {
+const wsInfo = ref({})
+
+async function showModal(i) {
     currentModal.value = items.value[i]
+    await axios
+        .get('http://localhost:3000/api/v1/wsinfo/' + currentModal.value.ws_id, {
+            headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+        })
+        .then((response) => {
+            wsInfo.value = response.data           
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     isModalActive.value = true
 }
 </script>
@@ -67,10 +82,13 @@ function showModal(i) {
         <p>
             Potenza Installata: <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
         </p>
+        <p>
+            Stazione meteo: <strong> {{ wsInfo.description }} </strong>
+        </p>
         <GMapMap
             v-if="isModalActive"
             :center="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
-            :zoom="13"
+            :zoom="12"
             :options="{
               zoomControl: true,
               mapTypeControl: false,
@@ -86,7 +104,23 @@ function showModal(i) {
                 :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
                 :clickable="true"
                 :draggable="false"
-            />
+                
+            >
+                <GMapInfoWindow>
+                    <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
+                </GMapInfoWindow>
+            </GMapMarker>
+            <GMapMarker
+                :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }"
+                :clickable="true"
+                :draggable="false"
+                
+            >
+                <GMapInfoWindow>
+                    <div><svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon></div>
+                </GMapInfoWindow>
+            </GMapMarker>
+
         </GMapMap>
     </CardBoxModal>
 

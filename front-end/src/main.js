@@ -13,6 +13,6 @@ pinia.use(piniaPluginPersistedState)
 
 createApp(App).use(pinia).use(router).use(VueGoogleMaps, {
   load: {
-    key: import.meta.env.VITE_API_KEY,
+    key: import.meta.env.VITE_GMAPS_API_KEY,
   },
 }).mount('#app')

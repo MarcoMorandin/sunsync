@@ -23,6 +23,8 @@ const tile = ref({
   money: 0.0
 })
 
+//TODO: AGGIUNGERE WS INFO AL DETTAGLIO DEI PANNELLI
+
 const fillTileNumber = () => {
   axios.get('http://localhost:3000/api/v1/reports/pvnumber', { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}})
     .then((response) => {
