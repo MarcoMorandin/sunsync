@@ -117,7 +117,7 @@ async function showModal(i) {
                 
             >
                 <GMapInfoWindow>
-                    <div><svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon></div>
+                    <svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon>
                 </GMapInfoWindow>
             </GMapMarker>
 

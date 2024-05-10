@@ -46,39 +46,6 @@ const submit = async () => {
       <UserCard class="mb-6" />
 
       <div class="grid grid-cols-1 gap-6">
-<!-- 
-        <CardBox is-form @submit="submitPass">
-          <p class="text-2xl"><strong>Cambia Password</strong></p>
-          <SectionTitleLineWithButton icon="" title="" main></SectionTitleLineWithButton>
-
-          <FormField label="Nuova password" help="Obbligatorio">
-            <FormControl
-              v-model="passwordForm.password"
-              :icon="mdiFormTextboxPassword"
-              name="password"
-              type="password"
-              required
-              autocomplete="new-password"
-            />
-          </FormField>
-
-          <FormField label="Conferma password" help="Obbligatorio">
-            <FormControl
-              v-model="passwordForm.password_confirmation"
-              :icon="mdiFormTextboxPassword"
-              name="password_confirmation"
-              type="password"
-              required
-              autocomplete="new-password"
-            />
-          </FormField>
-
-          <template #footer>
-            <BaseButtons>
-              <BaseButton type="submit" color="info" label="Invia" />
-            </BaseButtons>
-          </template>
-        </CardBox> -->
         <CardBox is-form @submit.prevent="submit">
           <FormField label="Password" help="Please enter your password">
                 <FormControl
@@ -99,14 +66,6 @@ const submit = async () => {
                     autocomplete="current-password"
                 />
             </FormField>
-
-            <!-- <FormCheckRadio
-                v-model="form.remember"
-                name="remember"
-                label="Remember"
-                :input-value="true"
-            /> -->
-
             <template #footer>
                 <BaseButtons>
                     <BaseButton type="submit" color="info" label="Cambia Password" />
