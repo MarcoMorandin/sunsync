@@ -35,6 +35,7 @@ const submit = async () => {
         let decoded_token = VueJwtDecode.decode(response.data.token)
         authStore.setUserId(decoded_token.user_id)
         authStore.setExpire(decoded_token.exp)
+        authStore.setRole(decoded_token.role)
         router.push('/dashboard')
 	})
 	.catch((error) => {
