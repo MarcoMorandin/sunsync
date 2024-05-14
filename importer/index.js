@@ -53,7 +53,7 @@ function importData() {
             });
         }
 
-        const response = await fetch("http://nodered:1880/api/v1/pun/" + date.toISOString().split('T')[0]);
+        const response = await fetch("https://simulator-n1ou.onrender.com/api/v1/pun/" + date.toISOString().split('T')[0]);
         const resp = await response.json();
         let price = 0;
         if(!resp["error"]){
@@ -92,7 +92,7 @@ function importData() {
 }
 
 importData();
-setInterval(importData, 10000);
+setInterval(importData, 50000);
 
 /**
  * scheduled import of data every day at same time
