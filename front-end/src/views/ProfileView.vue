@@ -49,7 +49,7 @@ const submit = async () => {
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccount"
-                title="Profile"
+                title="Profilo"
                 main
             ></SectionTitleLineWithButton>
 
@@ -64,7 +64,7 @@ const submit = async () => {
                     >
                         <b>ERRORE: </b> {{ error }}
                     </NotificationBar>
-                    <FormField label="Password" help="Please enter your password">
+                    <FormField label="Password" help="Inserisci la tua nuova password">
                         <FormControl
                             v-model="passwordForm.password"
                             :icon="mdiAsterisk"
@@ -74,7 +74,7 @@ const submit = async () => {
                         />
                     </FormField>
 
-                    <FormField label="Password" help="Please enter your password">
+                    <FormField label="Password" help="Inserisci nuovamente la tua password">
                         <FormControl
                             v-model="passwordForm.password_confirmation"
                             :icon="mdiAsterisk"

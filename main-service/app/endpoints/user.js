@@ -5,6 +5,8 @@ const { ObjectId } = require('mongodb');
 const User = require('../schemas/User')
 const jwt = require('jsonwebtoken');
 const { createHash } = require('crypto');
+const crypto = require('crypto');
+
 require("dotenv").config();
 
 const tokenChecker = require('../middlewares/tockenChecker')
@@ -107,7 +109,7 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
 })
 
-router.patch('', tokenCheckerChangePassword, [
+router.patch('/me', tokenCheckerChangePassword, [
     body('password', 'password must be filled').notEmpty(),
 ], async (req, res) => {
     const errors = validationResult(req);

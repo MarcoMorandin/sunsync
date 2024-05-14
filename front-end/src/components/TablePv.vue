@@ -152,6 +152,7 @@ async function deletePv() {
         v-model="isWarningActive"
         title="Sei sicuro?"
         button="danger"
+        button-label="Conferma"
         has-cancel
         @confirm="deletePv()"
     >
@@ -205,7 +206,7 @@ async function deletePv() {
                     @click="currentPage = page"
                 />
             </BaseButtons>
-            <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
+            <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>
     </div>
 </template>

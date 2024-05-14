@@ -28,10 +28,10 @@ const asideLgCloseClick = (event) => {
     >
         <div class="aside lg:rounded-2xl flex-1 flex flex-col overflow-hidden dark:bg-slate-900">
             <div
-                class="aside-brand flex flex-row h-14 items-center justify-between dark:bg-slate-900"
+                class="aside-brand flex flex-row h-28 items-center justify-center dark:bg-slate-900"
             >
-                <div class="text-center flex-1 lg:text-left lg:pl-6 xl:text-center xl:pl-0">
-                    <b class="font-black">SunSync</b>
+                <div class="justify-center items-center text-center flex">
+                    <img src="/logo.png" alt="" srcset="" class="h-20 w-20">
                 </div>
                 <button
                     class="hidden lg:inline-block xl:hidden p-3"

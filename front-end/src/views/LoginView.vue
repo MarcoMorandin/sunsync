@@ -40,7 +40,7 @@ const submit = async () => {
             authStore.setExpire(decoded_token.exp)
             authStore.setRole(decoded_token.role)
             if(decoded_token.disabled)
-                router.push('/changepassword')
+                setTimeout(() => router.push('/changepassword'), 500)
             else
                 router.push('/dashboard')
         })
@@ -62,7 +62,7 @@ const submit = async () => {
                 >
                     <b>ERRORE: </b> Errore nell'effettuare il login
                 </NotificationBar>
-                <FormField label="Login" help="Please enter your login">
+                <FormField label="Email" help="Perfavore inserisci la tua email">
                     <FormControl
                         v-model="form.login"
                         :icon="mdiAccount"
@@ -71,7 +71,7 @@ const submit = async () => {
                     />
                 </FormField>
 
-                <FormField label="Password" help="Please enter your password">
+                <FormField label="Password" help="Perfavore inserisci la tua password">
                     <FormControl
                         v-model="form.pass"
                         :icon="mdiAsterisk"
@@ -91,7 +91,7 @@ const submit = async () => {
                 <template #footer>
                     <BaseButtons>
                         <BaseButton type="submit" color="info" label="Login" />
-                        <BaseButton to="/" color="info" outline label="Back" />
+                        <BaseButton to="/" color="info" outline label="Indietro" />
                     </BaseButtons>
                 </template>
             </CardBox> </SectionFullScreen

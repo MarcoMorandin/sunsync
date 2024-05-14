@@ -125,7 +125,7 @@ const isVisible = ref(true)
                 </FormField>
                 <template #footer>
                     <BaseButtons>
-                        <BaseButton type="submit" color="info" label="Submit" />
+                        <BaseButton type="submit" color="info" label="Invia" />
                         <BaseButton type="reset" color="info" outline label="Reset" />
                     </BaseButtons>
                 </template>

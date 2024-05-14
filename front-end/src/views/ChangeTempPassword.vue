@@ -37,7 +37,8 @@ const submit = async () => {
         .then(() =>  {
             router.push('/dashboard')
         })
-        .catch(() => {
+        .catch((error) => {
+            console.log(error)
             showErrorNotification.value = true
             return;
         })
