@@ -50,7 +50,7 @@ const username = ref('')
 
 const fillUsername = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/user/me', {
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/users/me', {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {

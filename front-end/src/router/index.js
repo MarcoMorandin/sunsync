@@ -9,7 +9,7 @@ const routes = [
         },
         path: '/',
         name: 'home',
-        component: () => import('@/views/BaseView.vue')
+        component: () => import('@/views/LandingView.vue')
     },
     {
         meta: {
