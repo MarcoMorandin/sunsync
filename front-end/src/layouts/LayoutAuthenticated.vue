@@ -20,48 +20,48 @@ const isAsideMobileExpanded = ref(false)
 const isAsideLgActive = ref(false)
 
 router.beforeEach(() => {
-  isAsideMobileExpanded.value = false
-  isAsideLgActive.value = false
+    isAsideMobileExpanded.value = false
+    isAsideLgActive.value = false
 })
 
 const menuClick = (event, item) => {
-  if (item.isToggleLightDark) {
-    darkModeStore.set()
-  }
+    if (item.isToggleLightDark) {
+        darkModeStore.set()
+    }
 
-  if (item.isLogout) {
-    authStore.setToken('')
-    authStore.setExpire('')
-    authStore.setUserId('')
-    router.push({name: 'home'})
-  }
+    if (item.isLogout) {
+        authStore.setToken('')
+        authStore.setExpire('')
+        authStore.setUserId('')
+        router.push({ name: 'home' })
+    }
 }
 </script>
 
 <template>
-  <div
-    :class="{
-      'overflow-hidden lg:overflow-visible': isAsideMobileExpanded
-    }"
-  >
     <div
-      :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-      class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
+        :class="{
+            'overflow-hidden lg:overflow-visible': isAsideMobileExpanded
+        }"
     >
-      <NavBar
-        :menu="menuNavBar"
-        :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-        @menu-click="menuClick"
-      >
-      </NavBar>
-      <AsideMenu
-        :is-aside-mobile-expanded="isAsideMobileExpanded"
-        :is-aside-lg-active="isAsideLgActive"
-        :menu="menuAside"
-        @menu-click="menuClick"
-        @aside-lg-close-click="isAsideLgActive = false"
-      />
-      <slot />
+        <div
+            :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
+            class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
+        >
+            <NavBar
+                :menu="menuNavBar"
+                :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
+                @menu-click="menuClick"
+            >
+            </NavBar>
+            <AsideMenu
+                :is-aside-mobile-expanded="isAsideMobileExpanded"
+                :is-aside-lg-active="isAsideLgActive"
+                :menu="menuAside"
+                @menu-click="menuClick"
+                @aside-lg-close-click="isAsideLgActive = false"
+            />
+            <slot />
+        </div>
     </div>
-  </div>
 </template>

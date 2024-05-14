@@ -1,8 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import {
-  mdiSolarPanel
-} from '@mdi/js'
+import { mdiSolarPanel } from '@mdi/js'
 import * as chartConfig from '@/components/Charts/chart.config.js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
@@ -12,34 +10,51 @@ import LineChart from '@/components/Charts/LineChart.vue'
 
 const chartData = ref({})
 
-
 const fillChartData = async () => {
-  //TODO: Add filters
-  chartData.value.production = await chartConfig.chartData('info', 'http://localhost:3000/api/v1/reports/production', '', '', '')
-  chartData.value.money = await chartConfig.chartData('primary', 'http://localhost:3000/api/v1/reports/money', '', '', '')
+    //TODO: Add filters
+    chartData.value.production = await chartConfig.chartData(
+        'info',
+        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/production',
+        '',
+        '',
+        ''
+    )
+    chartData.value.money = await chartConfig.chartData(
+        'primary',
+        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/money',
+        '',
+        '',
+        ''
+    )
 }
 
 onMounted(async () => {
-  await fillChartData()
+    await fillChartData()
 })
-
 </script>
 
 <template>
-  <LayoutAuthenticated>
-    <SectionMain>      
-      <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Produzione Energetica" main></SectionTitleLineWithButton>
-      <CardBox class="mb-6">
-          <line-chart :data="chartData.production" class="h-72" />
-      </CardBox>
+    <LayoutAuthenticated>
+        <SectionMain>
+            <SectionTitleLineWithButton
+                :icon="mdiSolarPanel"
+                title="Produzione Energetica"
+                main
+            ></SectionTitleLineWithButton>
+            <CardBox class="mb-6">
+                <line-chart :data="chartData.production" class="h-72" />
+            </CardBox>
 
-      <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Soldi Risparmiati" main></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton
+                :icon="mdiSolarPanel"
+                title="Soldi Risparmiati"
+                main
+            ></SectionTitleLineWithButton>
 
-      <CardBox class="mb-6">
-          <line-chart :data="chartData.money" class="h-72" />
-      </CardBox>
-
-    </SectionMain>
-  </LayoutAuthenticated>
+            <CardBox class="mb-6">
+                <line-chart :data="chartData.money" class="h-72" />
+            </CardBox>
+        </SectionMain>
+    </LayoutAuthenticated>
 </template>
 @/stores/authStore

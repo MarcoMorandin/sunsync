@@ -6,7 +6,7 @@ import BaseLevel from '@/components/BaseLevel.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import axios from 'axios'
-import SvgIcon from '@jamescoyle/vue-icon';
+import SvgIcon from '@jamescoyle/vue-icon'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
 
@@ -20,15 +20,15 @@ const currentPage = ref(0)
 const items = ref([])
 onMounted(async () => {
     axios
-        .get('http://localhost:3000/api/v1/pvinfo', {
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo', {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
-            items.value = response.data            
+            items.value = response.data
         })
         .catch(() => {
             showErrorNotification.value = true
-            error.value = "Errore nel caricamento degli impianti fotovoltaici"
+            error.value = 'Errore nel caricamento degli impianti fotovoltaici'
         })
 })
 
@@ -43,7 +43,6 @@ const itemsPaginated = computed(() =>
 )
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
-
 
 const pagesList = computed(() => {
     const pagesList = []
@@ -60,15 +59,15 @@ const wsInfo = ref({})
 async function showModal(i) {
     currentModal.value = items.value[i]
     await axios
-        .get('http://localhost:3000/api/v1/wsinfo/' + currentModal.value.ws_id, {
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo/' + currentModal.value.ws_id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
-            wsInfo.value = response.data           
+            wsInfo.value = response.data
         })
         .catch((error) => {
             showErrorNotification.value = true
-            error.value = "Errore nel caricamento delle stazioni meteo"
+            error.value = 'Errore nel caricamento delle stazioni meteo'
         })
     isModalActive.value = true
 }
@@ -81,19 +80,23 @@ async function showWarning(i) {
     isWarningActive.value = true
 }
 
-
-async function deletePv(){
+async function deletePv() {
     await axios
-        .delete('http://localhost:3000/api/v1/pvinfo/' + currentWarning.value._id, {
+        .delete(import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo/' + currentWarning.value._id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then(async () => {
             await axios
-                .delete('http://localhost:3000/api/v1/wsinfo/' + currentWarning.value.ws_id, {
-                    headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-                })
+                .delete(
+                    import.meta.env.VITE_BASE_URL_API +
+                        '/api/v1/wsinfo/' +
+                        currentWarning.value.ws_id,
+                    {
+                        headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+                    }
+                )
                 .then(() => {
-                    window.location.reload()  
+                    window.location.reload()
                 })
                 .catch((error) => {
                     showErrorNotification.value = true
@@ -104,9 +107,7 @@ async function deletePv(){
             showErrorNotification.value = true
             error.value = "Errore nell'eliminazione dell'impianto fotovoltaico"
         })
-    
 }
-
 </script>
 
 <template>
@@ -118,7 +119,8 @@ async function deletePv(){
             Nome: <strong>{{ currentModal.description }}</strong>
         </p>
         <p>
-            Potenza Installata: <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
+            Potenza Installata:
+            <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
         </p>
         <p>
             Stazione meteo: <strong> {{ wsInfo.description }} </strong>
@@ -128,12 +130,12 @@ async function deletePv(){
             :center="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
             :zoom="12"
             :options="{
-              zoomControl: true,
-              mapTypeControl: false,
-              scaleControl: true,
-              streetViewControl: false,
-              rotateControl: false,
-              fullscreenControl: true,
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: true,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: true
             }"
             map-type-id="terrain"
             class="w-full h-96"
@@ -142,7 +144,6 @@ async function deletePv(){
                 :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
                 :clickable="true"
                 :draggable="false"
-                
             >
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
@@ -152,24 +153,28 @@ async function deletePv(){
                 :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }"
                 :clickable="true"
                 :draggable="false"
-                
             >
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon>
                 </GMapInfoWindow>
             </GMapMarker>
         </GMapMap>
-
     </CardBoxModal>
 
-    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" has-cancel @confirm="deletePv()">
+    <CardBoxModal
+        v-model="isWarningActive"
+        title="Sei sicuro?"
+        button="danger"
+        has-cancel
+        @confirm="deletePv()"
+    >
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
             l'impianto fotovoltaico e tutti i dati ad esso collegati
         </p>
     </CardBoxModal>
 
-    <table >
+    <table>
         <thead>
             <tr>
                 <th>Descrizione</th>

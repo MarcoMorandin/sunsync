@@ -1,6 +1,13 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { mdiLightningBolt, mdiDatabaseArrowLeftOutline, mdiSolarPanelLarge, mdiLatitude, mdiLongitude, mdiImageFilterHdrOutline } from '@mdi/js'
+import { onMounted, reactive, ref } from 'vue'
+import {
+    mdiLightningBolt,
+    mdiDatabaseArrowLeftOutline,
+    mdiSolarPanelLarge,
+    mdiLatitude,
+    mdiLongitude,
+    mdiImageFilterHdrOutline
+} from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
 import FormField from '@/components/FormField.vue'
@@ -19,117 +26,139 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const form = reactive({
-  pvLat: '',
-  pvLong: '',
-  pvHeight: '',
-  pvDescription: '',
-  power: '',
-  pvUrl: '',
-  wsLat: '',
-  wsLong: '',
-  wsHeight: '',
-  wsDescription: '',
-  wsUrl: ''
+    pvLat: '',
+    pvLong: '',
+    pvHeight: '',
+    pvDescription: '',
+    power: '',
+    pvUrl: '',
+    wsId: ''
+})
+
+const selectOptions = ref([])
+
+onMounted(() => {
+    axios
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo', {
+            headers: {
+                Authorization: `Bearer ${authStore.getToken.value}`
+            }
+        })
+        .then((response) => {
+            response.data.forEach((ws) => {
+				selectOptions.value.push({
+					id: ws._id,
+					label: ws.description
+				})
+			})
+        })
 })
 
 const submit = async () => {
-  await axios.post('http://localhost:3000/api/v1/wsinfo', {
-		location: {
-      lat: form.wsLat,
-      long: form.wsLong,
-      alt: form.wsHeight
-    },
-    description: form.wsDescription,
-    url: form.wsUrl
-	}, {
-    headers: {
-      "Authorization" : `Bearer ${authStore.getToken.value}`
-    }
-  }).then(async (response) => {
-    const wsId = response.data.data._id
-    await axios.post('http://localhost:3000/api/v1/pvinfo', {
-      location: {
-        lat: form.pvLat,
-        long: form.pvLong,
-        alt: form.pvHeight
-      },
-      description: form.pvDescription,
-      url: form.pvUrl,
-      installed_power: form.power,
-      "ws_id": wsId
-    }, {
-      headers: {
-        "Authorization" : `Bearer ${authStore.getToken.value}`
-      }
-    }).then(() => {
-        formStatusCurrent.value = formStatusOptions[1]
-        isVisible.value = false
-        setTimeout(() => router.push('/dashboard'), 500)
-      }
-    )
-	}).catch(() => {
-    formStatusCurrent.value = formStatusOptions[2]
-	});
+    await axios
+        .post(
+            import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo',
+            {
+                location: {
+                    lat: form.pvLat,
+                    long: form.pvLong,
+                    alt: form.pvHeight
+                },
+                description: form.pvDescription,
+                url: form.pvUrl,
+                installed_power: form.power,
+                ws_id: form.wsId.id
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${authStore.getToken.value}`
+                }
+            }
+        )
+        .then(() => {
+            formStatusCurrent.value = formStatusOptions[1]
+            isVisible.value = false
+            setTimeout(() => router.push('/dashboard'), 500)
+        })
+        .catch(() => {
+            formStatusCurrent.value = formStatusOptions[2]
+        })
 }
-
 
 const formStatusCurrent = ref(0)
 
 const formStatusOptions = ['none', 'success', 'danger']
 const isVisible = ref(true)
-
 </script>
 
 <template>
-  <LayoutAuthenticated>
-    <SectionMain >
-      <SectionTitleLineWithButton :icon="mdiSolarPanelLarge" title="Nuovo Impianto" main></SectionTitleLineWithButton>
-      <NotificationBar
-          :color="formStatusCurrent"
-        >
-        <span v-if="formStatusCurrent == 'danger'"><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon fine!</span>
-        <span v-if="formStatusCurrent == 'success'">Inserimento avvenuto con successo!</span>
-      </NotificationBar>
-      <CardBox v-if="isVisible" is-form @submit.prevent="submit">
-        <FormField label="Posizione Impianto Fotovoltaico">
-          <FormControl v-model="form.pvLat" type="number" :icon="mdiLatitude" placeholder="Latitudine"/>
-          <FormControl v-model="form.pvLong" type="number" :icon="mdiLongitude" placeholder="Longintudine"/>
-        </FormField>
-        <FormField>
-          <FormControl v-model="form.pvHeight" type="number" :icon="mdiImageFilterHdrOutline" placeholder="Altitudine"/>
-        </FormField>
-        
-        <FormField label="Descrizione Impianto Fotovoltaico">
-          <FormControl v-model="form.pvDescription" type="textarea" placeholder="Descrizione dell'impianto fotovoltaico" />
-        </FormField>
-        <FormField label="Potenza Installata (kW)">
-          <FormControl v-model="form.power" type="number" :icon="mdiLightningBolt" />
-        </FormField>
-        <FormField label="Url dati fotovoltaico">
-          <FormControl v-model="form.pvUrl" type="url" :icon="mdiDatabaseArrowLeftOutline" />
-        </FormField>
-        <hr>
-        <FormField label="Posizione Stazione Meteo">
-          <FormControl v-model="form.wsLat" type="number" :icon="mdiLatitude" placeholder="Latitudine"/>
-          <FormControl v-model="form.wsLong" type="number" :icon="mdiLongitude" placeholder="Longintudine"/>
-        </FormField>
-        <FormField>
-          <FormControl v-model="form.wsHeight" type="number" :icon="mdiImageFilterHdrOutline" placeholder="Altitudine"/>
-        </FormField>
+    <LayoutAuthenticated>
+        <SectionMain>
+            <SectionTitleLineWithButton
+                :icon="mdiSolarPanelLarge"
+                title="Nuovo Impianto"
+                main
+            ></SectionTitleLineWithButton>
+            <NotificationBar :color="formStatusCurrent">
+                <span v-if="formStatusCurrent == 'danger'"
+                    ><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon
+                    fine!</span
+                >
+                <span v-if="formStatusCurrent == 'success'"
+                    >Inserimento avvenuto con successo!</span
+                >
+            </NotificationBar>
+            <CardBox v-if="isVisible" is-form @submit.prevent="submit">
+                <FormField label="Posizione Impianto Fotovoltaico">
+                    <FormControl
+                        v-model="form.pvLat"
+                        type="number"
+                        :icon="mdiLatitude"
+                        placeholder="Latitudine"
+                    />
+                    <FormControl
+                        v-model="form.pvLong"
+                        type="number"
+                        :icon="mdiLongitude"
+                        placeholder="Longintudine"
+                    />
+                </FormField>
+                <FormField>
+                    <FormControl
+                        v-model="form.pvHeight"
+                        type="number"
+                        :icon="mdiImageFilterHdrOutline"
+                        placeholder="Altitudine"
+                    />
+                </FormField>
 
-        <FormField label="Descrizione Stazione Meteo">
-          <FormControl v-model="form.wsDescription" type="textarea" placeholder="Descrizione della stazione meteo" />
-        </FormField>
-        <FormField label="Url dati meteo">
-          <FormControl v-model="form.wsUrl" type="url" :icon="mdiDatabaseArrowLeftOutline" />
-        </FormField>
-        <template #footer>
-          <BaseButtons>
-            <BaseButton type="submit" color="info" label="Submit" />
-            <BaseButton type="reset" color="info" outline label="Reset" />
-          </BaseButtons>
-        </template>
-      </CardBox>
-    </SectionMain>
-  </LayoutAuthenticated>
+                <FormField label="Descrizione Impianto Fotovoltaico">
+                    <FormControl
+                        v-model="form.pvDescription"
+                        type="textarea"
+                        placeholder="Descrizione dell'impianto fotovoltaico"
+                    />
+                </FormField>
+                <FormField label="Potenza Installata (kW)">
+                    <FormControl v-model="form.power" type="number" :icon="mdiLightningBolt" />
+                </FormField>
+                <FormField label="Url dati fotovoltaico">
+                    <FormControl
+                        v-model="form.pvUrl"
+                        type="url"
+                        :icon="mdiDatabaseArrowLeftOutline"
+                    />
+                </FormField>
+                <FormField label="Stazione Meteo">
+                    <FormControl v-model="form.wsId" :options="selectOptions" />
+                </FormField>
+                <template #footer>
+                    <BaseButtons>
+                        <BaseButton type="submit" color="info" label="Submit" />
+                        <BaseButton type="reset" color="info" outline label="Reset" />
+                    </BaseButtons>
+                </template>
+            </CardBox>
+        </SectionMain>
+    </LayoutAuthenticated>
 </template>

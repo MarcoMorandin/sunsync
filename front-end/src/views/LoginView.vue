@@ -29,30 +29,34 @@ const form = reactive({
 const router = useRouter()
 
 const submit = async () => {
-
-	axios.put('http://localhost:3000/api/v1/user', {
-		username: form.login,
-		password: form.pass
-	})
-	.then((response) => {
-        authStore.setToken(response.data.token)
-        let decoded_token = VueJwtDecode.decode(response.data.token)
-        authStore.setUserId(decoded_token.user_id)
-        authStore.setExpire(decoded_token.exp)
-        authStore.setRole(decoded_token.role)
-        router.push('/dashboard')
-	})
-	.catch((error) => {
-		showErrorNotification.value = true
-        error.value = "Errore nell'effettuare il login"
-	});
+    axios
+        .put(import.meta.env.VITE_BASE_URL_API + '/api/v1/user', {
+            username: form.login,
+            password: form.pass
+        })
+        .then((response) => {
+            authStore.setToken(response.data.token)
+            let decoded_token = VueJwtDecode.decode(response.data.token)
+            authStore.setUserId(decoded_token.user_id)
+            authStore.setExpire(decoded_token.exp)
+            authStore.setRole(decoded_token.role)
+            router.push('/dashboard')
+        })
+        .catch((error) => {
+            showErrorNotification.value = true
+            error.value = "Errore nell'effettuare il login"
+        })
 }
 </script>
 
 <template>
     <LayoutGuest>
         <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
-            <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
+            <NotificationBar
+                v-if="showErrorNotification"
+                color="danger"
+                :icon="mdiMonitorCellphone"
+            >
                 <b>ERRORE: </b> {{ error }}
             </NotificationBar>
             <CardBox :class="cardClass" is-form @submit.prevent="submit">
@@ -88,8 +92,8 @@ const submit = async () => {
                         <BaseButton to="/" color="info" outline label="Back" />
                     </BaseButtons>
                 </template>
-            </CardBox>
-        </SectionFullScreen>@/stores/authStore
+            </CardBox> </SectionFullScreen
+        >@/stores/authStore
     </LayoutGuest>
 </template>
 @/stores/auth.store

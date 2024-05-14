@@ -19,24 +19,29 @@ const authStore = useAuthStore()
 const selectOptions = { 0: 'Admin', 1: 'Dipendente' }
 
 const form = reactive({
-  email: '',
-  pass: '',
-  role: selectOptions[0]
+    email: '',
+    pass: '',
+    role: selectOptions[0]
 })
 
 const submit = async () => {
-  console.log()
-  await axios.post('http://localhost:3000/api/v1/user', {
-		username: form.email,
-		password: form.pass,
-    role: form.role
-	}, { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}})
-	.then(() => {
-    formStatusCurrent.value = formStatusOptions[1]
-	})
-	.catch(() => {
-    formStatusCurrent.value = formStatusOptions[2]
-	});
+    console.log()
+    await axios
+        .post(
+            import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
+            {
+                username: form.email,
+                password: form.pass,
+                role: form.role
+            },
+            { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
+        )
+        .then(() => {
+            formStatusCurrent.value = formStatusOptions[1]
+        })
+        .catch(() => {
+            formStatusCurrent.value = formStatusOptions[2]
+        })
 }
 
 const formStatusWithHeader = ref(true)
@@ -44,42 +49,54 @@ const formStatusWithHeader = ref(true)
 const formStatusCurrent = ref(0)
 
 const formStatusOptions = ['none', 'success', 'danger']
-
 </script>
 
 <template>
-  <LayoutAuthenticated>
-    <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiAccountPlusOutline" title="Nuovo Utente" main></SectionTitleLineWithButton>
-      <CardBox is-form @submit.prevent="submit">
-        <NotificationBarInCard
-          :color="formStatusCurrent"
-          :is-placed-with-header="formStatusWithHeader"
-        >
-          <span v-if="formStatusCurrent == 'danger'"><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon fine!</span>
-          <span v-if="formStatusCurrent == 'success'">Inserimento avvenuto con successo!</span>
-        </NotificationBarInCard>
-        <FormField label="Username">
-          <FormControl v-model="form.email" type="email" :icon="mdiMail" />
-        </FormField>
-        <FormField label="Password">
-          <FormControl v-model="form.pass" type="password" :icon="mdiFormTextboxPassword" />
-        </FormField>
-        <FormField label="Ruolo">
-          <FormCheckRadioGroup
-            v-model="form.role"
-            name="role"
-            type="radio"
-            :options="selectOptions"
-          />
-        </FormField>
-        <template #footer>
-          <BaseButtons>
-            <BaseButton type="submit" color="info" label="Submit" />
-            <BaseButton type="reset" color="info" outline label="Reset" />
-          </BaseButtons>
-        </template>
-      </CardBox>
-    </SectionMain>
-  </LayoutAuthenticated>
+    <LayoutAuthenticated>
+        <SectionMain>
+            <SectionTitleLineWithButton
+                :icon="mdiAccountPlusOutline"
+                title="Nuovo Utente"
+                main
+            ></SectionTitleLineWithButton>
+            <CardBox is-form @submit.prevent="submit">
+                <NotificationBarInCard
+                    :color="formStatusCurrent"
+                    :is-placed-with-header="formStatusWithHeader"
+                >
+                    <span v-if="formStatusCurrent == 'danger'"
+                        ><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon
+                        fine!</span
+                    >
+                    <span v-if="formStatusCurrent == 'success'"
+                        >Inserimento avvenuto con successo!</span
+                    >
+                </NotificationBarInCard>
+                <FormField label="Username">
+                    <FormControl v-model="form.email" type="email" :icon="mdiMail" />
+                </FormField>
+                <FormField label="Password">
+                    <FormControl
+                        v-model="form.pass"
+                        type="password"
+                        :icon="mdiFormTextboxPassword"
+                    />
+                </FormField>
+                <FormField label="Ruolo">
+                    <FormCheckRadioGroup
+                        v-model="form.role"
+                        name="role"
+                        type="radio"
+                        :options="selectOptions"
+                    />
+                </FormField>
+                <template #footer>
+                    <BaseButtons>
+                        <BaseButton type="submit" color="info" label="Submit" />
+                        <BaseButton type="reset" color="info" outline label="Reset" />
+                    </BaseButtons>
+                </template>
+            </CardBox>
+        </SectionMain>
+    </LayoutAuthenticated>
 </template>

@@ -10,28 +10,30 @@ const authStore = useAuthStore()
 
 const username = ref('')
 
-
 const fillUsername = () => {
-  axios.get('http://localhost:3000/api/v1/user/me', { 
-    headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}
-  })
-    .then((response) => {
-      username.value = response.data.username
-    })
+    axios
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/user/me', {
+            headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+        })
+        .then((response) => {
+            username.value = response.data.username
+        })
 }
 
 onMounted(() => {
-  fillUsername()
+    fillUsername()
 })
-
 </script>
 
 <template>
-  <CardBox>
-    <BaseLevel type="justify-around lg:justify-center">
-      <div class="space-y-3 text-center md:text-left lg:mx-12">
-        <h1 class="text-2xl">Buongiorno, <strong>{{ username }}</strong>!</h1>
-      </div>
-    </BaseLevel>
-  </CardBox>
+    <CardBox>
+        <BaseLevel type="justify-around lg:justify-center">
+            <div class="space-y-3 text-center md:text-left lg:mx-12">
+                <h1 class="text-2xl">
+                    Buongiorno, <strong>{{ username }}</strong
+                    >!
+                </h1>
+            </div>
+        </BaseLevel>
+    </CardBox>
 </template>

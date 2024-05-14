@@ -1,7 +1,5 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-  <h1>Home page pubblica</h1>
+    <h1>Home page pubblica</h1>
 </template>

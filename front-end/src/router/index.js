@@ -48,13 +48,13 @@ const routes = [
         component: () => import('@/views/ProfileView.vue')
     },
     {
-      meta: {
-          title: 'Nuovo Utente',
-          role: 0
-      },
-      path: '/newuser',
-      name: 'newuser',
-      component: () => import('@/views/NewUserView.vue')
+        meta: {
+            title: 'Nuovo Utente',
+            role: 0
+        },
+        path: '/newuser',
+        name: 'newuser',
+        component: () => import('@/views/NewUserView.vue')
     },
     {
         meta: {
@@ -87,17 +87,17 @@ const router = createRouter({
 router.beforeEach((to) => {
     const authStore = useAuthStore()
     if (to.meta.role < 2) {
-      if (authStore.getToken.value == null || authStore.getToken.value == '') {
-          return { name: 'login' }
-      } else if (authStore.getExpire.value < Date.now() / 1000) {
-          authStore.setToken('')
-          authStore.setExpire('')
-          authStore.setUserId('')
+        if (authStore.getToken.value == null || authStore.getToken.value == '') {
+            return { name: 'login' }
+        } else if (authStore.getExpire.value < Date.now() / 1000) {
+            authStore.setToken('')
+            authStore.setExpire('')
+            authStore.setUserId('')
 
-          return { name: 'login' }
-      }else if(authStore.getRole.value > to.meta.role){
-        return { name: 'dashboard' }
-      }
+            return { name: 'login' }
+        } else if (authStore.getRole.value > to.meta.role) {
+            return { name: 'dashboard' }
+        }
     }
 })
 

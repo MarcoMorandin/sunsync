@@ -6,7 +6,7 @@ import BaseLevel from '@/components/BaseLevel.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import axios from 'axios'
-import SvgIcon from '@jamescoyle/vue-icon';
+import SvgIcon from '@jamescoyle/vue-icon'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
 
@@ -20,15 +20,15 @@ const currentPage = ref(0)
 const items = ref([])
 onMounted(async () => {
     axios
-        .get('http://localhost:3000/api/v1/wsinfo', {
+        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo', {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
-            items.value = response.data            
+            items.value = response.data
         })
         .catch(() => {
             showErrorNotification.value = true
-            error.value = "Errore nel caricamento delle stazioni meteo"
+            error.value = 'Errore nel caricamento delle stazioni meteo'
         })
 })
 
@@ -44,7 +44,6 @@ const itemsPaginated = computed(() =>
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
 
-
 const pagesList = computed(() => {
     const pagesList = []
 
@@ -54,7 +53,6 @@ const pagesList = computed(() => {
 
     return pagesList
 })
-
 
 async function showModal(i) {
     currentModal.value = items.value[i]
@@ -69,21 +67,19 @@ async function showWarning(i) {
     isWarningActive.value = true
 }
 
-
-async function deleteWs(){
+async function deleteWs() {
     await axios
-        .delete('http://localhost:3000/api/v1/wsinfo/' + currentWarning.value._id, {
+        .delete(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo/' + currentWarning.value._id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then(() => {
-            window.location.reload()  
+            window.location.reload()
         })
         .catch((error) => {
             showErrorNotification.value = true
             error.value = "Errore nell'eliminazione della stazione meteo"
-        })    
+        })
 }
-
 </script>
 
 <template>
@@ -99,12 +95,12 @@ async function deleteWs(){
             :center="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
             :zoom="12"
             :options="{
-              zoomControl: true,
-              mapTypeControl: false,
-              scaleControl: true,
-              streetViewControl: false,
-              rotateControl: false,
-              fullscreenControl: true,
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: true,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: true
             }"
             map-type-id="terrain"
             class="w-full h-96"
@@ -112,7 +108,7 @@ async function deleteWs(){
             <GMapMarker
                 :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
                 :clickable="true"
-                :draggable="false"   
+                :draggable="false"
             >
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
@@ -121,14 +117,20 @@ async function deleteWs(){
         </GMapMap>
     </CardBoxModal>
 
-    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" has-cancel @confirm="deleteWs()">
+    <CardBoxModal
+        v-model="isWarningActive"
+        title="Sei sicuro?"
+        button="danger"
+        has-cancel
+        @confirm="deleteWs()"
+    >
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
             la stazione meteo e tutti i dati ad essa collegati
         </p>
     </CardBoxModal>
 
-    <table >
+    <table>
         <thead>
             <tr>
                 <th>Descrizione</th>

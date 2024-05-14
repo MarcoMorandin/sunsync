@@ -20,66 +20,75 @@ const showErrorNotification = ref(false)
 const error = ref('')
 
 const passwordForm = reactive({
-  password: '',
-  password_confirmation: ''
+    password: '',
+    password_confirmation: ''
 })
 
 const submit = async () => {
-  if(passwordForm.password === passwordForm.password_confirmation){
-    axios.patch('http://localhost:3000/api/v1/user', 
-     { "password" : passwordForm.password },
-     { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}
-    })
-    .catch((error) => {
-      showErrorNotification.value = true
-      error.value = "Errore nella modifica della password"
-    })
-  }else{
-    showErrorNotification.value = true
-    error.value = "Le password non coincidono"
-  }
+    if (passwordForm.password === passwordForm.password_confirmation) {
+        axios
+            .patch(
+                import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
+                { password: passwordForm.password },
+                { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
+            )
+            .catch((error) => {
+                showErrorNotification.value = true
+                error.value = 'Errore nella modifica della password'
+            })
+    } else {
+        showErrorNotification.value = true
+        error.value = 'Le password non coincidono'
+    }
 }
 </script>
 
 <template>
-  <LayoutAuthenticated>
-    <SectionMain>
-      
-      <SectionTitleLineWithButton :icon="mdiAccount" title="Profile" main></SectionTitleLineWithButton>
+    <LayoutAuthenticated>
+        <SectionMain>
+            <SectionTitleLineWithButton
+                :icon="mdiAccount"
+                title="Profile"
+                main
+            ></SectionTitleLineWithButton>
 
-      <UserCard class="mb-6" />
+            <UserCard class="mb-6" />
 
-      <div class="grid grid-cols-1 gap-6">
-        <CardBox is-form @submit.prevent="submit">
-          <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
-            <b>ERRORE: </b> {{ error }}
-          </NotificationBar>
-          <FormField label="Password" help="Please enter your password">
-                <FormControl
-                    v-model="passwordForm.password"
-                    :icon="mdiAsterisk"
-                    type="password"
-                    name="password"
-                    autocomplete="current-password"
-                />
-            </FormField>
+            <div class="grid grid-cols-1 gap-6">
+                <CardBox is-form @submit.prevent="submit">
+                    <NotificationBar
+                        v-if="showErrorNotification"
+                        color="danger"
+                        :icon="mdiMonitorCellphone"
+                    >
+                        <b>ERRORE: </b> {{ error }}
+                    </NotificationBar>
+                    <FormField label="Password" help="Please enter your password">
+                        <FormControl
+                            v-model="passwordForm.password"
+                            :icon="mdiAsterisk"
+                            type="password"
+                            name="password"
+                            autocomplete="current-password"
+                        />
+                    </FormField>
 
-            <FormField label="Password" help="Please enter your password">
-                <FormControl
-                    v-model="passwordForm.password_confirmation"
-                    :icon="mdiAsterisk"
-                    type="password"
-                    name="password_confirmation"
-                    autocomplete="current-password"
-                />
-            </FormField>
-            <template #footer>
-                <BaseButtons>
-                    <BaseButton type="submit" color="info" label="Cambia Password" />
-                </BaseButtons>
-            </template>
-        </CardBox>
-      </div>
-    </SectionMain>
-  </LayoutAuthenticated>
+                    <FormField label="Password" help="Please enter your password">
+                        <FormControl
+                            v-model="passwordForm.password_confirmation"
+                            :icon="mdiAsterisk"
+                            type="password"
+                            name="password_confirmation"
+                            autocomplete="current-password"
+                        />
+                    </FormField>
+                    <template #footer>
+                        <BaseButtons>
+                            <BaseButton type="submit" color="info" label="Cambia Password" />
+                        </BaseButtons>
+                    </template>
+                </CardBox>
+            </div>
+        </SectionMain>
+    </LayoutAuthenticated>
 </template>
