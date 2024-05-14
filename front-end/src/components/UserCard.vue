@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useMainStore } from '@/stores/main'
 import BaseLevel from '@/components/BaseLevel.vue'
 import CardBox from '@/components/CardBox.vue'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
+import { meEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
 
@@ -12,7 +12,7 @@ const username = ref('')
 
 const fillUsername = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/user/me', {
+        .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {

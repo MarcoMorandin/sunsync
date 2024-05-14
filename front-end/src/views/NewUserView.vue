@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { mdiMail, mdiFormTextboxPassword, mdiAccountPlusOutline } from '@mdi/js'
+import { mdiEmailOutline, mdiFormTextboxPassword, mdiAccountPlusOutline, mdiAccount } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
 import FormCheckRadioGroup from '@/components/FormCheckRadioGroup.vue'
@@ -13,12 +13,17 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBarInCard from '@/components/NotificationBarInCard.vue'
+import { usersEndpoint } from '@/endpoints'
+import { useRouter } from 'vue-router'
 
+
+const router = useRouter()
 const authStore = useAuthStore()
 
 const selectOptions = { 0: 'Admin', 1: 'Dipendente' }
 
 const form = reactive({
+    username: '',
     email: '',
     pass: '',
     role: selectOptions[0]
@@ -28,9 +33,10 @@ const submit = async () => {
     console.log()
     await axios
         .post(
-            import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
-            {
-                username: form.email,
+            import.meta.env.VITE_BASE_URL_API + usersEndpoint,
+            {   
+                username: form.username,
+                mail: form.email,
                 password: form.pass,
                 role: form.role
             },
@@ -38,6 +44,7 @@ const submit = async () => {
         )
         .then(() => {
             formStatusCurrent.value = formStatusOptions[1]
+            setTimeout(() => router.push('/dashboard'), 500)
         })
         .catch(() => {
             formStatusCurrent.value = formStatusOptions[2]
@@ -73,7 +80,10 @@ const formStatusOptions = ['none', 'success', 'danger']
                     >
                 </NotificationBarInCard>
                 <FormField label="Username">
-                    <FormControl v-model="form.email" type="email" :icon="mdiMail" />
+                    <FormControl v-model="form.username" :icon="mdiAccount" />
+                </FormField>
+                <FormField label="Email">
+                    <FormControl v-model="form.email" type="email" :icon="mdiEmailOutline" />
                 </FormField>
                 <FormField label="Password">
                     <FormControl
@@ -92,7 +102,7 @@ const formStatusOptions = ['none', 'success', 'danger']
                 </FormField>
                 <template #footer>
                     <BaseButtons>
-                        <BaseButton type="submit" color="info" label="Submit" />
+                        <BaseButton type="submit" color="info" label="Invia" />
                         <BaseButton type="reset" color="info" outline label="Reset" />
                     </BaseButtons>
                 </template>

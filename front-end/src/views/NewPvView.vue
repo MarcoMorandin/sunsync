@@ -20,7 +20,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBarInCard.vue'
 import { useRouter } from 'vue-router'
-
+import { wsInfoEndpoint, pvInfoEndpoint } from '@/endpoints'
+ 
 const authStore = useAuthStore()
 
 const router = useRouter()
@@ -39,7 +40,7 @@ const selectOptions = ref([])
 
 onMounted(() => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo', {
+        .get(import.meta.env.VITE_BASE_URL_API + wsInfoEndpoint, {
             headers: {
                 Authorization: `Bearer ${authStore.getToken.value}`
             }
@@ -57,7 +58,7 @@ onMounted(() => {
 const submit = async () => {
     await axios
         .post(
-            import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo',
+            import.meta.env.VITE_BASE_URL_API + pvInfoEndpoint,
             {
                 location: {
                     lat: form.pvLat,
@@ -154,7 +155,7 @@ const isVisible = ref(true)
                 </FormField>
                 <template #footer>
                     <BaseButtons>
-                        <BaseButton type="submit" color="info" label="Submit" />
+                        <BaseButton type="submit" color="info" label="Invia" />
                         <BaseButton type="reset" color="info" outline label="Reset" />
                     </BaseButtons>
                 </template>

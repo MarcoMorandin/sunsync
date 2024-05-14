@@ -6,7 +6,7 @@ export default [
         menu: [
             {
                 icon: mdiCogOutline,
-                label: 'Settings',
+                label: 'Impostazioni',
                 to: '/profile'
             }
         ]

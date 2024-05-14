@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { mdiEye, mdiWeatherPartlyCloudy, mdiSolarPanel, mdiTrashCan } from '@mdi/js'
+import { mdiEye, mdiSolarPanel, mdiTrashCan } from '@mdi/js'
 import CardBoxModal from '@/components/CardBoxModal.vue'
 import BaseLevel from '@/components/BaseLevel.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
@@ -9,6 +9,7 @@ import axios from 'axios'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
+import { wsInfoEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
 
@@ -20,7 +21,7 @@ const currentPage = ref(0)
 const items = ref([])
 onMounted(async () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo', {
+        .get(import.meta.env.VITE_BASE_URL_API + wsInfoEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
@@ -69,7 +70,7 @@ async function showWarning(i) {
 
 async function deleteWs() {
     await axios
-        .delete(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo/' + currentWarning.value._id, {
+        .delete(import.meta.env.VITE_BASE_URL_API + wsInfoEndpoint + '/' + currentWarning.value._id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then(() => {
@@ -121,6 +122,7 @@ async function deleteWs() {
         v-model="isWarningActive"
         title="Sei sicuro?"
         button="danger"
+        button-label="Conferma"
         has-cancel
         @confirm="deleteWs()"
     >
@@ -170,7 +172,7 @@ async function deleteWs() {
                     @click="currentPage = page"
                 />
             </BaseButtons>
-            <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
+            <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>
     </div>
 </template>

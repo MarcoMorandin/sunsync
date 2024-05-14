@@ -12,11 +12,10 @@ import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
 import VueJwtDecode from 'vue-jwt-decode'
 import NotificationBar from '@/components/NotificationBar.vue'
-
+import { authEndpoint } from '@/endpoints'
 import { useAuthStore } from '@/stores/authStore'
 
 const showErrorNotification = ref(false)
-const error = ref('')
 
 const authStore = useAuthStore()
 
@@ -30,8 +29,8 @@ const router = useRouter()
 
 const submit = async () => {
     axios
-        .put(import.meta.env.VITE_BASE_URL_API + '/api/v1/user', {
-            username: form.login,
+        .post(import.meta.env.VITE_BASE_URL_API + authEndpoint, {
+            mail: form.login,
             password: form.pass
         })
         .then((response) => {
@@ -40,11 +39,13 @@ const submit = async () => {
             authStore.setUserId(decoded_token.user_id)
             authStore.setExpire(decoded_token.exp)
             authStore.setRole(decoded_token.role)
-            router.push('/dashboard')
+            if(decoded_token.disabled)
+                setTimeout(() => router.push('/changepassword'), 500)
+            else
+                router.push('/dashboard')
         })
-        .catch((error) => {
+        .catch(() => {
             showErrorNotification.value = true
-            error.value = "Errore nell'effettuare il login"
         })
 }
 </script>
@@ -52,15 +53,16 @@ const submit = async () => {
 <template>
     <LayoutGuest>
         <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
-            <NotificationBar
-                v-if="showErrorNotification"
-                color="danger"
-                :icon="mdiMonitorCellphone"
-            >
-                <b>ERRORE: </b> {{ error }}
-            </NotificationBar>
+            
             <CardBox :class="cardClass" is-form @submit.prevent="submit">
-                <FormField label="Login" help="Please enter your login">
+                <NotificationBar
+                    v-if="showErrorNotification"
+                    color="danger"
+                    :icon="mdiMonitorCellphone"
+                >
+                    <b>ERRORE: </b> Errore nell'effettuare il login
+                </NotificationBar>
+                <FormField label="Email" help="Perfavore inserisci la tua email">
                     <FormControl
                         v-model="form.login"
                         :icon="mdiAccount"
@@ -69,7 +71,7 @@ const submit = async () => {
                     />
                 </FormField>
 
-                <FormField label="Password" help="Please enter your password">
+                <FormField label="Password" help="Perfavore inserisci la tua password">
                     <FormControl
                         v-model="form.pass"
                         :icon="mdiAsterisk"
@@ -89,11 +91,10 @@ const submit = async () => {
                 <template #footer>
                     <BaseButtons>
                         <BaseButton type="submit" color="info" label="Login" />
-                        <BaseButton to="/" color="info" outline label="Back" />
+                        <BaseButton to="/" color="info" outline label="Indietro" />
                     </BaseButtons>
                 </template>
             </CardBox> </SectionFullScreen
-        >@/stores/authStore
+        >
     </LayoutGuest>
 </template>
-@/stores/auth.store

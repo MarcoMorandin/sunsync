@@ -17,7 +17,7 @@ const tokenChecker = async (req, res, next) => {
         }
         user = await User.findById(decoded.user_id)
         if (user.disabled) {
-            return res.status(401).json({ "401 Unauthorized": "You have to authenticate to use this endpoint"})
+            return res.status(412).json({ "412 Precondition Failed": "You have to change the password"})
         }
         req.user = user
         next()

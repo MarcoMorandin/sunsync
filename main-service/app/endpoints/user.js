@@ -5,6 +5,8 @@ const { ObjectId } = require('mongodb');
 const User = require('../schemas/User')
 const jwt = require('jsonwebtoken');
 const { createHash } = require('crypto');
+const crypto = require('crypto');
+
 require("dotenv").config();
 
 const tokenChecker = require('../middlewares/tockenChecker')
@@ -70,6 +72,10 @@ router.post('', tokenChecker, [
         return;
     }
 
+    let users = await User.find({mail: req.body.mail})
+    if(users.length > 0)
+        return res.status(409).json({ "409 Conflict" : "The user already exists" })
+
     let salt = crypto.randomBytes(128).toString('hex');
     let password = createHash('sha256').update(req.body.password + salt).digest('hex');
 
@@ -107,7 +113,7 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
 })
 
-router.patch('', tokenCheckerChangePassword, [
+router.patch('/me', tokenCheckerChangePassword, [
     body('password', 'password must be filled').notEmpty(),
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -152,8 +158,10 @@ router.post('/authentication', [
         mail: user.mail,
         username: user.username,
         user_id: user._id,
-        role: user.role
+        role: user.role,
+        disabled: user.disabled
     }, process.env.SUPER_SECRET, {expiresIn: 86400});
+
 
     return res.status(200).json({"info" : "Correctly authenticated", "token": token}).send()   
 })

@@ -13,6 +13,7 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
+import { usersEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
 
@@ -28,7 +29,7 @@ const submit = async () => {
     if (passwordForm.password === passwordForm.password_confirmation) {
         axios
             .patch(
-                import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
+                import.meta.env.VITE_BASE_URL_API + usersEndpoint,
                 { password: passwordForm.password },
                 { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
             )
@@ -48,7 +49,7 @@ const submit = async () => {
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccount"
-                title="Profile"
+                title="Profilo"
                 main
             ></SectionTitleLineWithButton>
 
@@ -63,7 +64,7 @@ const submit = async () => {
                     >
                         <b>ERRORE: </b> {{ error }}
                     </NotificationBar>
-                    <FormField label="Password" help="Please enter your password">
+                    <FormField label="Password" help="Inserisci la tua nuova password">
                         <FormControl
                             v-model="passwordForm.password"
                             :icon="mdiAsterisk"
@@ -73,7 +74,7 @@ const submit = async () => {
                         />
                     </FormField>
 
-                    <FormField label="Password" help="Please enter your password">
+                    <FormField label="Password" help="Inserisci nuovamente la tua password">
                         <FormControl
                             v-model="passwordForm.password_confirmation"
                             :icon="mdiAsterisk"

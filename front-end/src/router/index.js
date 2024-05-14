@@ -40,6 +40,15 @@ const routes = [
     },
     {
         meta: {
+            title: 'Change Password',
+            role: 1
+        },
+        path: '/changepassword',
+        name: 'changepassword',
+        component: () => import('@/views/ChangeTempPassword.vue')
+    },
+    {
+        meta: {
             title: 'Profile',
             role: 1
         },
