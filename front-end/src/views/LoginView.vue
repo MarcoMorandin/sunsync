@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { mdiAccount, mdiAsterisk } from '@mdi/js'
 import SectionFullScreen from '@/components/SectionFullScreen.vue'
@@ -11,8 +11,12 @@ import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
 import VueJwtDecode from 'vue-jwt-decode'
+import NotificationBar from '@/components/NotificationBar.vue'
 
 import { useAuthStore } from '@/stores/authStore'
+
+const showErrorNotification = ref(false)
+const error = ref('')
 
 const authStore = useAuthStore()
 
@@ -39,7 +43,8 @@ const submit = async () => {
         router.push('/dashboard')
 	})
 	.catch((error) => {
-		console.error(error);
+		showErrorNotification.value = true
+        error.value = "Errore nell'effettuare il login"
 	});
 }
 </script>
@@ -47,6 +52,9 @@ const submit = async () => {
 <template>
     <LayoutGuest>
         <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
+            <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
+                <b>ERRORE: </b> {{ error }}
+            </NotificationBar>
             <CardBox :class="cardClass" is-form @submit.prevent="submit">
                 <FormField label="Login" help="Please enter your login">
                     <FormControl
@@ -77,7 +85,7 @@ const submit = async () => {
                 <template #footer>
                     <BaseButtons>
                         <BaseButton type="submit" color="info" label="Login" />
-                        <BaseButton to="/dashboard" color="info" outline label="Back" />
+                        <BaseButton to="/" color="info" outline label="Back" />
                     </BaseButtons>
                 </template>
             </CardBox>

@@ -1,17 +1,40 @@
 import {
   mdiMonitor,
-  mdiChartTimelineVariant
+  mdiChartTimelineVariant,
+  mdiAccountPlusOutline,
+  mdiSolarPanelLarge,
+  mdiWeatherPartlyCloudy
 } from '@mdi/js'
 
 export default [
   {
     to: '/dashboard',
     icon: mdiMonitor,
-    label: 'Dashboard'
+    label: 'Dashboard',
+    role: 1
   },
   {
     to: '/grafici',
     label: 'Grafici',
-    icon: mdiChartTimelineVariant
+    icon: mdiChartTimelineVariant,
+    role: 1
+  },
+  {
+    to: '/newuser',
+    label: 'Nuovo Utente',
+    icon: mdiAccountPlusOutline,
+    role: 0
+  },
+  {
+    to: '/newpv',
+    label: 'Nuovo Impianto',
+    icon: mdiSolarPanelLarge,
+    role: 0
+  },
+  {
+    to: '/newws',
+    label: 'Nuova Stazione',
+    icon: mdiWeatherPartlyCloudy,
+    role: 0
   }
 ]

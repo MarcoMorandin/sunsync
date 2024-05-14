@@ -1,12 +1,10 @@
 <script setup>
-import { reactive } from 'vue'
-import { mdiAccount, mdiMail, mdiAsterisk, mdiFormTextboxPassword, mdiGithub } from '@mdi/js'
+import { reactive, ref } from 'vue'
+import { mdiAccount, mdiAsterisk } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
-import BaseDivider from '@/components/BaseDivider.vue'
 import FormField from '@/components/FormField.vue'
 import FormControl from '@/components/FormControl.vue'
-import FormFilePicker from '@/components/FormFilePicker.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import UserCard from '@/components/UserCard.vue'
@@ -14,8 +12,12 @@ import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
+import NotificationBar from '@/components/NotificationBar.vue'
 
 const authStore = useAuthStore()
+
+const showErrorNotification = ref(false)
+const error = ref('')
 
 const passwordForm = reactive({
   password: '',
@@ -29,11 +31,12 @@ const submit = async () => {
      { headers: {"Authorization" : `Bearer ${authStore.getToken.value}`}
     })
     .catch((error) => {
-      console.error(error)
-      //TODO: send error
+      showErrorNotification.value = true
+      error.value = "Errore nella modifica della password"
     })
   }else{
-    //TODO: send error
+    showErrorNotification.value = true
+    error.value = "Le password non coincidono"
   }
 }
 </script>
@@ -41,12 +44,16 @@ const submit = async () => {
 <template>
   <LayoutAuthenticated>
     <SectionMain>
+      
       <SectionTitleLineWithButton :icon="mdiAccount" title="Profile" main></SectionTitleLineWithButton>
 
       <UserCard class="mb-6" />
 
       <div class="grid grid-cols-1 gap-6">
         <CardBox is-form @submit.prevent="submit">
+          <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
+            <b>ERRORE: </b> {{ error }}
+          </NotificationBar>
           <FormField label="Password" help="Please enter your password">
                 <FormControl
                     v-model="passwordForm.password"

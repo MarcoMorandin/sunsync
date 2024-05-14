@@ -5,6 +5,8 @@ import { mdiMinus, mdiPlus } from '@mdi/js'
 import { getButtonColor } from '@/colors.js'
 import BaseIcon from '@/components/BaseIcon.vue'
 import AsideMenuList from '@/components/AsideMenuList.vue'
+import { useAuthStore } from '@/stores/authStore'
+const authStore = useAuthStore()
 
 const props = defineProps({
   item: {
@@ -45,6 +47,7 @@ const menuClick = (event) => {
 <template>
   <li>
     <component
+      v-if="item.role >= authStore.getRole.value"
       :is="item.to ? RouterLink : 'a'"
       v-slot="vSlot"
       :to="item.to ?? null"

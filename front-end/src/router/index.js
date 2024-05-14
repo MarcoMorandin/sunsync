@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
-import { reactiveComputed } from '@vueuse/core'
 
 const routes = [
     {
@@ -27,7 +26,7 @@ const routes = [
             role: 1
         },
         path: '/grafici',
-        name: 'charts',
+        name: 'grafici',
         component: () => import('@/views/ChartsView.vue')
     },
     {
@@ -47,6 +46,33 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: () => import('@/views/ProfileView.vue')
+    },
+    {
+      meta: {
+          title: 'Nuovo Utente',
+          role: 0
+      },
+      path: '/newuser',
+      name: 'newuser',
+      component: () => import('@/views/NewUserView.vue')
+    },
+    {
+        meta: {
+            title: 'Nuovo impianto',
+            role: 0
+        },
+        path: '/newpv',
+        name: 'newpv',
+        component: () => import('@/views/NewPvView.vue')
+    },
+    {
+        meta: {
+            title: 'Nuova Stazione',
+            role: 0
+        },
+        path: '/newws',
+        name: 'newws',
+        component: () => import('@/views/NewWsView.vue')
     }
 ]
 

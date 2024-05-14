@@ -20,7 +20,7 @@ const currentPage = ref(0)
 const items = ref([])
 onMounted(async () => {
     axios
-        .get('http://localhost:3000/api/v1/pvinfo', {
+        .get('http://localhost:3000/api/v1/wsinfo', {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
@@ -28,7 +28,7 @@ onMounted(async () => {
         })
         .catch(() => {
             showErrorNotification.value = true
-            error.value = "Errore nel caricamento degli impianti fotovoltaici"
+            error.value = "Errore nel caricamento delle stazioni meteo"
         })
 })
 
@@ -55,21 +55,9 @@ const pagesList = computed(() => {
     return pagesList
 })
 
-const wsInfo = ref({})
 
 async function showModal(i) {
     currentModal.value = items.value[i]
-    await axios
-        .get('http://localhost:3000/api/v1/wsinfo/' + currentModal.value.ws_id, {
-            headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-        })
-        .then((response) => {
-            wsInfo.value = response.data           
-        })
-        .catch((error) => {
-            showErrorNotification.value = true
-            error.value = "Errore nel caricamento delle stazioni meteo"
-        })
     isModalActive.value = true
 }
 
@@ -82,29 +70,18 @@ async function showWarning(i) {
 }
 
 
-async function deletePv(){
+async function deleteWs(){
     await axios
-        .delete('http://localhost:3000/api/v1/pvinfo/' + currentWarning.value._id, {
+        .delete('http://localhost:3000/api/v1/wsinfo/' + currentWarning.value._id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
-        .then(async () => {
-            await axios
-                .delete('http://localhost:3000/api/v1/wsinfo/' + currentWarning.value.ws_id, {
-                    headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-                })
-                .then(() => {
-                    window.location.reload()  
-                })
-                .catch((error) => {
-                    showErrorNotification.value = true
-                    error.value = "Errore nell'eliminazione della stazione meteo"
-                })
+        .then(() => {
+            window.location.reload()  
         })
         .catch((error) => {
             showErrorNotification.value = true
-            error.value = "Errore nell'eliminazione dell'impianto fotovoltaico"
-        })
-    
+            error.value = "Errore nell'eliminazione della stazione meteo"
+        })    
 }
 
 </script>
@@ -116,12 +93,6 @@ async function deletePv(){
     <CardBoxModal v-model="isModalActive" title="Dettagli">
         <p>
             Nome: <strong>{{ currentModal.description }}</strong>
-        </p>
-        <p>
-            Potenza Installata: <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
-        </p>
-        <p>
-            Stazione meteo: <strong> {{ wsInfo.description }} </strong>
         </p>
         <GMapMap
             v-if="isModalActive"
@@ -141,31 +112,19 @@ async function deletePv(){
             <GMapMarker
                 :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
                 :clickable="true"
-                :draggable="false"
-                
+                :draggable="false"   
             >
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
                 </GMapInfoWindow>
             </GMapMarker>
-            <GMapMarker
-                :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }"
-                :clickable="true"
-                :draggable="false"
-                
-            >
-                <GMapInfoWindow>
-                    <svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon>
-                </GMapInfoWindow>
-            </GMapMarker>
         </GMapMap>
-
     </CardBoxModal>
 
-    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" has-cancel @confirm="deletePv()">
+    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" has-cancel @confirm="deleteWs()">
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
-            l'impianto fotovoltaico e tutti i dati ad esso collegati
+            la stazione meteo e tutti i dati ad essa collegati
         </p>
     </CardBoxModal>
 
@@ -173,17 +132,13 @@ async function deletePv(){
         <thead>
             <tr>
                 <th>Descrizione</th>
-                <th>Potenza Installata</th>
                 <th />
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(pvInfo, index) in itemsPaginated" :key="pvInfo._id">
+            <tr v-for="(wsInfo, index) in itemsPaginated" :key="wsInfo._id">
                 <td data-label="description">
-                    {{ pvInfo.description }}
-                </td>
-                <td data-label="installed_power">
-                    {{ (pvInfo.installed_power / 1000).toFixed(2) }} kW
+                    {{ wsInfo.description }}
                 </td>
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
