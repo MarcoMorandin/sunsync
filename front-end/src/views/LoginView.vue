@@ -12,7 +12,7 @@ import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
 import VueJwtDecode from 'vue-jwt-decode'
 import NotificationBar from '@/components/NotificationBar.vue'
-
+import { authEndpoint } from '@/endpoints'
 import { useAuthStore } from '@/stores/authStore'
 
 const showErrorNotification = ref(false)
@@ -29,8 +29,8 @@ const router = useRouter()
 
 const submit = async () => {
     axios
-        .put(import.meta.env.VITE_BASE_URL_API + '/api/v1/user', {
-            username: form.login,
+        .post(import.meta.env.VITE_BASE_URL_API + authEndpoint, {
+            mail: form.login,
             password: form.pass
         })
         .then((response) => {

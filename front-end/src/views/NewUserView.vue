@@ -13,6 +13,7 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBarInCard from '@/components/NotificationBarInCard.vue'
+import { usersEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
 
@@ -28,7 +29,7 @@ const submit = async () => {
     console.log()
     await axios
         .post(
-            import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
+            import.meta.env.VITE_BASE_URL_API + usersEndpoint,
             {
                 username: form.email,
                 password: form.pass,

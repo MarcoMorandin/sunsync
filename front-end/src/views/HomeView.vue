@@ -18,6 +18,7 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
+import { pvnumberReportsEndpoint, moneyReportsEndpoint, productionReportsEndpoint } from '@/endpoints'
 
 const showErrorNotification = ref(false)
 const error = ref('')
@@ -30,7 +31,7 @@ const tile = ref({
 
 const fillTileNumber = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/pvnumber', {
+        .get(import.meta.env.VITE_BASE_URL_API + pvnumberReportsEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
@@ -44,7 +45,7 @@ const fillTileNumber = () => {
 
 const fillTileMoney = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/money', {
+        .get(import.meta.env.VITE_BASE_URL_API + moneyReportsEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` },
             params: { aggregation: 'all' }
         })
@@ -59,7 +60,7 @@ const fillTileMoney = () => {
 
 const fillTileProduction = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/production', {
+        .get(import.meta.env.VITE_BASE_URL_API + productionReportsEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` },
             params: { aggregation: 'all' }
         })

@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { mdiAccount, mdiAsterisk, mdiLockReset } from '@mdi/js'
+import { mdiAsterisk, mdiLockReset } from '@mdi/js'
 import SectionFullScreen from '@/components/SectionFullScreen.vue'
 import CardBox from '@/components/CardBox.vue'
 import FormField from '@/components/FormField.vue'
@@ -10,11 +10,9 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
-import VueJwtDecode from 'vue-jwt-decode'
 import NotificationBar from '@/components/NotificationBar.vue'
-
+import { meEndpoint } from '@/endpoints'
 import { useAuthStore } from '@/stores/authStore'
-import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 
 const showErrorNotification = ref(false)
 
@@ -32,7 +30,7 @@ const router = useRouter()
 const submit = async () => {
     if (form.pass == form.repeatPass) {
         axios.patch(
-                import.meta.env.VITE_BASE_URL_API + '/api/v1/user',
+                import.meta.env.VITE_BASE_URL_API + meEndpoint,
                 { password: form.pass },
                 { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
         )

@@ -7,6 +7,7 @@ import CardBox from '@/components/CardBox.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
+import { productionReportsEndpoint, moneyReportsEndpoint } from '@/endpoints'
 
 const chartData = ref({})
 
@@ -14,14 +15,14 @@ const fillChartData = async () => {
     //TODO: Add filters
     chartData.value.production = await chartConfig.chartData(
         'info',
-        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/production',
+        import.meta.env.VITE_BASE_URL_API + productionReportsEndpoint,
         '',
         '',
         ''
     )
     chartData.value.money = await chartConfig.chartData(
         'primary',
-        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/money',
+        import.meta.env.VITE_BASE_URL_API + moneyReportsEndpoint,
         '',
         '',
         ''

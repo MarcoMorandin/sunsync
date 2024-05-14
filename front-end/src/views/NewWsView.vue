@@ -1,7 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import {
-    mdiLightningBolt,
     mdiDatabaseArrowLeftOutline,
     mdiSolarPanelLarge,
     mdiLatitude,
@@ -20,6 +19,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBarInCard.vue'
 import { useRouter } from 'vue-router'
+import { wsInfoEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
 
@@ -36,7 +36,7 @@ const form = reactive({
 const submit = async () => {
     await axios
         .post(
-            import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo',
+            import.meta.env.VITE_BASE_URL_API + wsInfoEndpoint,
             {
                 location: {
                     lat: form.wsLat,

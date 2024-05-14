@@ -7,6 +7,7 @@ import NavBarMenuList from '@/components/NavBarMenuList.vue'
 import BaseDivider from '@/components/BaseDivider.vue'
 import { useAuthStore } from '@/stores/authStore'
 import axios from 'axios'
+import { meEndpoint } from '@/endpoints.js'
 
 const authStore = useAuthStore()
 
@@ -50,7 +51,7 @@ const username = ref('')
 
 const fillUsername = () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/user/me', {
+        .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {

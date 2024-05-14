@@ -9,6 +9,8 @@ import axios from 'axios'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
+import { pvInfoEndpoint, wsInfoEndpoint } from '@/endpoints.js'
+
 
 const authStore = useAuthStore()
 
@@ -20,7 +22,7 @@ const currentPage = ref(0)
 const items = ref([])
 onMounted(async () => {
     axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo', {
+        .get(import.meta.env.VITE_BASE_URL_API + pvInfoEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
@@ -59,7 +61,7 @@ const wsInfo = ref({})
 async function showModal(i) {
     currentModal.value = items.value[i]
     await axios
-        .get(import.meta.env.VITE_BASE_URL_API + '/api/v1/wsinfo/' + currentModal.value.ws_id, {
+        .get(import.meta.env.VITE_BASE_URL_API + wsInfoEndpoint + '/' + currentModal.value.ws_id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
@@ -82,26 +84,11 @@ async function showWarning(i) {
 
 async function deletePv() {
     await axios
-        .delete(import.meta.env.VITE_BASE_URL_API + '/api/v1/pvinfo/' + currentWarning.value._id, {
+        .delete(import.meta.env.VITE_BASE_URL_API + pvInfoEndpoint + '/' + currentWarning.value._id, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then(async () => {
-            await axios
-                .delete(
-                    import.meta.env.VITE_BASE_URL_API +
-                        '/api/v1/wsinfo/' +
-                        currentWarning.value.ws_id,
-                    {
-                        headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-                    }
-                )
-                .then(() => {
-                    window.location.reload()
-                })
-                .catch((error) => {
-                    showErrorNotification.value = true
-                    error.value = "Errore nell'eliminazione della stazione meteo"
-                })
+            window.location.reload()
         })
         .catch((error) => {
             showErrorNotification.value = true
