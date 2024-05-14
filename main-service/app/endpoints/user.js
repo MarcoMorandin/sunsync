@@ -72,6 +72,10 @@ router.post('', tokenChecker, [
         return;
     }
 
+    let users = await User.find({mail: req.body.mail})
+    if(users.length > 0)
+        return res.status(409).json({ "409 Conflict" : "The user already exists" })
+
     let salt = crypto.randomBytes(128).toString('hex');
     let password = createHash('sha256').update(req.body.password + salt).digest('hex');
 

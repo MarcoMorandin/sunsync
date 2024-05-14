@@ -52,6 +52,10 @@ router.post('', tokenChecker, [
     if(!errors.isEmpty())
         return res.status(400).json({ errors: errors.array() })
 
+    let pvs = await PvSystem.find({$or: [{url: req.body.url}, {description: req.body.description}]})
+    if(pvs.length > 0)
+        return res.status(409).json({ "409 Conflict": "The pv system already exists" })
+
     let a = await PvSystem.create({
         _id: new ObjectId(),
         description: req.body.description,

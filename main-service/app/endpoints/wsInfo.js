@@ -48,6 +48,10 @@ router.post('', tokenChecker, [
     if(!errors.isEmpty())
         return res.status(400).json({ errors: errors.array() });
 
+    let wss = await WeatherStation.find({$or: [{url: req.body.url}, {description: req.body.description}]})
+    if(wss.length > 0)
+        return res.status(409).json({ "409 Conflict": "The weather station already exists" })
+
     let data = await WeatherStation.create({
         _id: new ObjectId(),
         description: req.body.description,
