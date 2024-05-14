@@ -20,17 +20,17 @@ services:
     volumes:
       - ./front-end:/usr/src/app
   
-  nodered:
-    image: nodered/node-red:3.1.0-18
-    container_name: nodered
-    privileged: true
-    environment:
-      - TZ=Europe/Rome
-    restart: unless-stopped
-    volumes:
-      - ./simulator:/data
-    ports:
-      - 1880:1880
+  # nodered:
+  #   image: nodered/node-red:3.1.0-18
+  #   container_name: nodered
+  #   privileged: true
+  #   environment:
+  #     - TZ=Europe/Rome
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./simulator:/data
+  #   ports:
+  #     - 1880:1880
   
   importer:
     build:

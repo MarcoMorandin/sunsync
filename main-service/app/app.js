@@ -27,7 +27,7 @@ app.use('/api/v1/pvinfo', pvInfo)
 app.use('/api/v1/pvdata', pvData)
 app.use('/api/v1/wsInfo', wsInfo)
 app.use('/api/v1/wsData', wsData)
-app.use('/api/v1/user', user)
+app.use('/api/v1/users', user)
 app.use('/api/v1/reports', reports)
 
 

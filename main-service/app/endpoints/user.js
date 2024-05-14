@@ -14,8 +14,19 @@ router.get('', tokenChecker, async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
     
-    let users = await User.find({})
+    let users = await User.find({}, '_id username mail forecast_notification maintenance_notification role disabled')
     res.status(200).json(users)
+})
+
+router.get('/me', tokenChecker, async (req, res) => {
+    let user = await User.findById(req.user._id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
+    
+    if(!user){
+        res.status(404).json({ "404 Not Found": "No user found with the given ID"})
+        return;
+    }
+
+    res.status(200).json(user);
 })
 
 router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
@@ -28,19 +39,22 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
         return;
     }
 
-    let user = await User.findById(req.params.user_id).exec()
+    let user = await User.findById(req.params.user_id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
     
     if(!user){
         res.status(404).json({ "404 Not Found": "No user found with the given ID"})
         return;
     }
-    
-    res.status(200).json(user)
+
+    res.status(200).json(user);
 })
 
 router.post('', tokenChecker, [
-    body('username', 'username must be a valid email').isEmail(),
+    body('username', 'username must be a valid string').isAlpha(),
     body('username', 'username must be filled').notEmpty(),
+
+    body('mail', 'mail must be a valid email').isEmail(),
+    body('mail', 'mail must be filled').notEmpty(),
 
     body('password', 'password must be filled').notEmpty(),
 
@@ -62,6 +76,7 @@ router.post('', tokenChecker, [
     let a = await User.create({
         _id: new ObjectId(),
         username: req.body.username,
+        mail: req.body.mail,
         password: password,
         forecast_notification: false,
         maintenance_notification: false,
@@ -72,8 +87,6 @@ router.post('', tokenChecker, [
 
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
 })
-
-
 
 router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
     if(req.user.role == 1)
@@ -86,7 +99,7 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     }
     let user = await User.countDocuments({ _id: req.params.user_id })
     if (!user || user === 0){
-        res.status(404).json({ "404 Not Found": "No pv system found with the given ID"})
+        res.status(404).json({ "404 Not Found": "No user found with the given ID"})
         return;
     }
     let eliminated = await User.deleteOne({"_id": ObjectId.createFromHexString(req.params.user_id)})
@@ -108,14 +121,14 @@ router.patch('', tokenCheckerChangePassword, [
 
     let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: false}, {includeResultMetadata: true}) 
     if(!user.lastErrorObject.updatedExisting)
-        return res.status(404).json({ "404 Not Found": "No user found with the given username"})
+        return res.status(404).json({ "404 Not Found": "No user found with the given mail"})
 
     return res.status(200).json({"info" : "Operazione completata"}).send()   
 })
 
-router.put('', [
-    body('username', 'username must be a valid email').isEmail(),
-    body('username', 'username must be filled').notEmpty(),
+router.post('/authentication', [
+    body('mail', 'mail must be a valid email').isEmail(),
+    body('mail', 'mail must be filled').notEmpty(),
 
     body('password', 'password must be filled').notEmpty(),
 ], async (req, res) => {
@@ -125,18 +138,19 @@ router.put('', [
         return;
     }
 
-    let user = await User.findOne({username: req.body.username})
+    let user = await User.findOne({mail: req.body.mail})
     if(!user){
-        return res.status(401).json({ "401 Unauthorized": "Authentication failed, username or password error"})
+        return res.status(401).json({ "401 Unauthorized": "Authentication failed, mail or password error"})
     } else {
         let salt = user.salt
         let password = createHash('sha256').update(req.body.password + salt).digest('hex');
         if(user.password !== password)
-            return res.status(401).json({ "401 Unauthorized": "Authentication failed, username or password error"})
+            return res.status(401).json({ "401 Unauthorized": "Authentication failed, mail or password error"})
     }
 
     let token = jwt.sign({
-        user: user.username,
+        mail: user.mail,
+        username: user.username,
         user_id: user._id,
         role: user.role
     }, process.env.SUPER_SECRET, {expiresIn: 86400});
