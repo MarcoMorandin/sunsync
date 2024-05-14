@@ -4,7 +4,9 @@ const { param, body, validationResult } = require('express-validator')
 const { ObjectId } = require('mongodb');
 const User = require('../schemas/User')
 const jwt = require('jsonwebtoken');
+const { createHash } = require('crypto');
 require("dotenv").config();
+
 const tokenChecker = require('../middlewares/tockenChecker')
 const tokenCheckerChangePassword = require('../middlewares/tockenCheckerChangePassword')
 
@@ -14,10 +16,6 @@ router.get('', tokenChecker, async (req, res) => {
     
     let users = await User.find({})
     res.status(200).json(users)
-})
-
-router.get('/me', tokenChecker, async (req, res) => {    
-    res.status(200).json(req.user)
 })
 
 router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
@@ -40,8 +38,6 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
     res.status(200).json(user)
 })
 
-
-
 router.post('', tokenChecker, [
     body('username', 'username must be a valid email').isEmail(),
     body('username', 'username must be filled').notEmpty(),
@@ -60,15 +56,18 @@ router.post('', tokenChecker, [
         return;
     }
 
-    // TODO : Implement password hashing
+    let salt = crypto.randomBytes(128).toString('hex');
+    let password = createHash('sha256').update(req.body.password + salt).digest('hex');
+
     let a = await User.create({
         _id: new ObjectId(),
         username: req.body.username,
-        password: req.body.password,
+        password: password,
         forecast_notification: false,
         maintenance_notification: false,
         role: req.body.role,
-        disabled: true
+        disabled: true,
+        salt: salt
     });
 
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
@@ -104,8 +103,10 @@ router.patch('', tokenCheckerChangePassword, [
         return;
     }
 
-    // TODO : Implement password hashing
-    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: req.body.password, disabled: false}, {includeResultMetadata: true}) 
+    let salt = crypto.randomBytes(128).toString('hex');
+    let password = createHash('sha256').update(req.body.password + salt).digest('hex');
+
+    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: false}, {includeResultMetadata: true}) 
     if(!user.lastErrorObject.updatedExisting)
         return res.status(404).json({ "404 Not Found": "No user found with the given username"})
 
@@ -124,10 +125,15 @@ router.put('', [
         return;
     }
 
-    // TODO : Implement password hashing
-    let user = await User.findOne({username: req.body.username, password: req.body.password}) 
-    if(!user)
+    let user = await User.findOne({username: req.body.username})
+    if(!user){
         return res.status(401).json({ "401 Unauthorized": "Authentication failed, username or password error"})
+    } else {
+        let salt = user.salt
+        let password = createHash('sha256').update(req.body.password + salt).digest('hex');
+        if(user.password !== password)
+            return res.status(401).json({ "401 Unauthorized": "Authentication failed, username or password error"})
+    }
 
     let token = jwt.sign({
         user: user.username,
