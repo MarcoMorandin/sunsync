@@ -106,7 +106,7 @@ onMounted(async () => {
                 <CardBoxWidget
                     trend=""
                     trend-type="up"
-                    color="text-emerald-500"
+                    color="text-blue-500"
                     :icon="mdiSolarPowerVariantOutline"
                     :number="tile.pvNumber"
                     label="Impianti Fotovoltaici"
@@ -114,7 +114,7 @@ onMounted(async () => {
                 <CardBoxWidget
                     trend=""
                     trend-type="up"
-                    color="text-blue-500"
+                    color="text-emerald-500"
                     :icon="mdiCashMultiple"
                     :number="tile.money"
                     prefix="€ "
@@ -123,7 +123,7 @@ onMounted(async () => {
                 <CardBoxWidget
                     trend=""
                     trend-type="up"
-                    color="text-red-500"
+                    color="text-orange-300"
                     :icon="mdiLightningBoltOutline"
                     :number="tile.production"
                     suffix=" KW/h"
