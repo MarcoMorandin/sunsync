@@ -82,7 +82,17 @@ const routes = [
         path: '/newws',
         name: 'newws',
         component: () => import('@/views/NewWsView.vue')
-    }
+    },
+    {
+        meta: {
+            title: 'Errore',
+            role: 2
+        },
+        path: '/:pathMatch(.*)*',
+        name: 'error',
+        component: () => import('@/views/ErrorView.vue')
+    },
+
 ]
 
 const router = createRouter({
