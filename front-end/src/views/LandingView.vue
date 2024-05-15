@@ -66,7 +66,6 @@ const fillTileProduction = () => {
 const chartData = ref({})
 
 const fillChartData = async () => {
-    //TODO: Add filters
     chartData.value.production = await chartConfig.chartData(
         'info',
         import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/production',

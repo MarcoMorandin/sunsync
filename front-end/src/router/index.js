@@ -112,11 +112,16 @@ router.beforeEach((to) => {
             authStore.setToken('')
             authStore.setExpire('')
             authStore.setUserId('')
-
+            authStore.setRole('')
+            authStore.setDisabled('')
             return { name: 'login' }
+        } else if (authStore.getDisabled.value == true && to.name != "changepassword") {
+            return { name: 'changepassword' }
         } else if (authStore.getRole.value > to.meta.role) {
             return { name: 'dashboard' }
         }
+    } else if (to.name == "login" && authStore.getToken.value != null && authStore.getToken.value != '' && authStore.getExpire.value >= Date.now() / 1000) {
+        return { name: 'dashboard' }
     }
 })
 

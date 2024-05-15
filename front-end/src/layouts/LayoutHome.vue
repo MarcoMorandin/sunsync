@@ -23,6 +23,8 @@ const menuClick = (event, item) => {
         authStore.setToken('')
         authStore.setExpire('')
         authStore.setUserId('')
+        authStore.setRole('')
+        authStore.setDisabled('')
         router.push({ name: 'home' })
         location.reload()
     }
@@ -42,6 +44,7 @@ const menuClick = (event, item) => {
         >
             <NavBar
                 :menu="menuNavBar"
+                :isHome="true"
                 :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
                 @menu-click="menuClick"
                 class="bg-slate-900 h-20"

@@ -1,15 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { mdiClose, mdiDotsVertical } from '@mdi/js'
 import { containerMaxW } from '@/config.js'
 import BaseIcon from '@/components/BaseIcon.vue'
 import NavBarMenuList from '@/components/NavBarMenuList.vue'
 import NavBarItemPlain from '@/components/NavBarItemPlain.vue'
 
-defineProps({
+const props = defineProps({
     menu: {
         type: Array,
         required: true
+    },
+    isHome: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -20,6 +24,15 @@ const menuClick = (event, item) => {
 }
 
 const isMenuNavBarActive = ref(false)
+
+const classColor = computed(() => {
+    if(props.isHome === true){
+        return "text-slate-300 hover:text-white"
+    } else {
+        return ""
+    }
+})
+
 </script>
 
 <template>
@@ -32,7 +45,7 @@ const isMenuNavBarActive = ref(false)
             </div>
             <div class="flex-none items-stretch flex h-14 lg:hidden">
                 <NavBarItemPlain @click.prevent="isMenuNavBarActive = !isMenuNavBarActive">
-                    <BaseIcon :path="isMenuNavBarActive ? mdiClose : mdiDotsVertical" size="24" />
+                    <BaseIcon :path="isMenuNavBarActive ? mdiClose : mdiDotsVertical" size="24" :class="classColor" />
                 </NavBarItemPlain>
             </div>
             <div

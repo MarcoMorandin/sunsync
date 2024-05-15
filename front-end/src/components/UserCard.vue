@@ -11,13 +11,15 @@ const authStore = useAuthStore()
 const username = ref('')
 
 const fillUsername = () => {
-    axios
-        .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
-            headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-        })
-        .then((response) => {
-            username.value = response.data.username
-        })
+    if (authStore.getToken.value != null || authStore.getToken.value != "") {
+        axios
+            .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
+                headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+            })
+            .then((response) => {
+                username.value = response.data.username
+            })
+    }
 }
 
 onMounted(() => {

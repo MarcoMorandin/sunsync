@@ -28,22 +28,23 @@ const form = reactive({
 const router = useRouter()
 
 const submit = async () => {
-    if (form.pass == form.repeatPass) {
+    if (form.pass === form.repeatPass) {
         axios.patch(
                 import.meta.env.VITE_BASE_URL_API + meEndpoint,
-                { password: form.pass },
+                { old_password: form.oldPass, password: form.pass },
                 { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
         )
         .then(() =>  {
             router.push('/dashboard')
         })
-        .catch((error) => {
-            console.log(error)
+        .catch((e) => {
             showErrorNotification.value = true
+            error.value = e.response.data["400 Bad Request"]
             return;
         })
     } else {
         showErrorNotification.value = true
+        error.value = 'Le password non coincidono'
     }
 }
 </script>
@@ -66,6 +67,17 @@ const submit = async () => {
                 >
                     <b>ERRORE: </b> Errore nell'effettuare il cambio della password
                 </NotificationBar>
+
+                <FormField label="Vecchia Password" help="Inserisci la tua vecchia password">
+                    <FormControl
+                        v-model="form.oldPass"
+                        :icon="mdiAsterisk"
+                        type="password"
+                        name="old_password"
+                        autocomplete="old-password"
+                    />
+                </FormField>
+
                 <FormField label="Nuova Password" help="Inserisci la tua nuova password">
                     <FormControl
                         v-model="form.pass"
@@ -76,16 +88,15 @@ const submit = async () => {
                     />
                 </FormField>
 
-                <FormField label="Ripeti Password" help="Ripeti la tua nuova password">
+                <FormField label="Ripeti Nuova Password" help="Ripeti la tua nuova password">
                     <FormControl
                         v-model="form.repeatPass"
                         :icon="mdiAsterisk"
                         type="password"
-                        name="password"
+                        name="password_confirmation"
                         autocomplete="new-password"
                     />
                 </FormField>
-
 
                 <template #footer>
                     <BaseButtons>
