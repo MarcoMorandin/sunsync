@@ -35,7 +35,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./importer
-      target: dev
     volumes:
       - ./importer:/usr/src/app
     
