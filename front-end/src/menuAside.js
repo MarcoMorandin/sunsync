@@ -3,10 +3,17 @@ import {
     mdiChartTimelineVariant,
     mdiAccountPlusOutline,
     mdiSolarPanelLarge,
-    mdiWeatherPartlyCloudy
+    mdiWeatherPartlyCloudy,
+    mdiHomeOutline
 } from '@mdi/js'
 
 export default [
+    {
+        to: '/',
+        label: 'Home Page',
+        icon: mdiHomeOutline,
+        role: 0
+    },
     {
         to: '/dashboard',
         icon: mdiMonitor,

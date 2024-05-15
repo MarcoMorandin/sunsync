@@ -19,7 +19,7 @@ export default [
     },
     {
         icon: mdiLogout,
-        label: 'Log out',
+        label: 'Logout',
         isDesktopNoLabel: true,
         isLogout: true
     }
