@@ -20,7 +20,7 @@ router.get('', tokenChecker, async (req, res) => {
     res.status(200).json(users)
 })
 
-router.get('/me', tokenChecker, async (req, res) => {
+router.get('/me', tokenCheckerChangePassword, async (req, res) => {
     let user = await User.findById(req.user._id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
     
     if(!user){
@@ -114,12 +114,23 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
 })
 
 router.patch('/me', tokenCheckerChangePassword, [
+    body('old_password', 'old_password must be filled').notEmpty(),
     body('password', 'password must be filled').notEmpty(),
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         res.status(400).json({ errors: errors.array() });
         return;
+    }
+
+    let userOld = await User.findById(req.user._id).exec()
+    let old_password_in = createHash('sha256').update(req.body.old_password + userOld.salt).digest('hex');
+    let password_in = createHash('sha256').update(req.body.password + userOld.salt).digest('hex');
+
+    if(old_password_in !== userOld.password) {
+        return res.status(400).json({ "400 Bad Request": "Old password is incorrect"})
+    } else if (old_password_in === password_in) {
+        return res.status(400).json({ "400 Bad Request": "New password must be different from old"})
     }
 
     let salt = crypto.randomBytes(128).toString('hex');

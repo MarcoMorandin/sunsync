@@ -64,13 +64,15 @@ const iconClass = computed(() => {
 const username = ref('')
 
 const fillUsername = () => {
-    axios
-        .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
-            headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-        })
-        .then((response) => {
-            username.value = response.data.username
-        })
+    if (authStore.getToken.value != null || authStore.getToken.value != "") {
+        axios
+            .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
+                headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+            })
+            .then((response) => {
+                username.value = response.data.username
+            })
+    }
 }
 
 onMounted(() => {
@@ -144,10 +146,10 @@ onBeforeUnmount(() => {
     >
         <div
             class="flex items-center"
-            :class="{
+            :class="[{
                 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0':
                     item.menu
-            }"
+            }, iconClass]"
         >
             <BaseIcon
                 v-if="item.icon"
@@ -155,11 +157,10 @@ onBeforeUnmount(() => {
                 class="transition-colors"
                 h="h-16"
                 :size="20"
-                :class="iconClass"
             />
             <span
                 class="px-2 transition-colors"
-                :class="[{ 'lg:hidden': item.isDesktopNoLabel && item.icon }, iconClass]"
+                :class="{ 'lg:hidden': item.isDesktopNoLabel && item.icon }"
                 >{{ itemLabel }}</span
             >
             <BaseIcon
@@ -168,13 +169,6 @@ onBeforeUnmount(() => {
                 class="hidden lg:inline-flex transition-colors"
                 :class="iconClass"
             />
-        </div>
-        <div
-            v-if="item.menu"
-            class="text-sm border-b border-gray-100 lg:border lg:bg-white lg:absolute lg:top-full lg:left-0 lg:min-w-full lg:z-20 lg:rounded-lg lg:shadow-lg lg:dark:bg-slate-800 dark:border-slate-700"
-            :class="{ 'lg:hidden': !isDropdownActive }"
-        >
-            <NavBarMenuList :menu="item.menu" @menu-click="menuClickDropdown" />
         </div>
     </component>
 </template>

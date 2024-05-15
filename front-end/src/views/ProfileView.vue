@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { mdiAccount, mdiAsterisk } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
@@ -13,9 +14,11 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
-import { usersEndpoint } from '@/endpoints'
+import { meEndpoint } from '@/endpoints'
 
 const authStore = useAuthStore()
+
+const router = useRouter()
 
 const showErrorNotification = ref(false)
 const error = ref('')
@@ -29,13 +32,16 @@ const submit = async () => {
     if (passwordForm.password === passwordForm.password_confirmation) {
         axios
             .patch(
-                import.meta.env.VITE_BASE_URL_API + usersEndpoint,
-                { password: passwordForm.password },
+                import.meta.env.VITE_BASE_URL_API + meEndpoint,
+                { old_password: passwordForm.old_password, password: passwordForm.password },
                 { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
-            )
-            .catch((error) => {
+            ).then(() =>  {
+                router.push('/dashboard')
+            })
+            .catch((e) => {
                 showErrorNotification.value = true
-                error.value = 'Errore nella modifica della password'
+                error.value = e.response.data["400 Bad Request"]
+                return;
             })
     } else {
         showErrorNotification.value = true
@@ -64,25 +70,37 @@ const submit = async () => {
                     >
                         <b>ERRORE: </b> {{ error }}
                     </NotificationBar>
-                    <FormField label="Password" help="Inserisci la tua nuova password">
+
+                    <FormField label="Vecchia Password" help="Inserisci la tua vecchia password">
+                        <FormControl
+                            v-model="passwordForm.old_password"
+                            :icon="mdiAsterisk"
+                            type="password"
+                            name="old_password"
+                            autocomplete="old-password"
+                        />
+                    </FormField>
+
+                    <FormField label="Nuova Password" help="Inserisci la tua nuova password">
                         <FormControl
                             v-model="passwordForm.password"
                             :icon="mdiAsterisk"
                             type="password"
                             name="password"
-                            autocomplete="current-password"
+                            autocomplete="new-password"
                         />
                     </FormField>
 
-                    <FormField label="Password" help="Inserisci nuovamente la tua password">
+                    <FormField label="Ripeti Nuova Password" help="Ripeti la tua nuova password">
                         <FormControl
                             v-model="passwordForm.password_confirmation"
                             :icon="mdiAsterisk"
                             type="password"
                             name="password_confirmation"
-                            autocomplete="current-password"
+                            autocomplete="new-password"
                         />
                     </FormField>
+
                     <template #footer>
                         <BaseButtons>
                             <BaseButton type="submit" color="info" label="Cambia Password" />

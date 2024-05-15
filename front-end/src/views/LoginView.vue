@@ -39,6 +39,7 @@ const submit = async () => {
             authStore.setUserId(decoded_token.user_id)
             authStore.setExpire(decoded_token.exp)
             authStore.setRole(decoded_token.role)
+            authStore.setDisabled(decoded_token.disabled)
             if(decoded_token.disabled)
                 setTimeout(() => router.push('/changepassword'), 500)
             else

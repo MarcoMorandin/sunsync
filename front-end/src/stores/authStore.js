@@ -8,11 +8,13 @@ export const useAuthStore = defineStore(
         const userId = ref('')
         const expire = ref('')
         const role = ref('')
+        const disabled = ref('')
 
         const getToken = computed(() => token)
         const getUserId = computed(() => userId)
         const getExpire = computed(() => expire)
         const getRole = computed(() => role)
+        const getDisabled = computed(() => disabled)
 
         function setToken(tkn) {
             token.value = tkn
@@ -30,6 +32,10 @@ export const useAuthStore = defineStore(
             role.value = r
         }
 
+        function setDisabled(d) {
+            disabled.value = d
+        }
+
         return {
             token,
             userId,
@@ -39,10 +45,12 @@ export const useAuthStore = defineStore(
             getUserId,
             getExpire,
             getRole,
+            getDisabled,
             setToken,
             setUserId,
             setExpire,
-            setRole
+            setRole,
+            setDisabled,
         }
     },
     { persist: true }

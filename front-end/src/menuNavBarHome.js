@@ -44,7 +44,6 @@ export default [
         icon: mdiLogin,
         label: 'Login',
         to: '/login',
-        isDesktopNoLabel: true,
         isAuth: false,
         bgColor: "dark:bg-slate-800 bg-slate-900"
     }

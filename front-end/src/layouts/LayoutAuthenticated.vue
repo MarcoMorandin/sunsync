@@ -36,6 +36,8 @@ const menuClick = (event, item) => {
         authStore.setToken('')
         authStore.setExpire('')
         authStore.setUserId('')
+        authStore.setRole('')
+        authStore.setDisabled('')
         router.push({ name: 'home' })
     }
 }
