@@ -3,6 +3,7 @@ import {
     mdiLogout,
     mdiThemeLightDark,
     mdiMonitor,
+    mdiLogin,
 } from '@mdi/js'
 
 export default [
@@ -19,18 +20,32 @@ export default [
                 label: 'Impostazioni',
                 to: '/profile'
             }
-        ]
+        ],
+        isAuth: true,
+        bgColor: "dark:bg-slate-800 bg-slate-900"
     },
     {
         icon: mdiThemeLightDark,
         label: 'Light/Dark',
         isDesktopNoLabel: true,
-        isToggleLightDark: true
+        isToggleLightDark: true,
+        bgColor: "dark:bg-slate-800 bg-slate-900"
     },
     {
         icon: mdiLogout,
-        label: 'Log out',
+        label: 'Logout',
+        to: '/logout',
         isDesktopNoLabel: true,
-        isLogout: true
+        isLogout: true,
+        isAuth: true,
+        bgColor: "dark:bg-slate-800 bg-slate-900"
+    },
+    {
+        icon: mdiLogin,
+        label: 'Login',
+        to: '/login',
+        isDesktopNoLabel: true,
+        isAuth: false,
+        bgColor: "dark:bg-slate-800 bg-slate-900"
     }
 ]

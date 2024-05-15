@@ -44,6 +44,20 @@ const componentClass = computed(() => {
         base.push('lg:w-16', 'lg:justify-center')
     }
 
+    if (props.item.bgColor) {
+        base.push(props.item.bgColor)
+    }
+
+    return base
+})
+
+const iconClass = computed(() => {
+    const base = []
+
+    if (props.item.bgColor) {
+        base.push("text-slate-300 hover:text-white")
+    }
+
     return base
 })
 
@@ -87,6 +101,20 @@ const forceClose = (event) => {
     }
 }
 
+function displayFunc(isAuth) {
+    if(isAuth != null) {
+        if(isAuth == true && authStore.getToken.value) {
+            return true
+        } else if(isAuth == false && !authStore.getToken.value) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        return true
+    }
+}
+
 onMounted(() => {
     if (props.item.menu) {
         window.addEventListener('click', forceClose)
@@ -105,6 +133,7 @@ onBeforeUnmount(() => {
     <component
         :is="is"
         v-else
+        v-if="displayFunc(item.isAuth)"
         ref="root"
         class="block lg:flex items-center relative cursor-pointer"
         :class="componentClass"
@@ -120,16 +149,24 @@ onBeforeUnmount(() => {
                     item.menu
             }"
         >
-            <BaseIcon v-if="item.icon" :path="item.icon" class="transition-colors" />
+            <BaseIcon
+                v-if="item.icon"
+                :path="item.icon"
+                class="transition-colors"
+                h="h-16"
+                :size="20"
+                :class="iconClass"
+            />
             <span
                 class="px-2 transition-colors"
-                :class="{ 'lg:hidden': item.isDesktopNoLabel && item.icon }"
+                :class="[{ 'lg:hidden': item.isDesktopNoLabel && item.icon }, iconClass]"
                 >{{ itemLabel }}</span
             >
             <BaseIcon
                 v-if="item.menu"
                 :path="isDropdownActive ? mdiChevronUp : mdiChevronDown"
                 class="hidden lg:inline-flex transition-colors"
+                :class="iconClass"
             />
         </div>
         <div
