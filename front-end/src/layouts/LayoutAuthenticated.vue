@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { mdiForwardburger, mdiBackburger } from '@mdi/js'
 import { useRouter } from 'vue-router'
 import menuAside from '@/menuAside.js'
 import menuNavBar from '@/menuNavBar.js'
@@ -7,6 +8,8 @@ import { useDarkModeStore } from '@/stores/darkMode.js'
 import NavBar from '@/components/NavBar.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import { useAuthStore } from '@/stores/authStore'
+import NavBarItemPlain from '@/components/NavBarItemPlain.vue'
+import BaseIcon from '@/components/BaseIcon.vue'
 
 const authStore = useAuthStore()
 
@@ -53,6 +56,12 @@ const menuClick = (event, item) => {
                 :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
                 @menu-click="menuClick"
             >
+                <NavBarItemPlain
+                    display="flex lg:hidden"
+                    @click.prevent="isAsideMobileExpanded = !isAsideMobileExpanded"
+                    >
+                    <BaseIcon :path="isAsideMobileExpanded ? mdiBackburger : mdiForwardburger" size="24" />
+                </NavBarItemPlain>
             </NavBar>
             <AsideMenu
                 :is-aside-mobile-expanded="isAsideMobileExpanded"
