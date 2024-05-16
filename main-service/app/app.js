@@ -12,6 +12,7 @@ const tokenChecker = require('./middlewares/tockenChecker.js')
 
 const bodyParser = require('body-parser')
 
+// Abilitazione richieste CORS...
 app.use(cors())
 
 app.use((req,res,next) => {
@@ -22,7 +23,7 @@ app.use((req,res,next) => {
 app.use(bodyParser.json());
 
 
-
+// Routing della richiesta al percorso corretto...
 app.use('/api/v1/pvinfo', pvInfo)
 app.use('/api/v1/pvdata', pvData)
 app.use('/api/v1/wsInfo', wsInfo)
@@ -33,7 +34,7 @@ app.use('/api/v1/reports', reports)
 
 app.use((req, res) => {
     res.status(404);
-    res.json({ error: 'Not found' });
+    res.json({ error: '404 Not Found' });
 });
 
 

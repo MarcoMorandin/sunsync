@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 
+/**
+ * Oggetto che modella l'impianto fotovoltaico presente nel DB
+ */
 const PvSystem = new Schema({
     _id: Schema.ObjectId,
     description: String,

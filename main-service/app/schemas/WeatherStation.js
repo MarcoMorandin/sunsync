@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 
+/**
+ * Oggetto che modella la stazione meteo presente nel DB
+ */
 const WeatherStation = new Schema({
     _id: Schema.ObjectId,
     description: String,

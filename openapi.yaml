@@ -992,8 +992,11 @@ paths:
               properties:
                 password:
                   type: string
+                old_password:
+                  type: string
               required:
                 - password
+                - old_password
       responses:
         '200':
           description: Success
