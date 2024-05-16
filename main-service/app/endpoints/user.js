@@ -12,6 +12,10 @@ require("dotenv").config();
 const tokenChecker = require('../middlewares/tockenChecker')
 const tokenCheckerChangePassword = require('../middlewares/tockenCheckerChangePassword')
 
+/**
+ * Endpoint that returns a list of all registered user. This endpoint is accessible
+ * only if the user has role admin else it returns 401.
+ */
 router.get('', tokenChecker, async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
@@ -20,6 +24,10 @@ router.get('', tokenChecker, async (req, res) => {
     res.status(200).json(users)
 })
 
+/**
+ * Endpoint that returns all informations about the user that contact this endpoint.
+ * It could be returns 404 if the user cannot be found.
+ */
 router.get('/me', tokenCheckerChangePassword, async (req, res) => {
     let user = await User.findById(req.user._id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
     
@@ -31,6 +39,11 @@ router.get('/me', tokenCheckerChangePassword, async (req, res) => {
     res.status(200).json(user);
 })
 
+/**
+ * Endpoint that returns all informations about a user given his user_id. This endpoint is accessible
+ * only if the user has role admin else it returns 401. If the user_id is not a valid MongoDb
+ * ObjectId it returns 400 and in the end if the user cannot be found it returns 404.
+ */
 router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
@@ -51,6 +64,14 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
     res.status(200).json(user);
 })
 
+/**
+ * Endpoint used to register new users. It require a username, an email, a password and a role.
+ * In SunSync only the admins could register new user so if the endpoint is contacted by an employee
+ * it returns 401. Moreover if any of the params are not valid it returns 400 and if there is another
+ * user with the same email address already registered it gives 409. To the given password is 
+ * added a random salt that is a random string of 128 byte and then hashed with sha256 algorithm
+ * to store them in a safe way. 
+ */
 router.post('', tokenChecker, [
     body('username', 'username must be a valid string').isAlpha(),
     body('username', 'username must be filled').notEmpty(),
@@ -94,6 +115,12 @@ router.post('', tokenChecker, [
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
 })
 
+/**
+ * Endpoint that is used to delete a user given his user_id, it must be a valid MongoDb ObjectId
+ * otherwise it returns 400. This endpoint is accessible only for user with role admin so if an
+ * employee contact this endpoint it receives a 401. If no user could be found with the given 
+ * user_id it returns 404.
+ */
 router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
@@ -113,6 +140,13 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
 })
 
+/**
+ * Endpoint used to modify the password of the current user. It requires the old_password
+ * and the new password otherwise it returns 400. If the old password is incorrect or the new
+ * password is equal to the old password it returns 400. If no user can be found returns a 404.
+ * To the given new password is added a random salt that is a random string of 128 byte and
+ * then hashed with sha256 algorithm to store them in a safe way. 
+ */
 router.patch('/me', tokenCheckerChangePassword, [
     body('old_password', 'old_password must be filled').notEmpty(),
     body('password', 'password must be filled').notEmpty(),
@@ -143,6 +177,11 @@ router.patch('/me', tokenCheckerChangePassword, [
     return res.status(200).json({"info" : "Operazione completata"}).send()   
 })
 
+/**
+ * Endpoint that authenticate users by email and password and gives the token to a user.
+ * If the email has not a correct format or any field is empty it returns 400. In the case that
+ * a user insert wrong password or email or if it is not registered it gives 401.
+ */
 router.post('/authentication', [
     body('mail', 'mail must be a valid email').isEmail(),
     body('mail', 'mail must be filled').notEmpty(),

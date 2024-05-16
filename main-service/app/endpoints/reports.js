@@ -5,7 +5,12 @@ const { ObjectId } = require('mongodb');
 const PvData = require('../schemas/PvData');
 const PvInfo = require('../schemas/PvSystem');
 
-
+/**
+ * Endpoint that gives power production filtered by year, and pvinfo_id. It could return the data 
+ * aggregated by year, i.e. the result is an array of the cumulative power production per year, moreover
+ * the results could be aggregated by month, i.e. returns the required data month per month and all that 
+ * returns the value of all power production. The endpoint returns 400 if any of the params are in the wrong format.
+ */
 router.get('/production', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
     query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId() ,
@@ -64,6 +69,12 @@ router.get('/production', [
     res.status(200).json(data);
 })
 
+/**
+ * Endpoint that gives the amount of saved money with the usage of pvSystems filtered by year, and pvinfo_id. It could return the data 
+ * aggregated by year, i.e. the result is an array of the cumulative saved money per year, moreover
+ * the results could be aggregated by month, i.e. returns the required data month per month and 'all', that 
+ * returns the value of the total saved money. The endpoint returns 400 if any of the params are in the wrong format.
+ */
 router.get('/money', [
     query('year', 'year must be an int').optional().isInt({ min:0, max: 4000 }),
     query('pvinfo_id', 'pvinfo_id must be a valid Mongo ObjectId').optional().isMongoId(),
@@ -123,6 +134,9 @@ router.get('/money', [
     res.status(200).json(data);
 })
 
+/**
+ * Endpoint that returns the number of all registered pvSystem
+ */
 router.get('/pvnumber', async (req, res) => {
     let data = await PvInfo.aggregate([
         { $count: "number_of_pv_systems" }

@@ -6,11 +6,19 @@ const { param, body, validationResult } = require('express-validator')
 const { ObjectId } = require('mongodb');
 const tokenChecker = require('../middlewares/tockenChecker')
 
+/**
+ * Endpoint that returns infos of all pvSystem
+ */
 router.get('', tokenChecker, async (req, res) => {  
     let pvSystems = await PvSystem.find({})
     res.status(200).json(pvSystems)
 })
 
+/**
+ * Endpoint that return infos of a pvSystem with id pvinfo_id, that must
+ * be a valid mongodb ObjectId. It can return 400 if the pvinfo_id is not a
+ * valid ObjectId or 404 if there is not any pvSystem with the given pvinfo_id.
+ */
 router.get('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
@@ -28,6 +36,12 @@ router.get('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (r
     res.status(200).json(pvSystem)
 })
 
+/**
+ * Endpoint that is used to create a new pvSystem, it checks all the given params to be valid
+ * and return 401 if the token of the user has role employee because it is a feature available
+ * only for admins. Moreover, it can return 400 if any of the params is not validated,
+ * 409 if the given url and description are equal to another registerd pvSystem.
+ */
 router.post('', tokenChecker, [
     body('description', 'description must be a string').isString(),
     body('description', 'description cannot contains $').not().contains('$'),
@@ -68,6 +82,12 @@ router.post('', tokenChecker, [
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
 })
 
+/**
+ * Endpoint that is used to delete a specific pvSystem, it deletes all infos and data linked to
+ * a pvSystem. It return 401 in case of unauthorized access by a user with a token with role 
+ * employee, then it could return 400 if the given pvinfo_id is not a valid MongoDb ObjectId,
+ * moreover it could return 404 if the pvSystem could not be found.
+ */
 router.delete('/:pvinfo_id', tokenChecker, param("pvinfo_id").isMongoId(), async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
