@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 
+/**
+ * Oggetto che modella l'utente presente nel DB
+ */
 const User = new Schema({
     _id: Schema.ObjectId,
     username: String,

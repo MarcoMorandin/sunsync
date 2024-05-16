@@ -1,6 +1,9 @@
 const { Schema, model } = require("mongoose");
 
-const PvData = new Schema(
+/**
+ * Oggetto che modella il singolo rilevamento meteo presente nel DB
+ */
+const WeatherData = new Schema(
     {
         _id: Schema.ObjectId,
         time: Date,
@@ -25,4 +28,4 @@ const PvData = new Schema(
     }
 );
 
-module.exports = model("weather_data", PvData);
+module.exports = model("weather_data", WeatherData);

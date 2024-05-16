@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 
+/**
+ * Oggetto che modella il singolo rilevamento di produzione dell'impianto presente nel DB
+ */
 const PvData = new Schema(
     {
         _id: Schema.ObjectId,

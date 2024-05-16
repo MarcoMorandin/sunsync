@@ -10,25 +10,29 @@ const WeatherStation = require('./schemas/WeatherStation');
 const WsData = require('./schemas/WeatherData');
 
 /**
- * scheduled import of data every 10 seconds
+ * scheduled import of data every x seconds
  */
-let date = new Date(Date.parse("2012-12-21T00:00:00.000Z"));
+let date = new Date(Date.parse("2013-10-01T00:00:00.000Z"));
 
 function importData() {
     console.log(date.toISOString());
 
+    // Connessione a MongoDB...
     mongoose.set('strictQuery', true);
     db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
     .then ( async () => {
         let pvs = await PvInfo.find({});
         let wst = await WeatherStation.find({});
-
+        
+        /** 
+         * Recupero dati da tutte le stazioni meteo tramite URL delle API
+         * In questo caso dal simulatore
+         */
         for(let el of wst) {
             console.log("wsdata: " + el['description']);
 
             await axios.get(el['url'] + date.toISOString().split('T')[0]).then( async (resp) => {
                 const data = resp['data'];
-                console.log(data);
 
                 if(!data["error"]){
                     let dayData = {
@@ -53,6 +57,9 @@ function importData() {
             });
         }
 
+        /**
+         * Recupero PUN dal simulatore
+         */
         const response = await fetch("https://simulator-n1ou.onrender.com/api/v1/pun/" + date.toISOString().split('T')[0]);
         const resp = await response.json();
         let price = 0;
@@ -60,12 +67,15 @@ function importData() {
             price = resp['price'];
         }
 
+        /** 
+         * Recupero dati da tutti gli impianti fotovoltaici tramite URL delle API
+         * In questo caso dal simulatore
+         */
         for(let el of pvs) {
             console.log("pvdata: " + el['description']);
 
             await axios.get(el['url'] + date.toISOString().split('T')[0]).then( async (resp) => {
                 const data = resp['data'];
-                console.log(data);
 
                 if(!data["error"]){
                     let dayData = {
@@ -91,14 +101,14 @@ function importData() {
     date.setUTCDate(date.getUTCDate() + 1);
 }
 
+// avvio della routine e scheduling...
 importData();
-setInterval(importData, 50000);
+setInterval(importData, 600000);
 
 /**
  * scheduled import of data every day at same time
  */
-/*
 
 // TODO importer da sito meteotrentino e Terna...
 
-schedule.scheduleJob('0 1 * * *', importData);*/
+/*schedule.scheduleJob('0 1 * * *', importData);*/
