@@ -112,7 +112,15 @@ router.post('', tokenChecker, [
         salt: salt
     });
 
-    res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
+    res.status(200).json({"info" : "Operazione completata", "data" : {
+        _id: a._id,
+        username: a.username,
+        mail: a.mail,
+        forecast_notification: a.forecast_notification,
+        maintenance_notification: a.maintenance_notification,
+        role: a.role,
+        disabled: a.disabled
+    }}).send()
 })
 
 /**
@@ -137,7 +145,15 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     }
     let eliminated = await User.deleteOne({"_id": ObjectId.createFromHexString(req.params.user_id)})
     
-    res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
+    res.status(200).json({"info" : "Operazione completata", "data" : {
+        _id: eliminated._id,
+        username: eliminated.username,
+        mail: eliminated.mail,
+        forecast_notification: eliminated.forecast_notification,
+        maintenance_notification: eliminated.maintenance_notification,
+        role: eliminated.role,
+        disabled: eliminated.disabled
+    }}).send()
 })
 
 /**
