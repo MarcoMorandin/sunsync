@@ -178,6 +178,39 @@ router.patch('/me', tokenCheckerChangePassword, [
 })
 
 /**
+ * Endpoint used to modify the password of a user. It requires the new password otherwise it returns 400.
+ * If the new password is equal to the old password it returns 400. If no user can be found returns a 404.
+ * To the given new password is added a random salt that is a random string of 128 byte and
+ * then hashed with sha256 algorithm to store them in a safe way.
+ */
+router.patch('/:id', tokenCheckerChangePassword, [
+    body('password', 'password must be filled').notEmpty(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    let userOld = await User.findById(req.user._id).exec()
+    let old_password_in = createHash('sha256').update(userOld.password + userOld.salt).digest('hex');
+    let password_in = createHash('sha256').update(req.body.password + userOld.salt).digest('hex');
+
+    if (old_password_in === password_in) {
+        return res.status(400).json({ "400 Bad Request": "New password must be different from old"})
+    }
+
+    let salt = crypto.randomBytes(128).toString('hex');
+    let password = createHash('sha256').update(req.body.password + salt).digest('hex');
+
+    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: false}, {includeResultMetadata: true}) 
+    if(!user.lastErrorObject.updatedExisting)
+        return res.status(404).json({ "404 Not Found": "No user found with the given mail"})
+
+    return res.status(200).json({"info" : "Operazione completata"}).send()   
+})
+
+/**
  * Endpoint that authenticate users by email and password and gives the token to a user.
  * If the email has not a correct format or any field is empty it returns 400. In the case that
  * a user insert wrong password or email or if it is not registered it gives 401.
