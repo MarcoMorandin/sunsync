@@ -25,6 +25,14 @@ export default [
         bgColor: "dark:bg-slate-800 bg-slate-900"
     },
     {
+        icon: mdiMonitor,
+        label: 'Dashboard',
+        isDesktopNoLabel: true,
+        isAuth: true,
+        to: '/dashboard',
+        bgColor: "dark:bg-slate-800 bg-slate-900"
+    },
+    {
         icon: mdiThemeLightDark,
         label: 'Light/Dark',
         isDesktopNoLabel: true,
