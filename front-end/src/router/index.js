@@ -67,6 +67,15 @@ const routes = [
     },
     {
         meta: {
+            title: 'Utenti',
+            role: 0
+        },
+        path: '/users',
+        name: 'users',
+        component: () => import('@/views/UsersView.vue')
+    },
+    {
+        meta: {
             title: 'Nuovo impianto',
             role: 0
         },
