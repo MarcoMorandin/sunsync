@@ -112,7 +112,15 @@ router.post('', tokenChecker, [
         salt: salt
     });
 
-    res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
+    res.status(200).json({"info" : "Operazione completata", "data" : {
+        _id: a._id,
+        username: a.username,
+        mail: a.mail,
+        forecast_notification: a.forecast_notification,
+        maintenance_notification: a.maintenance_notification,
+        role: a.role,
+        disabled: a.disabled
+    }}).send()
 })
 
 /**
@@ -137,7 +145,15 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
     }
     let eliminated = await User.deleteOne({"_id": ObjectId.createFromHexString(req.params.user_id)})
     
-    res.status(200).json({"info" : "Operazione completata", "data" : eliminated}).send()
+    res.status(200).json({"info" : "Operazione completata", "data" : {
+        _id: eliminated._id,
+        username: eliminated.username,
+        mail: eliminated.mail,
+        forecast_notification: eliminated.forecast_notification,
+        maintenance_notification: eliminated.maintenance_notification,
+        role: eliminated.role,
+        disabled: eliminated.disabled
+    }}).send()
 })
 
 /**
@@ -164,6 +180,39 @@ router.patch('/me', tokenCheckerChangePassword, [
     if(old_password_in !== userOld.password) {
         return res.status(400).json({ "400 Bad Request": "Old password is incorrect"})
     } else if (old_password_in === password_in) {
+        return res.status(400).json({ "400 Bad Request": "New password must be different from old"})
+    }
+
+    let salt = crypto.randomBytes(128).toString('hex');
+    let password = createHash('sha256').update(req.body.password + salt).digest('hex');
+
+    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: false}, {includeResultMetadata: true}) 
+    if(!user.lastErrorObject.updatedExisting)
+        return res.status(404).json({ "404 Not Found": "No user found with the given mail"})
+
+    return res.status(200).json({"info" : "Operazione completata"}).send()   
+})
+
+/**
+ * Endpoint used to modify the password of a user. It requires the new password otherwise it returns 400.
+ * If the new password is equal to the old password it returns 400. If no user can be found returns a 404.
+ * To the given new password is added a random salt that is a random string of 128 byte and
+ * then hashed with sha256 algorithm to store them in a safe way.
+ */
+router.patch('/:id', tokenCheckerChangePassword, [
+    body('password', 'password must be filled').notEmpty(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    let userOld = await User.findById(req.user._id).exec()
+    let old_password_in = createHash('sha256').update(userOld.password + userOld.salt).digest('hex');
+    let password_in = createHash('sha256').update(req.body.password + userOld.salt).digest('hex');
+
+    if (old_password_in === password_in) {
         return res.status(400).json({ "400 Bad Request": "New password must be different from old"})
     }
 
