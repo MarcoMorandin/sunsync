@@ -11,11 +11,20 @@ const reports = require('./endpoints/reports.js')
 const tokenChecker = require('./middlewares/tockenChecker.js')
 
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+
+const apiVers = 2
 
 // Abilitazione richieste CORS...
-app.use(cors())
+app.use(cors({
+    credentials: true,
+    origin: true,
+}))
 
-app.use((req,res,next) => {
+// Parsing cookies...
+app.use(cookieParser());
+
+app.use((req, res, next) => {
     console.log(req.method + ' ' + req.url)
     next()
 })
@@ -23,13 +32,26 @@ app.use((req,res,next) => {
 app.use(bodyParser.json());
 
 
+// Redirect to current version API...
+app.use('/api/v:vers/*', (req, res, next) => {
+    if(req.params.vers != apiVers) {
+        res.writeHead(301, {
+            'Location': req.originalUrl.replace(/\/v[0-9]+\//g, '/v' + apiVers + '/')
+        });
+        res.end();
+    } else {
+        next();
+    }
+});
+
+
 // Routing della richiesta al percorso corretto...
-app.use('/api/v2/pvinfo', pvInfo)
-app.use('/api/v2/pvdata', pvData)
-app.use('/api/v2/wsInfo', wsInfo)
-app.use('/api/v2/wsData', wsData)
-app.use('/api/v2/users', user)
-app.use('/api/v2/reports', reports)
+app.use('/api/v' + apiVers + '/pvinfo', pvInfo)
+app.use('/api/v' + apiVers + '/pvdata', pvData)
+app.use('/api/v' + apiVers + '/wsInfo', wsInfo)
+app.use('/api/v' + apiVers + '/wsData', wsData)
+app.use('/api/v' + apiVers + '/users', user)
+app.use('/api/v' + apiVers + '/reports', reports)
 
 
 app.use((req, res) => {

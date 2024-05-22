@@ -12,7 +12,7 @@ import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import axios from 'axios'
 import VueJwtDecode from 'vue-jwt-decode'
 import NotificationBar from '@/components/NotificationBar.vue'
-import { authEndpoint } from '@/endpoints'
+import { authEndpoint, meEndpoint } from '@/endpoints'
 import { useAuthStore } from '@/stores/authStore'
 
 const showErrorNotification = ref(false)
@@ -32,15 +32,25 @@ const submit = async () => {
         .post(import.meta.env.VITE_BASE_URL_API + authEndpoint, {
             mail: form.login,
             password: form.pass
+        }, {
+            headers: { "Content-Type": "application/json", },
+            withCredentials: true
         })
-        .then((response) => {
+        .then(async (response) => {
             authStore.setToken(response.data.token)
             let decoded_token = VueJwtDecode.decode(response.data.token)
             authStore.setUserId(decoded_token.user_id)
             authStore.setExpire(decoded_token.exp)
             authStore.setRole(decoded_token.role)
-            authStore.setDisabled(decoded_token.disabled)
-            if(decoded_token.disabled)
+
+            let disabled = await axios
+                .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
+                    headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+                })
+                .then((response) => {
+                    return response.data.disabled
+                })
+            if(disabled)
                 setTimeout(() => router.push('/changepassword'), 500)
             else
                 router.push('/dashboard')
