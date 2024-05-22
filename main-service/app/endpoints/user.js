@@ -208,6 +208,13 @@ router.patch('/:id', tokenCheckerChangePassword, [
         return;
     }
 
+    let userId = await jwt.verify(req.headers.authorization.split(' ')[1], process.env.SUPER_SECRET, async (err, decoded) => {
+        return decoded.user_id
+    })
+    if(userId == req.params.id) {
+        return res.status(400).json({ "400 Bad Request": "User can't change his own password by id"})
+    }
+
     let userOld = await User.findById(req.user._id).exec()
     let old_password_in = createHash('sha256').update(userOld.password + userOld.salt).digest('hex');
     let password_in = createHash('sha256').update(req.body.password + userOld.salt).digest('hex');
@@ -219,7 +226,7 @@ router.patch('/:id', tokenCheckerChangePassword, [
     let salt = crypto.randomBytes(128).toString('hex');
     let password = createHash('sha256').update(req.body.password + salt).digest('hex');
 
-    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: false}, {includeResultMetadata: true}) 
+    let user = await User.findOneAndUpdate({_id: req.user._id}, {password: password, salt: salt, disabled: true}, {includeResultMetadata: true}) 
     if(!user.lastErrorObject.updatedExisting)
         return res.status(404).json({ "404 Not Found": "No user found with the given mail"})
 
@@ -257,12 +264,51 @@ router.post('/authentication', [
         mail: user.mail,
         username: user.username,
         user_id: user._id,
-        role: user.role,
-        disabled: user.disabled
-    }, process.env.SUPER_SECRET, {expiresIn: 86400});
+        role: user.role
+    }, process.env.SUPER_SECRET, { expiresIn: 86400 });
 
+    let refreshToken = jwt.sign({
+        mail: user.mail,
+        user_id: user._id,
+    }, process.env.REFRESH_SUPER_SECRET, { expiresIn: '7d' });
 
-    return res.status(200).json({"info" : "Correctly authenticated", "token": token}).send()   
+    // Assigning refresh token in http-only cookie 
+    res.cookie('refresh_jwt', refreshToken, {
+        httpOnly: true,
+        sameSite: 'None',
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.set('Access-Control-Allow-Credentials', 'true');
+
+    return res.status(200).json({"info" : "Correctly authenticated", "token": token}).send()
+})
+
+router.post('/refresh', (req, res) => {
+    if(req.cookies?.refresh_jwt) {
+        let refreshToken = req.cookies.refresh_jwt;
+    
+        jwt.verify(refreshToken, process.env.REFRESH_SUPER_SECRET, async (err, decoded) => {
+            if(err) {
+                console.log('a')
+                return res.status(401).json({ "401 Unauthorized": "Authentication failed, refresh token error"});
+            } else {
+                let user = await User.findById(decoded.user_id).exec();
+
+                let token = jwt.sign({
+                    mail: user.mail,
+                    username: user.username,
+                    user_id: user._id,
+                    role: user.role
+                }, process.env.SUPER_SECRET, { expiresIn: 86400 });
+
+                return res.status(200).json({"info" : "Correctly re-authenticated", "token": token}).send();
+            }
+        });
+    } else {
+        return res.status(401).json({ "401 Unauthorized": "Authentication failed, refresh token error"});
+    }
 })
 
 
