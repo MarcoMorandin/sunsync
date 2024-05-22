@@ -16,7 +16,7 @@ let date = new Date(Date.parse("2013-10-01T00:00:00.000Z"));
 
 function importData() {
     console.log(date.toISOString());
-
+    let dayData = {}
     // Connessione a MongoDB...
     mongoose.set('strictQuery', true);
     db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
@@ -35,7 +35,7 @@ function importData() {
                 const data = resp['data'];
 
                 if(!data["error"]){
-                    let dayData = {
+                    dayData = {
                         _id: new ObjectId(),
                         time: new Date(date.toISOString()),
                         metadata: {
@@ -74,27 +74,47 @@ function importData() {
         for(let el of pvs) {
             console.log("pvdata: " + el['description']);
 
-            await axios.get(el['url'] + date.toISOString().split('T')[0]).then( async (resp) => {
-                const data = resp['data'];
+            await axios.get(el['url'] + date.toISOString().split('T')[0])
+                .then( async (resp) => {
+                    const data = resp['data'];
 
-                if(!data["error"]){
-                    let dayData = {
-                        _id: new ObjectId(),
-                        time: new Date(date.toISOString()),
-                        metadata: {
-                            description: el['description'],
-                            location: el['location'],
-                            installed_power: el['installed_power'],
-                            ws_id: el['ws_id'],
-                            pv_id: el['_id'],
-                            price: price
-                        },
-                        power: data['power']
-                    };
-        
-                    await PvData.create(dayData);
+                    const wsDataPrompt = {
+                        installed_power: el['installed_power'],
+                        rain: dayData.rain,
+                        temperature: dayData.temperature,
+                        humidity: dayData.humidity,
+                        wind_speed: dayData.wind_speed,
+                        solar_power: Number(dayData.solar_power),
+                        wind_direction: dayData.wind_direction
+                    }
+
+                    let predicted_power = 0
+
+                    let temp = await axios.post(process.env.PREDICTION_URL, wsDataPrompt)
+                        .then((res) => {
+                            predicted_power = res.data.predictions[0]
+                        })
+
+
+                    if(!data["error"]){
+                        let dayData = {
+                            _id: new ObjectId(),
+                            time: new Date(date.toISOString()),
+                            metadata: {
+                                description: el['description'],
+                                location: el['location'],
+                                installed_power: el['installed_power'],
+                                ws_id: el['ws_id'],
+                                pv_id: el['_id'],
+                                price: price
+                            },
+                            power: data['power'],
+                            predicted_power: predicted_power
+                        };
+                        await PvData.create(dayData);
+                    }
                 }
-            });
+            );
         }
     });
 
