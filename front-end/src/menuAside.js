@@ -4,7 +4,8 @@ import {
     mdiAccountPlusOutline,
     mdiSolarPanelLarge,
     mdiWeatherPartlyCloudy,
-    mdiHomeOutline
+    mdiHomeOutline,
+    mdiAccountGroupOutline
 } from '@mdi/js'
 
 export default [
@@ -25,6 +26,12 @@ export default [
         label: 'Grafici',
         icon: mdiChartTimelineVariant,
         role: 1
+    },
+    {
+        to: '/users',
+        label: 'Utenti',
+        icon: mdiAccountGroupOutline,
+        role: 0
     },
     {
         to: '/newuser',

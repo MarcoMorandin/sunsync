@@ -43,10 +43,10 @@ const menuClick = (event, item) => {
         >
             <NavBar
                 :menu="menuNavBar"
-                :isHome="true"
+                :is-home="true"
                 :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-                @menu-click="menuClick"
                 class="bg-slate-900 h-20"
+                @menu-click="menuClick"
             >
                 <NavBarItemPlain use-margin>
                     <div class="justify-center items-center text-center flex pt-6 pl-4">

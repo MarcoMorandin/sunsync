@@ -11,6 +11,14 @@ services:
     volumes:
       - ./main-service:/usr/src/app
 
+  model:
+    build:
+      dockerfile: Dockerfile
+      context: ./power-prediction-service
+    ports:
+      - 8001:8001
+
+
   front-end:
     build: 
       dockerfile: Dockerfile

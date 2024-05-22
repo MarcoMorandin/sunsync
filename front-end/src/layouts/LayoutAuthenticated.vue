@@ -55,6 +55,7 @@ const menuClick = (event, item) => {
             <NavBar
                 :menu="menuNavBar"
                 :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
+                class="h-20"
                 @menu-click="menuClick"
             >
                 <NavBarItemPlain
