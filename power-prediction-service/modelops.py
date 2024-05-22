@@ -21,7 +21,7 @@ def predict():
             return jsonify({"error": "Missing some required features in the input data"}), 400
         predictions = model.predict(df)
         res = {
-            'prediction': predictions.tolist()[0]
+            'predictions': predictions.tolist()
         }
         return jsonify(res)
     except Exception as e:

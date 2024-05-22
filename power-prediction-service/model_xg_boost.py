@@ -50,25 +50,26 @@ best_model.fit(X_train, y_train)
 # Make predictions
 y_pred = best_model.predict(X_test)
 
-print(y_pred.tolist()[0])
-print(y_test.tolist()[0])
 # Evaluate the model
-
 mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
 print(f"Mean Absolute Error: {mae}")
 print(f"R-squared: {r2}")
 
-plt.figure(figsize=(12, 6))
-plt.plot(y_test.index, y_test, label='Actual Power Production', color='blue')
-plt.plot(y_test.index, y_pred, label='Predicted Power Production', color='red')
-plt.title('Actual vs Predicted Power Production')
-plt.xlabel('Date')
-plt.ylabel('Power Production')
-plt.legend()
-plt.show()
-
 # Save the model for future use
 import joblib
 joblib.dump(best_model, 'pv_power_prediction_model.pkl')
+
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, y_pred, color='blue', label='Predicted vs Actual')
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linestyle='--', label='Perfect Prediction Line')
+
+# Add labels and title
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.title('Actual vs Predicted Values')
+plt.legend()
+
+# Show the plot
+plt.show()
