@@ -24,7 +24,6 @@ const menuClick = (event, item) => {
         authStore.setExpire('')
         authStore.setUserId('')
         authStore.setRole('')
-        authStore.setDisabled('')
         router.push({ name: 'home' })
         location.reload()
     }
