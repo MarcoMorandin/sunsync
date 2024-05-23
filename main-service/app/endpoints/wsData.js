@@ -3,7 +3,6 @@ const router = express.Router();
 const { ObjectId } = require('mongodb');
 const { param, body, validationResult } = require('express-validator')
 const tokenChecker = require('../middlewares/tockenChecker')
-
 const WeatherData = require("../schemas/WeatherData");
 
 const dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
@@ -37,7 +36,7 @@ router.get('', tokenChecker, async (req, res) => {
 
     // Aggiunta filtro stazione meteo...
     if(req.query.wsinfo_id){
-        query = { ...query, "metadata.ws_id": ObjectId.createFromHexString(req.params.wsinfo_id)}
+        query = { ...query, "metadata.ws_id": new ObjectId(req.query.wsinfo_id)}
     }
 
     let data = await WeatherData.find(query).exec()

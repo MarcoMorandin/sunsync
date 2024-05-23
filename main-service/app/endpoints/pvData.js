@@ -33,7 +33,7 @@ router.get('', tokenChecker, async (req, res) => {
     }
 
     if(req.query.pvinfo_id){
-        query = { ...query, "metadata.pv_id": ObjectId.createFromHexString(req.params.pvinfo_id)}
+        query = { ...query, "metadata.pv_id": new ObjectId(req.query.pvinfo_id)}
     }
 
     let pvData = await PvData.find(query).exec()
