@@ -10,6 +10,7 @@ const PvSystem = new Schema({
     location: {alt: Number, lat: Number, long: Number,},
     url: String,
     ws_id: Schema.ObjectId,
+    status: String
 });
 
 module.exports = model("pv_info", PvSystem);

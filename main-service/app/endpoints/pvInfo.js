@@ -76,7 +76,8 @@ router.post('', tokenChecker, [
         url: req.body.url,
         ws_id: ObjectId.createFromHexString(req.body.ws_id),
         installed_power: req.body.installed_power,
-        location: req.body.location
+        location: req.body.location,
+        status: 'ok'
     });
 
     res.status(200).json({"info" : "Operazione completata", "data" : a}).send()
