@@ -1,7 +1,8 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { mdiEye, mdiWeatherPartlyCloudy, mdiSolarPanel, mdiTrashCan } from '@mdi/js'
+import { mdiEye, mdiWeatherPartlyCloudy, mdiSolarPanel, mdiTrashCan, mdiCircle } from '@mdi/js'
 import CardBoxModal from '@/components/CardBoxModal.vue'
+import BaseIcon from '@/components/BaseIcon.vue'
 import BaseLevel from '@/components/BaseLevel.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -27,6 +28,10 @@ onMounted(async () => {
         })
         .then((response) => {
             items.value = response.data
+            items.value.forEach(it => {
+                it.statusColor = it.status == 'ok' ? 'text-green-600' : 'text-red-600'
+                it.status = it.status == 'ok' ? 'Funzionamento regolare' : 'Manutenzione da effettuare'
+            })
         })
         .catch(() => {
             showErrorNotification.value = true
@@ -106,6 +111,9 @@ async function deletePv() {
             Nome: <strong>{{ currentModal.description }}</strong>
         </p>
         <p>
+            Status: <strong>{{ currentModal.status }}</strong>
+        </p>
+        <p>
             Potenza Installata:
             <strong>{{ (currentModal.installed_power / 1000).toFixed(2) }} kW</strong>
         </p>
@@ -167,6 +175,7 @@ async function deletePv() {
             <tr>
                 <th>Descrizione</th>
                 <th>Potenza Installata</th>
+                <th class="text-center">Status</th>
                 <th />
             </tr>
         </thead>
@@ -177,6 +186,14 @@ async function deletePv() {
                 </td>
                 <td data-label="installed_power">
                     {{ (pvInfo.installed_power / 1000).toFixed(2) }} kW
+                </td>
+                <td class="flex justify-center items-center">
+                    <BaseIcon
+                        :path="mdiCircle"
+                        :size="30"
+                        h="h-8"
+                        :class="pvInfo.statusColor"
+                    ></BaseIcon>
                 </td>
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
