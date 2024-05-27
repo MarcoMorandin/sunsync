@@ -1,0 +1,28 @@
+{
+    "name": "event-service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "prettify": "prettier -l --write \"**/*.js\"",
+        "test": "jest",
+        "dev": "nodemon --inspect=0.0.0.0:9229 -L index.js"
+    },
+    "prettier": {
+        "trailingComma": "all",
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": true,
+        "singleQuote": true
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1",
+        "prettier": "^2.7.1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "mongoose": "^8.4.0"
+    }
+}

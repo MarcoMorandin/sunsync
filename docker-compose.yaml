@@ -11,6 +11,14 @@ services:
     volumes:
       - ./main-service:/usr/src/app
 
+  event:
+    build:
+      dockerfile: Dockerfile
+      context: ./event-service
+      target: dev
+    volumes:
+      - ./event-service:/usr/src/app
+
   model:
     build:
       dockerfile: Dockerfile
