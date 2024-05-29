@@ -30,6 +30,17 @@ onMounted(async () => {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
+            let id = authStore.getUserId.value
+            let found = false
+            let i = 0
+            while(i < response.data.length && !found) {
+                if(response.data[i]._id == id) {
+                    found = true
+                } else {
+                    i++
+                }
+            }
+            response.data.splice(i, 1);
             items.value = response.data
         })
         .catch(() => {
