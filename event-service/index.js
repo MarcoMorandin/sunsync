@@ -1,15 +1,55 @@
 const mongoose = require('mongoose');
 require("dotenv").config();
 const { ObjectId } = require('mongodb');
+const { Telegraf } = require('telegraf')
 
+const token = process.env.TELEGRAM_BOT_TOKEN
+const bot = new Telegraf(token)
 
+const emoji = require('node-emoji')
 const PvInfo = require('./schemas/PvSystem');
 const Event = require('./schemas/Event')
-function importData() {
+const User = require('./schemas/User')
+const TelegramChat = require('./schemas/TelegramChat')
+
+const botManager = () => {
+    bot.start(async (ctx) => {
+        await ctx.reply('Benvenuto nel bot SunSync')
+        ctx.reply('Per poter ricevere le notifiche della manutenzione inviami il token con il comando /token che trovi nel tuo profilo nella webapp')
+    })
+
+    bot.command('token', async (ctx) => {
+        let token = ctx.message.text.split('/token')[1].trim()
+        if(token.length == 0 || token == null){
+            ctx.reply('Token non valido')
+        }else{
+            let users = await User.find({bot_token: token})
+            if(users.length != 1)
+                ctx.reply('Token non valido')
+            else{
+                for(let i = 0; i < 3; i++){
+                    await ctx.deleteMessage(ctx.message.message_id - i);
+                }
+                await ctx.reply('Buongiorno, ' + users[0].username)
+                ctx.reply('Da questo momento inizierai a ricevere una notifica ogni qual volta un impianto fotovoltaico avrà bisogno di manutenzione')
+                
+                let telegramChat = await TelegramChat.find({chatId: ctx.message.chat.id})
+                if(telegramChat.length == 0 || telegramChat == null){
+                    await TelegramChat.create({
+                        chatId: ctx.message.chat.id
+                    })
+                }
+            }
+        }
+    })
+
+    bot.launch()
+}
+
+const createEvent = () => {    
     mongoose.set('strictQuery', true);
     db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
     .then ( async () => {
-
         
         PvInfo.watch().
             on('change', data => {
@@ -23,10 +63,18 @@ function importData() {
                     event.save()
                 }
             });
-
+        Event.watch()
+            .on('change', async data => {
+                let pvInfo = await PvInfo.findById(data.fullDocument.what)
+                let chats = await TelegramChat.find({})
+                chats.forEach(chat => {
+                    bot.telegram.sendMessage(chat.chatId, `${emoji.get('warning')}${emoji.get('warning')} L'impianto "${pvInfo.description}" ha bisogno di manutenzione`)
+                    bot.telegram.sendLocation(chat.chatId, pvInfo.location.lat, pvInfo.location.long)
+                })
+            })
+        botManager()
         
     });
 }
 
-importData();
-
+createEvent();
