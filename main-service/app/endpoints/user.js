@@ -6,6 +6,7 @@ const User = require('../schemas/User')
 const jwt = require('jsonwebtoken');
 const { createHash } = require('crypto');
 const crypto = require('crypto');
+const hat = require('hat');
 
 require("dotenv").config();
 
@@ -20,7 +21,7 @@ router.get('', tokenChecker, async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
     
-    let users = await User.find({}, '_id username mail forecast_notification maintenance_notification role disabled')
+    let users = await User.find({}, '_id username mail forecast_notification maintenance_notification role disabled bot_token')
     res.status(200).json(users)
 })
 
@@ -29,7 +30,7 @@ router.get('', tokenChecker, async (req, res) => {
  * It could be returns 404 if the user cannot be found.
  */
 router.get('/me', tokenCheckerChangePassword, async (req, res) => {
-    let user = await User.findById(req.user._id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
+    let user = await User.findById(req.user._id, '_id username mail forecast_notification maintenance_notification role disabled bot_token').exec()
     
     if(!user){
         res.status(404).json({ "404 Not Found": "No user found with the given ID"})
@@ -54,7 +55,7 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
         return;
     }
 
-    let user = await User.findById(req.params.user_id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
+    let user = await User.findById(req.params.user_id, '_id username mail forecast_notification maintenance_notification role disabled bot_token').exec()
     
     if(!user){
         res.status(404).json({ "404 Not Found": "No user found with the given ID"})
@@ -109,7 +110,8 @@ router.post('', tokenChecker, [
         maintenance_notification: false,
         role: req.body.role,
         disabled: true,
-        salt: salt
+        salt: salt,
+        bot_token: hat()
     });
 
     res.status(200).json({"info" : "Operazione completata", "data" : {
@@ -119,7 +121,8 @@ router.post('', tokenChecker, [
         forecast_notification: a.forecast_notification,
         maintenance_notification: a.maintenance_notification,
         role: a.role,
-        disabled: a.disabled
+        disabled: a.disabled,
+        bot_token: a.bot_token
     }}).send()
 })
 
@@ -152,7 +155,7 @@ router.delete('/:user_id', tokenChecker, param("user_id").isMongoId(), async (re
         forecast_notification: eliminated.forecast_notification,
         maintenance_notification: eliminated.maintenance_notification,
         role: eliminated.role,
-        disabled: eliminated.disabled
+        disabled: eliminated.disabled,
     }}).send()
 })
 

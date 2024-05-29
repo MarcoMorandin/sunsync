@@ -18,6 +18,7 @@
     "express": "^4.19.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-validator": "^7.0.1",
+    "hat": "^0.0.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.3"
   },

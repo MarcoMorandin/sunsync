@@ -26,15 +26,31 @@ services:
     ports:
       - 8001:8001
 
-
-  front-end:
-    build: 
+  # front-end:
+  #   build: 
+  #     dockerfile: Dockerfile
+  #     context: ./front-end
+  #   ports:
+  #     - 5173:5173
+  #   volumes:
+  #     - ./front-end:/usr/src/app
+  
+  importer:
+    build:
       dockerfile: Dockerfile
-      context: ./front-end
-    ports:
-      - 5173:5173
+      context: ./importer
+      target: dev
     volumes:
-      - ./front-end:/usr/src/app
+      - ./importer:/usr/src/app
+
+  status-checker:
+    build:
+      dockerfile: Dockerfile
+      context: ./pv-status-checker
+      target: dev
+    volumes:
+      - ./pv-status-checker:/usr/src/app
+
   
   # nodered:
   #   image: nodered/node-red:3.1.0-18
@@ -48,11 +64,5 @@ services:
   #   ports:
   #     - 1880:1880
   
-  importer:
-    build:
-      dockerfile: Dockerfile
-      context: ./importer
-      target: dev
-    volumes:
-      - ./importer:/usr/src/app
+  
     

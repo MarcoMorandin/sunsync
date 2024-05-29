@@ -53,7 +53,7 @@ async function importData() {
       data.forEach((d, i) => {
         sum += d.power - d.predicted_power
       })
-      if(sum/data.length < 10000){
+      if(sum/data.length < -20000){
         await PvSystem.updateOne({_id: new ObjectId(info._id)}, {status: 'warning'})
           .then(console.log({_id: new ObjectId(info._id)}, {status: 'warning'}))
           .catch(err => console.log(err))
