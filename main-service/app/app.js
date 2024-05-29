@@ -8,6 +8,8 @@ const wsInfo = require('./endpoints/wsInfo.js')
 const wsData = require('./endpoints/wsData.js')
 const user = require('./endpoints/user.js')
 const reports = require('./endpoints/reports.js')
+const events = require('./endpoints/events.js')
+
 const tokenChecker = require('./middlewares/tockenChecker.js')
 
 const bodyParser = require('body-parser')
@@ -52,6 +54,8 @@ app.use('/api/v' + apiVers + '/wsInfo', wsInfo)
 app.use('/api/v' + apiVers + '/wsData', wsData)
 app.use('/api/v' + apiVers + '/users', user)
 app.use('/api/v' + apiVers + '/reports', reports)
+app.use('/api/v' + apiVers + '/events', events)
+
 
 
 app.use((req, res) => {

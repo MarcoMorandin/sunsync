@@ -52,20 +52,22 @@ const createEvent = () => {
     .then ( async () => {
         
         PvInfo.watch().
-            on('change', data => {
+            on('change', async data => {
                 if(data.operationType == 'update' && data.updateDescription.updatedFields.status == 'warning'){
+                    let pv_info = await PvInfo.findById(data.documentKey._id)
                     const event = new Event({
                         _id: new ObjectId(),
                         time: data.wallTime,
                         description: data.updateDescription.updatedFields.status,
-                        what: data.documentKey._id
+                        pv_info: pv_info
                     })
                     event.save()
                 }
             });
         Event.watch()
             .on('change', async data => {
-                let pvInfo = await PvInfo.findById(data.fullDocument.what)
+                let event = await Event.findById(data.documentKey._id)
+                let pvInfo = await PvInfo.findById(event.pv_info._id)
                 let chats = await TelegramChat.find({})
                 chats.forEach(chat => {
                     bot.telegram.sendMessage(chat.chatId, `${emoji.get('warning')}${emoji.get('warning')} L'impianto "${pvInfo.description}" ha bisogno di manutenzione`)

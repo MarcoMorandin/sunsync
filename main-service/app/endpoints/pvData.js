@@ -39,7 +39,7 @@ router.get('', tokenChecker, async (req, res) => {
     let pvData = await PvData.find(query).exec()
     
     if(!pvData || pvData.length == 0){
-        res.status(404).json({ "404 Not Found": "No pv system data found with the given dates"})
+        res.status(404).json({ "404 Not Found": "No pv system data found with the given params"})
         return;
     }
     
