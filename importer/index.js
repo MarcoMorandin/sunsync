@@ -14,6 +14,43 @@ const WsData = require('./schemas/WeatherData');
  */
 let date = new Date(Date.parse("2013-10-01T01:00:00.000Z"));
 
+const loadWsData = async () => {
+    let wst = await WeatherStation.find({});
+    
+    /** 
+     * Recupero dati da tutte le stazioni meteo tramite URL delle API
+     * In questo caso dal simulatore
+     */
+    for(let el of wst) {
+        console.log("wsdata: " + el['description']);
+
+        await axios.get(el['url'] + date.toISOString().split('T')[0]).then( async (resp) => {
+            const data = resp['data'];
+            console.log(data)
+            if(!data["error"]){
+                let dayData = {
+                    _id: new ObjectId(),
+                    time: new Date(date.toISOString()),
+                    metadata: {
+                        description: el['description'],
+                        location: el['location'],
+                        ws_id: el['_id']
+                    },
+                    rain: data['rain'],
+                    humidity: data['umid'],
+                    wind_speed: data['velVen'],
+                    pressure: data['pres'],
+                    temperature: data['temp'],
+                    solar_power: (data['rad'] * 0.278).toFixed(3),
+                    wind_direction: data['dirVen']
+                };
+    
+                await WsData.create(dayData);
+            }
+        });
+    }
+}
+
 function importData() {
     console.log(date.toISOString());
     // Connessione a MongoDB...
@@ -21,40 +58,8 @@ function importData() {
     db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
     .then ( async () => {
         let pvs = await PvInfo.find({});
-        let wst = await WeatherStation.find({});
-        
-        /** 
-         * Recupero dati da tutte le stazioni meteo tramite URL delle API
-         * In questo caso dal simulatore
-         */
-        for(let el of wst) {
-            console.log("wsdata: " + el['description']);
 
-            await axios.get(el['url'] + date.toISOString().split('T')[0]).then( async (resp) => {
-                const data = resp['data'];
-                console.log(data)
-                if(!data["error"]){
-                    let dayData = {
-                        _id: new ObjectId(),
-                        time: new Date(date.toISOString()),
-                        metadata: {
-                            description: el['description'],
-                            location: el['location'],
-                            ws_id: el['_id']
-                        },
-                        rain: data['rain'],
-                        humidity: data['umid'],
-                        wind_speed: data['velVen'],
-                        pressure: data['pres'],
-                        temperature: data['temp'],
-                        solar_power: (data['rad'] * 0.278).toFixed(3),
-                        wind_direction: data['dirVen']
-                    };
-        
-                    await WsData.create(dayData);
-                }
-            });
-        }
+        await loadWsData()
 
         /**
          * Recupero PUN dal simulatore
@@ -133,7 +138,7 @@ function importData() {
 
 // avvio della routine e scheduling...
 importData();
-setInterval(importData, 600000);
+setInterval(importData, 3000);
 
 /**
  * scheduled import of data every day at same time

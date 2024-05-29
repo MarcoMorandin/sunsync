@@ -12,7 +12,8 @@ const User = new Schema({
     maintenance_notification: Boolean,
     role: Number,
     disabled: Boolean,
-    salt: String
+    salt: String,
+    bot_token: String,
 });
 
 module.exports = model("user", User);
