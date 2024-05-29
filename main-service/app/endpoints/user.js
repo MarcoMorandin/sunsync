@@ -21,7 +21,7 @@ router.get('', tokenChecker, async (req, res) => {
     if(req.user.role == 1)
         return res.status(401).json({ "401 Unauthorized": "You are not authorized"})
     
-    let users = await User.find({}, '_id username mail forecast_notification maintenance_notification role disabled bot_token')
+    let users = await User.find({}, '_id username mail forecast_notification maintenance_notification role disabled')
     res.status(200).json(users)
 })
 
@@ -55,7 +55,7 @@ router.get('/:user_id', tokenChecker, param("user_id").isMongoId(), async (req, 
         return;
     }
 
-    let user = await User.findById(req.params.user_id, '_id username mail forecast_notification maintenance_notification role disabled bot_token').exec()
+    let user = await User.findById(req.params.user_id, '_id username mail forecast_notification maintenance_notification role disabled').exec()
     
     if(!user){
         res.status(404).json({ "404 Not Found": "No user found with the given ID"})
