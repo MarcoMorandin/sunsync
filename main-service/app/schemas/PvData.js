@@ -8,6 +8,7 @@ const PvData = new Schema(
         _id: Schema.ObjectId,
         time: Date,
         power: Number,
+        predicted_power: Number,
         metadata: {
             pv_id: Schema.ObjectId,
             description: String,
