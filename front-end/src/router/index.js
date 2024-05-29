@@ -25,6 +25,15 @@ const routes = [
     },
     {
         meta: {
+            title: 'Statistiche',
+            role: 1
+        },
+        path: '/statistiche',
+        name: 'statistiches',
+        component: () => import('@/views/StatsView.vue')
+    },
+    {
+        meta: {
             title: 'Grafici',
             role: 1
         },

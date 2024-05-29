@@ -5,7 +5,8 @@ import {
     mdiSolarPanelLarge,
     mdiWeatherPartlyCloudy,
     mdiHomeOutline,
-    mdiAccountGroupOutline
+    mdiAccountGroupOutline,
+    mdiChartArc
 } from '@mdi/js'
 
 export default [
@@ -22,9 +23,15 @@ export default [
         role: 1
     },
     {
+        to: '/statistiche',
+        label: 'Statistiche',
+        icon: mdiChartTimelineVariant,
+        role: 1
+    },
+    {
         to: '/grafici',
         label: 'Grafici',
-        icon: mdiChartTimelineVariant,
+        icon: mdiChartArc,
         role: 1
     },
     {

@@ -15,6 +15,7 @@ import axios from 'axios'
 import LineChart from '@/components/Charts/LineChart.vue'
 import CardBox from '@/components/CardBox.vue'
 import * as chartConfig from '@/components/Charts/chart.config.js'
+import { productionReportsEndpoint, moneyReportsEndpoint } from '@/endpoints'
 
 const error = ref('')
 
@@ -68,17 +69,21 @@ const chartData = ref({})
 const fillChartData = async () => {
     chartData.value.production = await chartConfig.chartData(
         'info',
-        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/production',
+        import.meta.env.VITE_BASE_URL_API + productionReportsEndpoint,
         '',
         '',
-        ''
+        '',
+        'total',
+        'Energy (Wh)'
     )
     chartData.value.money = await chartConfig.chartData(
         'primary',
-        import.meta.env.VITE_BASE_URL_API + '/api/v1/reports/money',
+        import.meta.env.VITE_BASE_URL_API + moneyReportsEndpoint,
         '',
         '',
-        ''
+        '',
+        'total',
+        'Money (€)'
     )
 }
 
