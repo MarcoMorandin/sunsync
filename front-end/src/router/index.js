@@ -43,6 +43,24 @@ const routes = [
     },
     {
         meta: {
+            title: 'Previsioni',
+            role: 1
+        },
+        path: '/previsioni',
+        name: 'previsioni',
+        component: () => import('@/views/ForecastView.vue')
+    },
+    {
+        meta: {
+            title: 'Eventi',
+            role: 1
+        },
+        path: '/eventi',
+        name: 'eventi',
+        component: () => import('@/views/EventsView.vue')
+    },
+    {
+        meta: {
             title: 'Login',
             role: 2
         },
