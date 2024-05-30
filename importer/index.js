@@ -17,7 +17,7 @@ let weather = {
 }
 
 const tomorrowPredictionEventHandler = async (pv_info, predicted_power) => {
-    if(predicted_power / (pv_info.installed_power * 5) * 100 > 20){
+    if ((predicted_power / (pv_info.installed_power * 5)) * 100 > 20) {
         const event = new Event({
             _id: new ObjectId(),
             time: new Date(),
@@ -48,7 +48,7 @@ const handleWheaterResponse = async (wst, wsDataResp) => {
             solar_power: (wsDataTemp['rad'] * 0.278).toFixed(3),
             wind_direction: wsDataTemp['dirVen']
         }
-        return data 
+        return data
     }
     return null
 }
@@ -57,19 +57,19 @@ const loadWsData = async () => {
     let wsts = await WeatherStation.find({})
     let tomorrow = new Date(date)
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
-    for(let wst_index in wsts){
+    for (let wst_index in wsts) {
         let wst = wsts[wst_index]
         console.log('wsdata: ' + wst.description)
         let wsDataResp = await axios.get(wst.url + date.toISOString().split('T')[0])
         let result = await handleWheaterResponse(wst, wsDataResp)
-        if(result != null){
+        if (result != null) {
             weather.today.push(result)
             await WsData.create(result)
         }
-        
+
         wsDataResp = await axios.get(wst.url + tomorrow.toISOString().split('T')[0])
         result = await handleWheaterResponse(wst, wsDataResp)
-        if(result != null){
+        if (result != null) {
             weather.tomorrow.push(result)
             await WsData.create(result)
         }
@@ -84,14 +84,13 @@ const loadPvData = async () => {
         price = resp['price']
     }
     let pvs = await PvInfo.find({})
-    for(let pv_index in pvs){
+    for (let pv_index in pvs) {
         let pv = pvs[pv_index]
         console.log('pvdata: ' + pv['description'])
-        await axios.get(pv['url'] + date.toISOString().split('T')[0])
-        .then(async (pvDataResp) => {
+        await axios.get(pv['url'] + date.toISOString().split('T')[0]).then(async (pvDataResp) => {
             let pvDataTemp = pvDataResp.data
-            if(!pvDataTemp.error){
-                let wsDataToday = weather.today[weather.today.map(w => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
+            if (!pvDataTemp.error) {
+                let wsDataToday = weather.today[weather.today.map((w) => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
                 let wsDataTodayPrompt = {
                     installed_power: pv.installed_power,
                     rain: wsDataToday.rain,
@@ -101,8 +100,8 @@ const loadPvData = async () => {
                     solar_power: Number(wsDataToday.solar_power),
                     wind_direction: wsDataToday.wind_direction
                 }
-    
-                let wsDataTomorrow = weather.tomorrow[weather.tomorrow.map(w => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
+
+                let wsDataTomorrow = weather.tomorrow[weather.tomorrow.map((w) => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
                 let wsDataTomorrowPrompt = {
                     installed_power: pv.installed_power,
                     rain: wsDataTomorrow.rain,
@@ -112,8 +111,7 @@ const loadPvData = async () => {
                     solar_power: Number(wsDataTomorrow.solar_power),
                     wind_direction: wsDataTomorrow.wind_direction
                 }
-                await axios.post(process.env.PREDICTION_URL, [wsDataTodayPrompt, wsDataTomorrowPrompt])
-                .then(async (predictionsResp) => {
+                await axios.post(process.env.PREDICTION_URL, [wsDataTodayPrompt, wsDataTomorrowPrompt]).then(async (predictionsResp) => {
                     let predictions = predictionsResp.data.predictions
                     tomorrowPredictionEventHandler(pv, Math.abs(predictions[1]))
                     await PvData.create({
@@ -137,21 +135,18 @@ const loadPvData = async () => {
     }
 }
 
-
 function importData() {
     console.log(date.toISOString())
     mongoose.set('strictQuery', true)
-    db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
-    .then(async () => {
+    db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`).then(async () => {
         await loadWsData()
         await loadPvData()
         weather.today = []
         weather.tomorrow = []
     })
-    
+
     date.setUTCDate(date.getUTCDate() + 1)
 }
 
 importData()
 setInterval(importData, 10000)
-

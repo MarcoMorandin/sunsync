@@ -8,6 +8,6 @@ const PvSystem = new Schema({
     url: String,
     ws_id: Schema.ObjectId,
     status: String
-});
+})
 
 module.exports = model('pv_info', PvSystem)

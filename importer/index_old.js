@@ -16,7 +16,7 @@ const Event = require('./schemas/Event')
 let date = new Date(Date.parse('2013-10-01T01:00:00.000Z'))
 
 function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
+    return new Promise((resolve) => setTimeout(resolve, time))
 }
 
 const loadWsData = async () => {
@@ -56,12 +56,12 @@ const loadWsData = async () => {
 }
 
 const tomorrowPredictionEventHandler = async (time, predicted_power, installed_power) => {
-    if(predicted_power / (installed_power * 10) * 100 > 20){
+    if ((predicted_power / (installed_power * 10)) * 100 > 20) {
         const event = new Event({
             _id: new ObjectId(),
             time: time,
             description: 'peak',
-            value: predicted_power / (installed_power * 10) * 100,
+            value: (predicted_power / (installed_power * 10)) * 100,
             pv_info: pv_info
         })
         event.save()
@@ -73,8 +73,6 @@ function importData() {
     // Connessione a MongoDB...
     mongoose.set('strictQuery', true)
     db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`).then(async () => {
-        
-
         await loadWsData().then(async () => {
             /**
              * Recupero PUN dal simulatore

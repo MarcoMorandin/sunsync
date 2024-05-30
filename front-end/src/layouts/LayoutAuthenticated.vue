@@ -48,30 +48,13 @@ const menuClick = (event, item) => {
             'overflow-hidden lg:overflow-visible': isAsideMobileExpanded
         }"
     >
-        <div
-            :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-            class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
-        >
-            <NavBar
-                :menu="menuNavBar"
-                :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-                class="h-20"
-                @menu-click="menuClick"
-            >
-                <NavBarItemPlain
-                    display="flex lg:hidden"
-                    @click.prevent="isAsideMobileExpanded = !isAsideMobileExpanded"
-                    >
+        <div :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]" class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100">
+            <NavBar :menu="menuNavBar" :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]" class="h-20" @menu-click="menuClick">
+                <NavBarItemPlain display="flex lg:hidden" @click.prevent="isAsideMobileExpanded = !isAsideMobileExpanded">
                     <BaseIcon :path="isAsideMobileExpanded ? mdiBackburger : mdiForwardburger" size="24" />
                 </NavBarItemPlain>
             </NavBar>
-            <AsideMenu
-                :is-aside-mobile-expanded="isAsideMobileExpanded"
-                :is-aside-lg-active="isAsideLgActive"
-                :menu="menuAside"
-                @menu-click="menuClick"
-                @aside-lg-close-click="isAsideLgActive = false"
-            />
+            <AsideMenu :is-aside-mobile-expanded="isAsideMobileExpanded" :is-aside-lg-active="isAsideLgActive" :menu="menuAside" @menu-click="menuClick" @aside-lg-close-click="isAsideLgActive = false" />
             <slot />
         </div>
     </div>

@@ -1,16 +1,7 @@
 <script setup>
 import { ref, watch, computed, onMounted, isProxy, toRaw } from 'vue'
-import {
-    Chart,
-    LineElement,
-    PointElement,
-    LineController,
-    LinearScale,
-    CategoryScale,
-    Tooltip,
-    registerables
-} from 'chart.js'
-Chart.register(...registerables);
+import { Chart, LineElement, PointElement, LineController, LinearScale, CategoryScale, Tooltip, registerables } from 'chart.js'
+Chart.register(...registerables)
 
 const props = defineProps({
     data: {
@@ -32,7 +23,7 @@ Chart.register(LineElement, PointElement, LineController, LinearScale, CategoryS
 onMounted(() => {
     let outChart = {}
 
-    if(props.type == 'pv') {
+    if (props.type == 'pv') {
         outChart = {
             type: 'line',
             data: toRaw(props.data),
@@ -57,7 +48,7 @@ onMounted(() => {
                 }
             }
         }
-    } else if(props.type == 'ws') {
+    } else if (props.type == 'ws') {
         outChart = {
             type: 'line',
             data: toRaw(props.data),
@@ -77,7 +68,7 @@ onMounted(() => {
                         type: 'linear',
                         position: 'right',
                         grid: {
-                            color: 'rgba(0, 0, 0, 0)',
+                            color: 'rgba(0, 0, 0, 0)'
                         },
                         title: {
                             display: true,
@@ -93,8 +84,8 @@ onMounted(() => {
             }
         }
     }
-    
-    chart = new Chart(root.value, outChart);
+
+    chart = new Chart(root.value, outChart)
 })
 
 const chartData = computed(() => props.data)

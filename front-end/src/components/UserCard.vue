@@ -14,7 +14,7 @@ const username = ref('')
 const token = ref('')
 
 const fillUsername = () => {
-    if (authStore.getToken.value != null || authStore.getToken.value != "") {
+    if (authStore.getToken.value != null || authStore.getToken.value != '') {
         axios
             .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
                 headers: { Authorization: `Bearer ${authStore.getToken.value}` }
@@ -36,10 +36,11 @@ onMounted(() => {
         <BaseLevel type="justify-around lg:justify-center">
             <div class="space-y-3 text-center lg:mx-12">
                 <h1 class="text-2xl">
-                    Buongiorno, <strong>{{ username }}</strong>!
+                    Buongiorno, <strong>{{ username }}</strong
+                    >!
                 </h1>
                 <h2 class="text-2l">
-                    Il tuo token per accedere al <a class="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline" href="https://t.me/sunsync_alert_bot">Bot Telegram</a> è:<br/>
+                    Il tuo token per accedere al <a class="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline" href="https://t.me/sunsync_alert_bot">Bot Telegram</a> è:<br />
                     <PillTag class="mt-2" :label="token" color="info" :icon="mdiSend" :small="false" />
                 </h2>
             </div>

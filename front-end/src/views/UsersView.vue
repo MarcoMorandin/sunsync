@@ -7,17 +7,12 @@ import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 
 import TableUser from '@/components/TableUser.vue'
-
 </script>
 
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <SectionTitleLineWithButton
-                :icon="mdiAccountGroupOutline"
-                title="Utenti"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiAccountGroupOutline" title="Utenti" main></SectionTitleLineWithButton>
             <CardBox has-table>
                 <TableUser />
             </CardBox>

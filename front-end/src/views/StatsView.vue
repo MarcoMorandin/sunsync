@@ -13,24 +13,8 @@ const chartData = ref({})
 
 const fillChartData = async () => {
     //TODO: Add filters
-    chartData.value.production = await chartConfig.chartData(
-        'info',
-        import.meta.env.VITE_BASE_URL_API + productionReportsEndpoint,
-        '',
-        '',
-        '',
-        'total',
-        'Energy (Wh)'
-    )
-    chartData.value.money = await chartConfig.chartData(
-        'primary',
-        import.meta.env.VITE_BASE_URL_API + moneyReportsEndpoint,
-        '',
-        '',
-        '',
-        'total',
-        'Money (€)'
-    )
+    chartData.value.production = await chartConfig.chartData('info', import.meta.env.VITE_BASE_URL_API + productionReportsEndpoint, '', '', '', 'total', 'Energy (Wh)')
+    chartData.value.money = await chartConfig.chartData('primary', import.meta.env.VITE_BASE_URL_API + moneyReportsEndpoint, '', '', '', 'total', 'Money (€)')
 }
 
 onMounted(async () => {
@@ -41,20 +25,12 @@ onMounted(async () => {
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <SectionTitleLineWithButton
-                :icon="mdiSolarPanel"
-                title="Produzione Energetica"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Produzione Energetica" main></SectionTitleLineWithButton>
             <CardBox class="mb-6">
                 <line-chart :data="chartData.production" type="pv" class="h-72" />
             </CardBox>
 
-            <SectionTitleLineWithButton
-                :icon="mdiSolarPanel"
-                title="Soldi Risparmiati"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Soldi Risparmiati" main></SectionTitleLineWithButton>
 
             <CardBox class="mb-6">
                 <line-chart :data="chartData.money" class="h-72" />

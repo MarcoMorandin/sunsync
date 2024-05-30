@@ -16,34 +16,20 @@ const authStore = useAuthStore()
 const chartData = ref([])
 
 const fillChartData = async () => {
-    let pv_infos = await axios   
+    let pv_infos = await axios
         .get(import.meta.env.VITE_BASE_URL_API + pvInfoEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
             return response.data
         })
-    
-    for(let p in pv_infos) {
+
+    for (let p in pv_infos) {
         //TODO: Add filters
         chartData.value.push({
-            'name': pv_infos[p].description + ': ' + (pv_infos[p].installed_power/1000) + ' kW',
-            'power': await chartConfig.chartDataArr(
-                ['info', 'primary'],
-                import.meta.env.VITE_BASE_URL_API + pvDataEndpoint,
-                '',
-                '',
-                pv_infos[p]._id,
-                ['power', 'predicted_power']
-            ),
-            'weather': await chartConfig.chartDataWsArr(
-                ['warning', 'danger'],
-                import.meta.env.VITE_BASE_URL_API + wsDataEndpoint,
-                '',
-                '',
-                pv_infos[p].ws_id,
-                ['temperature', 'solar_power']
-            )
+            name: pv_infos[p].description + ': ' + pv_infos[p].installed_power / 1000 + ' kW',
+            power: await chartConfig.chartDataArr(['info', 'primary'], import.meta.env.VITE_BASE_URL_API + pvDataEndpoint, '', '', pv_infos[p]._id, ['power', 'predicted_power']),
+            weather: await chartConfig.chartDataWsArr(['warning', 'danger'], import.meta.env.VITE_BASE_URL_API + wsDataEndpoint, '', '', pv_infos[p].ws_id, ['temperature', 'solar_power'])
         })
     }
 }
@@ -57,11 +43,7 @@ onMounted(async () => {
     <LayoutAuthenticated>
         <SectionMain>
             <div v-for="(p, index) in chartData">
-                <SectionTitleLineWithButton
-                    :icon="mdiSolarPanel"
-                    :title="p.name"
-                    main
-                ></SectionTitleLineWithButton>
+                <SectionTitleLineWithButton :icon="mdiSolarPanel" :title="p.name" main></SectionTitleLineWithButton>
                 <CardBox class="mb-6">
                     <line-chart :data="p.power" type="pv" class="h-72" />
                 </CardBox>

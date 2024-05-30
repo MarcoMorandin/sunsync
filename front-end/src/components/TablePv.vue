@@ -12,7 +12,6 @@ import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
 import { pvInfoEndpoint, wsInfoEndpoint } from '@/endpoints.js'
 
-
 const authStore = useAuthStore()
 
 const showErrorNotification = ref(false)
@@ -28,7 +27,7 @@ onMounted(async () => {
         })
         .then((response) => {
             items.value = response.data
-            items.value.forEach(it => {
+            items.value.forEach((it) => {
                 it.statusColor = it.status == 'ok' ? 'text-green-600' : 'text-red-600'
                 it.status = it.status == 'ok' ? 'Funzionamento regolare' : 'Manutenzione da effettuare'
             })
@@ -45,9 +44,7 @@ const isModalActive = ref(false)
 
 const currentPageHuman = computed(() => currentPage.value + 1)
 
-const itemsPaginated = computed(() =>
-    items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
-)
+const itemsPaginated = computed(() => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1)))
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
 
@@ -103,9 +100,7 @@ async function deletePv() {
 </script>
 
 <template>
-    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
-        <b>ERRORE: </b> {{ error }}
-    </NotificationBar>
+    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
     <CardBoxModal v-model="isModalActive" title="Dettagli">
         <p>
             Nome: <strong>{{ currentModal.description }}</strong>
@@ -135,20 +130,12 @@ async function deletePv() {
             map-type-id="terrain"
             class="w-full h-96"
         >
-            <GMapMarker
-                :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
-                :clickable="true"
-                :draggable="false"
-            >
+            <GMapMarker :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }" :clickable="true" :draggable="false">
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
                 </GMapInfoWindow>
             </GMapMarker>
-            <GMapMarker
-                :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }"
-                :clickable="true"
-                :draggable="false"
-            >
+            <GMapMarker :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }" :clickable="true" :draggable="false">
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon>
                 </GMapInfoWindow>
@@ -156,14 +143,7 @@ async function deletePv() {
         </GMapMap>
     </CardBoxModal>
 
-    <CardBoxModal
-        v-model="isWarningActive"
-        title="Sei sicuro?"
-        button="danger"
-        button-label="Conferma"
-        has-cancel
-        @confirm="deletePv()"
-    >
+    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" button-label="Conferma" has-cancel @confirm="deletePv()">
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
             l'impianto fotovoltaico e tutti i dati ad esso collegati
@@ -184,27 +164,14 @@ async function deletePv() {
                 <td data-label="description">
                     {{ pvInfo.description }}
                 </td>
-                <td data-label="installed_power">
-                    {{ (pvInfo.installed_power / 1000).toFixed(2) }} kW
-                </td>
+                <td data-label="installed_power">{{ (pvInfo.installed_power / 1000).toFixed(2) }} kW</td>
                 <td class="flex justify-center items-center">
-                    <BaseIcon
-                        :path="mdiCircle"
-                        :size="30"
-                        h="h-8"
-                        :class="pvInfo.statusColor"
-                    ></BaseIcon>
+                    <BaseIcon :path="mdiCircle" :size="30" h="h-8" :class="pvInfo.statusColor"></BaseIcon>
                 </td>
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
                         <BaseButton color="info" :icon="mdiEye" small @click="showModal(index)" />
-                        <BaseButton
-                            v-if="authStore.getRole.value == 0"
-                            color="danger"
-                            :icon="mdiTrashCan"
-                            small
-                            @click="showWarning(index)"
-                        />
+                        <BaseButton v-if="authStore.getRole.value == 0" color="danger" :icon="mdiTrashCan" small @click="showWarning(index)" />
                     </BaseButtons>
                 </td>
             </tr>
@@ -213,15 +180,7 @@ async function deletePv() {
     <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
         <BaseLevel>
             <BaseButtons>
-                <BaseButton
-                    v-for="page in pagesList"
-                    :key="page"
-                    :active="page === currentPage"
-                    :label="page + 1"
-                    :color="page === currentPage ? 'lightDark' : 'whiteDark'"
-                    small
-                    @click="currentPage = page"
-                />
+                <BaseButton v-for="page in pagesList" :key="page" :active="page === currentPage" :label="page + 1" :color="page === currentPage ? 'lightDark' : 'whiteDark'" small @click="currentPage = page" />
             </BaseButtons>
             <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>

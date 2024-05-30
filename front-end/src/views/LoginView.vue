@@ -29,13 +29,17 @@ const router = useRouter()
 
 const submit = async () => {
     axios
-        .post(import.meta.env.VITE_BASE_URL_API + authEndpoint, {
-            mail: form.login,
-            password: form.pass
-        }, {
-            headers: { "Content-Type": "application/json", },
-            withCredentials: true
-        })
+        .post(
+            import.meta.env.VITE_BASE_URL_API + authEndpoint,
+            {
+                mail: form.login,
+                password: form.pass
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            }
+        )
         .then(async (response) => {
             authStore.setToken(response.data.token)
             let decoded_token = VueJwtDecode.decode(response.data.token)
@@ -50,10 +54,8 @@ const submit = async () => {
                 .then((response) => {
                     return response.data.disabled
                 })
-            if(disabled)
-                setTimeout(() => router.push('/changepassword'), 500)
-            else
-                router.push('/dashboard')
+            if (disabled) setTimeout(() => router.push('/changepassword'), 500)
+            else router.push('/dashboard')
         })
         .catch(() => {
             showErrorNotification.value = true
@@ -64,32 +66,14 @@ const submit = async () => {
 <template>
     <LayoutGuest>
         <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
-            
             <CardBox :class="cardClass" is-form @submit.prevent="submit">
-                <NotificationBar
-                    v-if="showErrorNotification"
-                    color="danger"
-                    :icon="mdiMonitorCellphone"
-                >
-                    <b>ERRORE: </b> Errore nell'effettuare il login
-                </NotificationBar>
+                <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> Errore nell'effettuare il login </NotificationBar>
                 <FormField label="Email" help="Perfavore inserisci la tua email">
-                    <FormControl
-                        v-model="form.login"
-                        :icon="mdiAccount"
-                        name="login"
-                        autocomplete="username"
-                    />
+                    <FormControl v-model="form.login" :icon="mdiAccount" name="login" autocomplete="username" />
                 </FormField>
 
                 <FormField label="Password" help="Perfavore inserisci la tua password">
-                    <FormControl
-                        v-model="form.pass"
-                        :icon="mdiAsterisk"
-                        type="password"
-                        name="password"
-                        autocomplete="current-password"
-                    />
+                    <FormControl v-model="form.pass" :icon="mdiAsterisk" type="password" name="password" autocomplete="current-password" />
                 </FormField>
 
                 <!-- <FormCheckRadio
@@ -105,7 +89,7 @@ const submit = async () => {
                         <BaseButton to="/" color="info" outline label="Indietro" />
                     </BaseButtons>
                 </template>
-            </CardBox> </SectionFullScreen
-        >
+            </CardBox>
+        </SectionFullScreen>
     </LayoutGuest>
 </template>

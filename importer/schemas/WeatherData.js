@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose')
 
 const WsData = new Schema(
     {
@@ -14,15 +14,15 @@ const WsData = new Schema(
         metadata: {
             ws_id: Schema.ObjectId,
             description: String,
-            location: {alt: Number, lat: Number, long: Number},
+            location: { alt: Number, lat: Number, long: Number }
         }
     },
     {
         timeseries: {
             timeField: 'time',
             metaField: 'metadata'
-        },
+        }
     }
-);
+)
 
-module.exports = model("weather_data", WsData);
+module.exports = model('weather_data', WsData)

@@ -130,8 +130,7 @@ const routes = [
         path: '/:pathMatch(.*)*',
         name: 'error',
         component: () => import('@/views/ErrorView.vue')
-    },
-
+    }
 ]
 
 const router = createRouter({
@@ -165,9 +164,8 @@ router.beforeEach(async (to) => {
                         .then((response) => {
                             return response.data.disabled
                         })
-                    if(disabled)
-                        setTimeout(() => router.push('/changepassword'), 500)
-                    return { 'refresh': 'ok' }
+                    if (disabled) setTimeout(() => router.push('/changepassword'), 500)
+                    return { refresh: 'ok' }
                 })
                 .catch(() => {
                     authStore.setToken('')
@@ -176,7 +174,7 @@ router.beforeEach(async (to) => {
                     authStore.setRole('')
                     return { name: 'login' }
                 })
-            if(resp.hasOwnProperty('name')) {
+            if (resp.hasOwnProperty('name')) {
                 return resp
             }
         } else {
@@ -187,14 +185,14 @@ router.beforeEach(async (to) => {
                 .then((response) => {
                     return response.data.disabled
                 })
-            
-            if (disabled == true && to.name != "changepassword") {
+
+            if (disabled == true && to.name != 'changepassword') {
                 return { name: 'changepassword' }
             } else if (authStore.getRole.value > to.meta.role) {
                 return { name: 'dashboard' }
             }
         }
-    } else if (to.name == "login" && authStore.getToken.value != null && authStore.getToken.value != '' && authStore.getExpire.value >= Date.now() / 1000) {
+    } else if (to.name == 'login' && authStore.getToken.value != null && authStore.getToken.value != '' && authStore.getExpire.value >= Date.now() / 1000) {
         return { name: 'dashboard' }
     }
 })

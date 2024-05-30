@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose')
 
-const PvData = new Schema(
+const WsData = new Schema(
     {
         _id: Schema.ObjectId,
         time: Date,
@@ -14,15 +14,15 @@ const PvData = new Schema(
         metadata: {
             ws_id: Schema.ObjectId,
             description: String,
-            location: {alt: Number, lat: Number, long: Number},
+            location: { alt: Number, lat: Number, long: Number }
         }
     },
     {
         timeseries: {
             timeField: 'time',
             metaField: 'metadata'
-        },
+        }
     }
-);
+)
 
-module.exports = model("weather_data", PvData);
+module.exports = model('weather_data', WsData)

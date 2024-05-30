@@ -7,7 +7,7 @@ export const chartColors = {
     }
 }
 
-const datasetObject = (color, points, label='') => {
+const datasetObject = (color, points, label = '') => {
     return {
         fill: false,
         borderColor: chartColors.default[color],
@@ -27,7 +27,7 @@ const datasetObject = (color, points, label='') => {
     }
 }
 
-const datasetObjectId = (color, points, label='', axisId='') => {
+const datasetObjectId = (color, points, label = '', axisId = '') => {
     return {
         fill: false,
         borderColor: chartColors.default[color],
@@ -68,12 +68,10 @@ export const chartData = async (color, endpoint, year, aggregation, pv_id, serie
         })
         .then((response) => {
             response.data.forEach((pvData) => {
-                if(pvData.hasOwnProperty('time')) {
+                if (pvData.hasOwnProperty('time')) {
                     labels.push(new Date(pvData.time).toISOString().split('T')[0])
                 } else {
-                    pvData.time = new Date(
-                        pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day
-                    )
+                    pvData.time = new Date(pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day)
                     labels.push(pvData.time.toISOString().split('T')[0])
                 }
                 dataset.push(pvData[series])
@@ -105,12 +103,10 @@ export const chartDataArr = async (color, endpoint, year, aggregation, pv_id, se
         })
         .then((response) => {
             response.data.forEach((pvData) => {
-                if(pvData.hasOwnProperty('time')) {
+                if (pvData.hasOwnProperty('time')) {
                     labels.push(new Date(pvData.time).toISOString().split('T')[0])
                 } else {
-                    pvData.time = new Date(
-                        pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day
-                    )
+                    pvData.time = new Date(pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day)
                     labels.push(pvData.time.toISOString().split('T')[0])
                 }
                 dataset1.push(pvData[series[0]])
@@ -143,12 +139,10 @@ export const chartDataWsArr = async (color, endpoint, year, aggregation, ws_id, 
         })
         .then((response) => {
             response.data.forEach((pvData) => {
-                if(pvData.hasOwnProperty('time')) {
+                if (pvData.hasOwnProperty('time')) {
                     labels.push(new Date(pvData.time).toISOString().split('T')[0])
                 } else {
-                    pvData.time = new Date(
-                        pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day
-                    )
+                    pvData.time = new Date(pvData._id.year + '-' + pvData._id.month + '-' + pvData._id.day)
                     labels.push(pvData.time.toISOString().split('T')[0])
                 }
                 dataset1.push(pvData[series[0]])

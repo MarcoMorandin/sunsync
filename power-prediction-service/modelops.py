@@ -16,9 +16,6 @@ def predict():
     try:
         data = request.get_json(force=True)
         df = pd.json_normalize(data)
-        # features = ['installed_power', 'rain', 'temperature', 'humidity', 'wind_speed', 'solar_power', 'wind_direction']
-        # if not all(feature in df.columns for feature in features):
-        #     return jsonify({"error": "Missing some required features in the input data"}), 400
         predictions = model.predict(df)
         res = {
             'predictions': predictions.tolist()

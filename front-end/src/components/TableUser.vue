@@ -33,14 +33,14 @@ onMounted(async () => {
             let id = authStore.getUserId.value
             let found = false
             let i = 0
-            while(i < response.data.length && !found) {
-                if(response.data[i]._id == id) {
+            while (i < response.data.length && !found) {
+                if (response.data[i]._id == id) {
                     found = true
                 } else {
                     i++
                 }
             }
-            response.data.splice(i, 1);
+            response.data.splice(i, 1)
             items.value = response.data
         })
         .catch(() => {
@@ -55,9 +55,7 @@ const isModalActive = ref(false)
 
 const currentPageHuman = computed(() => currentPage.value + 1)
 
-const itemsPaginated = computed(() =>
-    items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
-)
+const itemsPaginated = computed(() => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1)))
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
 
@@ -98,28 +96,28 @@ async function deleteUser() {
         })
 }
 
-
-
-async function modifyUser(){
-    if(form.password != form.repeat){
+async function modifyUser() {
+    if (form.password != form.repeat) {
         showErrorNotification.value = true
         error.value = 'Le password non coincidono!'
-    }else{
+    } else {
         await axios
-            .patch(import.meta.env.VITE_BASE_URL_API + usersEndpoint + '/' + currentWarning.value._id, 
-            {
-                password: form.password
-            }, 
-            {
-                headers: { Authorization: `Bearer ${authStore.getToken.value}` }
-            })
+            .patch(
+                import.meta.env.VITE_BASE_URL_API + usersEndpoint + '/' + currentWarning.value._id,
+                {
+                    password: form.password
+                },
+                {
+                    headers: { Authorization: `Bearer ${authStore.getToken.value}` }
+                }
+            )
             .then(() => {
                 showSuccessNotification.value = true
-                message.value = "Modifica avvenuta con successo"
+                message.value = 'Modifica avvenuta con successo'
             })
             .catch((error) => {
                 showErrorNotification.value = true
-                error.value = "Errore nella modifica della password"
+                error.value = 'Errore nella modifica della password'
             })
     }
 }
@@ -131,53 +129,25 @@ const form = reactive({
 </script>
 
 <template>
-    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
-        <b>ERRORE: </b> {{ error }}
-    </NotificationBar>
+    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
     <NotificationBar v-if="showSuccessNotification" color="success" :icon="mdiMonitorCellphone">
         {{ message }}
     </NotificationBar>
-    <CardBoxModal
-        v-model="isModalActive"
-        title="Modifica"
-        button="warning"
-        button-label="Modifica"
-        has-cancel
-        @confirm="modifyUser(currentModal)"
-    >
+    <CardBoxModal v-model="isModalActive" title="Modifica" button="warning" button-label="Modifica" has-cancel @confirm="modifyUser(currentModal)">
         <CardBox>
             <p class="text-xl mb-4"><b>Username:</b> {{ currentModal.username }}</p>
             <p class="text-xl mb-4"><b>Email:</b> {{ currentModal.mail }}</p>
             <FormField label="Nuova Password" help="Perfavore inserisci la nuova password">
-                <FormControl
-                    v-model="form.password"
-                    :icon="mdiAsterisk"
-                    type="password"
-                    name="login"
-                    autocomplete="new-password"
-                />
+                <FormControl v-model="form.password" :icon="mdiAsterisk" type="password" name="login" autocomplete="new-password" />
             </FormField>
 
             <FormField label="Ripeti Password" help="Perfavore re-inserisci la nuova password">
-                <FormControl
-                    v-model="form.repeat"
-                    :icon="mdiAsterisk"
-                    type="password"
-                    name="password"
-                    autocomplete="repeat-password"
-                />
+                <FormControl v-model="form.repeat" :icon="mdiAsterisk" type="password" name="password" autocomplete="repeat-password" />
             </FormField>
         </CardBox>
     </CardBoxModal>
 
-    <CardBoxModal
-        v-model="isWarningActive"
-        title="Sei sicuro?"
-        has-cancel
-        button="danger"
-        button-label="Conferma"
-        @confirm="deleteUser()"
-    >
+    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" has-cancel button="danger" button-label="Conferma" @confirm="deleteUser()">
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
             la stazione meteo e tutti i dati ad essa collegati
@@ -210,18 +180,8 @@ const form = reactive({
                 </td>
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
-                        <BaseButton
-                            color="warning"
-                            :icon="mdiPencilOutline"
-                            small @click="showModal(index)"
-                        />
-                        <BaseButton
-                            v-if="authStore.getRole.value == 0"
-                            color="danger"
-                            :icon="mdiTrashCan"
-                            small
-                            @click="showWarning(index)"
-                        />
+                        <BaseButton color="warning" :icon="mdiPencilOutline" small @click="showModal(index)" />
+                        <BaseButton v-if="authStore.getRole.value == 0" color="danger" :icon="mdiTrashCan" small @click="showWarning(index)" />
                     </BaseButtons>
                 </td>
             </tr>
@@ -230,15 +190,7 @@ const form = reactive({
     <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
         <BaseLevel>
             <BaseButtons>
-                <BaseButton
-                    v-for="page in pagesList"
-                    :key="page"
-                    :active="page === currentPage"
-                    :label="page + 1"
-                    :color="page === currentPage ? 'lightDark' : 'whiteDark'"
-                    small
-                    @click="currentPage = page"
-                />
+                <BaseButton v-for="page in pagesList" :key="page" :active="page === currentPage" :label="page + 1" :color="page === currentPage ? 'lightDark' : 'whiteDark'" small @click="currentPage = page" />
             </BaseButtons>
             <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>

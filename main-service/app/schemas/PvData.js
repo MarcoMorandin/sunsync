@@ -1,8 +1,5 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-/**
- * Oggetto che modella il singolo rilevamento di produzione dell'impianto presente nel DB
- */
 const PvData = new Schema(
     {
         _id: Schema.ObjectId,
@@ -14,16 +11,16 @@ const PvData = new Schema(
             description: String,
             installed_power: Number,
             price: Number,
-            location: {alt: Number, lat: Number, long: Number},
+            location: { alt: Number, lat: Number, long: Number },
             ws_id: Schema.ObjectId,
-        }
+        },
     },
     {
         timeseries: {
             timeField: 'time',
-            metaField: 'metadata'
+            metaField: 'metadata',
         },
-    }
+    },
 );
 
-module.exports = model("pv_data", PvData);
+module.exports = model('pv_data', PvData);

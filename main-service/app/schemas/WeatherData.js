@@ -1,9 +1,6 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-/**
- * Oggetto che modella il singolo rilevamento meteo presente nel DB
- */
-const WeatherData = new Schema(
+const WsData = new Schema(
     {
         _id: Schema.ObjectId,
         time: Date,
@@ -17,15 +14,15 @@ const WeatherData = new Schema(
         metadata: {
             ws_id: Schema.ObjectId,
             description: String,
-            location: {alt: Number, lat: Number, long: Number},
-        }
+            location: { alt: Number, lat: Number, long: Number },
+        },
     },
     {
         timeseries: {
             timeField: 'time',
-            metaField: 'metadata'
+            metaField: 'metadata',
         },
-    }
+    },
 );
 
-module.exports = model("weather_data", WeatherData);
+module.exports = model('weather_data', WsData);

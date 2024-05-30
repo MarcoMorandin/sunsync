@@ -1,15 +1,4 @@
-import {
-    mdiMonitor,
-    mdiChartTimelineVariant,
-    mdiAccountPlusOutline,
-    mdiSolarPanelLarge,
-    mdiWeatherPartlyCloudy,
-    mdiHomeOutline,
-    mdiAccountGroupOutline,
-    mdiChartArc,
-    mdiMessageBadgeOutline,
-    mdiHeadSnowflakeOutline
-} from '@mdi/js'
+import { mdiMonitor, mdiChartTimelineVariant, mdiAccountPlusOutline, mdiSolarPanelLarge, mdiWeatherPartlyCloudy, mdiHomeOutline, mdiAccountGroupOutline, mdiChartArc, mdiMessageBadgeOutline, mdiHeadSnowflakeOutline } from '@mdi/js'
 
 export default [
     {

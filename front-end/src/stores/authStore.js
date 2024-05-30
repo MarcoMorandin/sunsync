@@ -42,7 +42,7 @@ export const useAuthStore = defineStore(
             setToken,
             setUserId,
             setExpire,
-            setRole,
+            setRole
         }
     },
     { persist: true }

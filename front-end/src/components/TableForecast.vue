@@ -12,7 +12,6 @@ import { useAuthStore } from '@/stores/authStore'
 import NotificationBar from '@/components/NotificationBar.vue'
 import { pvDataEndpoint, wsInfoEndpoint } from '@/endpoints.js'
 
-
 const props = defineProps({
     pvInfo: {
         type: Object,
@@ -40,12 +39,12 @@ onMounted(async () => {
             items.value = response.data
         })
         .catch((error) => {
-            if(error.response.status != 404) {
+            if (error.response.status != 404) {
                 showErrorNotification.value = true
                 error.value = 'Errore nel caricamento delle previsioni'
             }
         })
-    
+
     currentModal.value = props.pvInfo
 })
 
@@ -53,11 +52,9 @@ const isModalActive = ref(false)
 
 const currentPageHuman = computed(() => currentPage.value + 1)
 
-const itemsPaginated = computed(() =>
-    items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
-)
+const itemsPaginated = computed(() => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1)))
 
-const numPages = computed(() => Math.ceil(items.value.length != 0? items.value.length / perPage.value: 1))
+const numPages = computed(() => Math.ceil(items.value.length != 0 ? items.value.length / perPage.value : 1))
 
 const pagesList = computed(() => {
     const pagesList = []
@@ -88,9 +85,7 @@ async function showModal(i) {
 </script>
 
 <template>
-    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
-        <b>ERRORE: </b> {{ error }}
-    </NotificationBar>
+    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
     <CardBoxModal v-model="isModalActive" title="Dettagli">
         <p>
             Nome: <strong>{{ currentModal.description }}</strong>
@@ -120,20 +115,12 @@ async function showModal(i) {
             map-type-id="terrain"
             class="w-full h-96"
         >
-            <GMapMarker
-                :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
-                :clickable="true"
-                :draggable="false"
-            >
+            <GMapMarker :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }" :clickable="true" :draggable="false">
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
                 </GMapInfoWindow>
             </GMapMarker>
-            <GMapMarker
-                :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }"
-                :clickable="true"
-                :draggable="false"
-            >
+            <GMapMarker :position="{ lat: wsInfo.location.lat, lng: wsInfo.location.long }" :clickable="true" :draggable="false">
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiWeatherPartlyCloudy"></svg-icon>
                 </GMapInfoWindow>
@@ -156,7 +143,7 @@ async function showModal(i) {
         <tbody>
             <tr v-for="(item, index) in itemsPaginated" :key="item._id">
                 <td data-label="date">
-                    {{ new Date(item.time).toLocaleString("it-IT") }}
+                    {{ new Date(item.time).toLocaleString('it-IT') }}
                 </td>
                 <td data-label="description">
                     {{ item.tomorrow_predicted_power }}
@@ -168,15 +155,7 @@ async function showModal(i) {
     <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
         <BaseLevel>
             <BaseButtons>
-                <BaseButton
-                    v-for="page in pagesList"
-                    :key="page"
-                    :active="page === currentPage"
-                    :label="page + 1"
-                    :color="page === currentPage ? 'lightDark' : 'whiteDark'"
-                    small
-                    @click="currentPage = page"
-                />
+                <BaseButton v-for="page in pagesList" :key="page" :active="page === currentPage" :label="page + 1" :color="page === currentPage ? 'lightDark' : 'whiteDark'" small @click="currentPage = page" />
             </BaseButtons>
             <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>

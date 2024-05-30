@@ -17,28 +17,20 @@ const authStore = useAuthStore()
 const chartData = ref([])
 
 const fillChartData = async () => {
-    let pv_infos = await axios   
+    let pv_infos = await axios
         .get(import.meta.env.VITE_BASE_URL_API + pvInfoEndpoint, {
             headers: { Authorization: `Bearer ${authStore.getToken.value}` }
         })
         .then((response) => {
             return response.data
         })
-    
-    for(let p in pv_infos) {
+
+    for (let p in pv_infos) {
         //TODO: Add filters
         chartData.value.push({
-            'name': pv_infos[p].description + ': ' + (pv_infos[p].installed_power/1000) + ' kW',
-            'pvInfo': pv_infos[p],
-            'predicted': await chartConfig.chartData(
-                'info',
-                import.meta.env.VITE_BASE_URL_API + pvDataEndpoint,
-                '',
-                '',
-                pv_infos[p]._id,
-                'tomorrow_predicted_power',
-                'Energy (Wh)'
-            )
+            name: pv_infos[p].description + ': ' + pv_infos[p].installed_power / 1000 + ' kW',
+            pvInfo: pv_infos[p],
+            predicted: await chartConfig.chartData('info', import.meta.env.VITE_BASE_URL_API + pvDataEndpoint, '', '', pv_infos[p]._id, 'tomorrow_predicted_power', 'Energy (Wh)')
         })
     }
 }
@@ -52,12 +44,7 @@ onMounted(async () => {
     <LayoutAuthenticated>
         <SectionMain>
             <div v-for="(p, index) in chartData">
-                <SectionTitleLineWithButton
-                    :icon="mdiHeadSnowflakeOutline"
-                    :title="p.name"
-                    main
-                    class="mt-6"
-                ></SectionTitleLineWithButton>
+                <SectionTitleLineWithButton :icon="mdiHeadSnowflakeOutline" :title="p.name" main class="mt-6"></SectionTitleLineWithButton>
                 <CardBox class="mb-6">
                     <line-chart :data="p.power" type="pv" class="h-72" />
                 </CardBox>

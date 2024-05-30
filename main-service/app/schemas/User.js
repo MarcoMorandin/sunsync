@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 /**
  * Oggetto che modella l'utente presente nel DB
@@ -16,4 +16,4 @@ const User = new Schema({
     bot_token: String,
 });
 
-module.exports = model("user", User);
+module.exports = model('user', User);
