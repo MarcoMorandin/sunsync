@@ -41,7 +41,10 @@ onMounted(() => {
                 maintainAspectRatio: false,
                 scales: {
                     y: {
-                        display: true
+                        display: true,
+                        ticks: {
+                            min: 0
+                        }
                     },
                     x: {
                         display: true
