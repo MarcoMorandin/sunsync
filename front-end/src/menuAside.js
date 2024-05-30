@@ -6,7 +6,9 @@ import {
     mdiWeatherPartlyCloudy,
     mdiHomeOutline,
     mdiAccountGroupOutline,
-    mdiChartArc
+    mdiChartArc,
+    mdiMessageBadgeOutline,
+    mdiHeadSnowflakeOutline
 } from '@mdi/js'
 
 export default [
@@ -32,6 +34,18 @@ export default [
         to: '/grafici',
         label: 'Grafici',
         icon: mdiChartArc,
+        role: 1
+    },
+    {
+        to: '/previsioni',
+        label: 'Previsioni',
+        icon: mdiHeadSnowflakeOutline,
+        role: 1
+    },
+    {
+        to: '/eventi',
+        label: 'Eventi',
+        icon: mdiMessageBadgeOutline,
         role: 1
     },
     {
