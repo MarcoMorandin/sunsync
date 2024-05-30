@@ -8,164 +8,150 @@ const PvInfo = require('./schemas/PvSystem')
 const PvData = require('./schemas/PvData')
 const WeatherStation = require('./schemas/WeatherStation')
 const WsData = require('./schemas/WeatherData')
+const Event = require('./schemas/Event')
 
-/**
- * scheduled import of data every x seconds
- */
 let date = new Date(Date.parse('2013-10-01T01:00:00.000Z'))
+let weather = {
+    today: [],
+    tomorrow: []
+}
 
-function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
+const tomorrowPredictionEventHandler = async (pv_info, predicted_power) => {
+    if(predicted_power / (pv_info.installed_power * 5) * 100 > 20){
+        const event = new Event({
+            _id: new ObjectId(),
+            time: new Date(),
+            description: 'peak',
+            value: predicted_power,
+            pv_info: pv_info
+        })
+        event.save()
+    }
+}
+
+const handleWheaterResponse = async (wst, wsDataResp) => {
+    let wsDataTemp = wsDataResp.data
+    if (!wsDataTemp['error']) {
+        const data = {
+            _id: new ObjectId(),
+            time: new Date(date.toISOString()),
+            metadata: {
+                description: wst['description'],
+                location: wst['location'],
+                ws_id: wst['_id']
+            },
+            rain: wsDataTemp['rain'],
+            humidity: wsDataTemp['umid'],
+            wind_speed: wsDataTemp['velVen'],
+            pressure: wsDataTemp['pres'],
+            temperature: wsDataTemp['temp'],
+            solar_power: (wsDataTemp['rad'] * 0.278).toFixed(3),
+            wind_direction: wsDataTemp['dirVen']
+        }
+        return data 
+    }
+    return null
 }
 
 const loadWsData = async () => {
-    let wst = await WeatherStation.find({})
+    let wsts = await WeatherStation.find({})
+    let tomorrow = new Date(date)
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+    for(let wst_index in wsts){
+        let wst = wsts[wst_index]
+        console.log('wsdata: ' + wst.description)
+        let wsDataResp = await axios.get(wst.url + date.toISOString().split('T')[0])
+        let result = await handleWheaterResponse(wst, wsDataResp)
+        if(result != null){
+            weather.today.push(result)
+            await WsData.create(result)
+        }
+        
+        wsDataResp = await axios.get(wst.url + tomorrow.toISOString().split('T')[0])
+        result = await handleWheaterResponse(wst, wsDataResp)
+        if(result != null){
+            weather.tomorrow.push(result)
+            await WsData.create(result)
+        }
+    }
+}
 
-    /**
-     * Recupero dati da tutte le stazioni meteo tramite URL delle API
-     * In questo caso dal simulatore
-     */
-    for (let el of wst) {
-        console.log('wsdata: ' + el['description'])
-
-        await axios.get(el['url'] + date.toISOString().split('T')[0]).then(async (resp) => {
-            const data = resp['data']
-            if (!data['error']) {
-                let dayData = {
-                    _id: new ObjectId(),
-                    time: new Date(date.toISOString()),
-                    metadata: {
-                        description: el['description'],
-                        location: el['location'],
-                        ws_id: el['_id']
-                    },
-                    rain: data['rain'],
-                    humidity: data['umid'],
-                    wind_speed: data['velVen'],
-                    pressure: data['pres'],
-                    temperature: data['temp'],
-                    solar_power: (data['rad'] * 0.278).toFixed(3),
-                    wind_direction: data['dirVen']
+const loadPvData = async () => {
+    const response = await fetch('https://simulator-n1ou.onrender.com/api/v1/pun/' + date.toISOString().split('T')[0])
+    const resp = await response.json()
+    let price = 0
+    if (!resp['error']) {
+        price = resp['price']
+    }
+    let pvs = await PvInfo.find({})
+    for(let pv_index in pvs){
+        let pv = pvs[pv_index]
+        console.log('pvdata: ' + pv['description'])
+        await axios.get(pv['url'] + date.toISOString().split('T')[0])
+        .then(async (pvDataResp) => {
+            let pvDataTemp = pvDataResp.data
+            if(!pvDataTemp.error){
+                let wsDataToday = weather.today[weather.today.map(w => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
+                let wsDataTodayPrompt = {
+                    installed_power: pv.installed_power,
+                    rain: wsDataToday.rain,
+                    temperature: wsDataToday.temperature,
+                    humidity: wsDataToday.humidity,
+                    wind_speed: wsDataToday.wind_speed,
+                    solar_power: Number(wsDataToday.solar_power),
+                    wind_direction: wsDataToday.wind_direction
                 }
-
-                await WsData.create(dayData)
+    
+                let wsDataTomorrow = weather.tomorrow[weather.tomorrow.map(w => w.metadata.ws_id.toString()).indexOf(pv.ws_id.toString())]
+                let wsDataTomorrowPrompt = {
+                    installed_power: pv.installed_power,
+                    rain: wsDataTomorrow.rain,
+                    temperature: wsDataTomorrow.temperature,
+                    humidity: wsDataTomorrow.humidity,
+                    wind_speed: wsDataTomorrow.wind_speed,
+                    solar_power: Number(wsDataTomorrow.solar_power),
+                    wind_direction: wsDataTomorrow.wind_direction
+                }
+                await axios.post(process.env.PREDICTION_URL, [wsDataTodayPrompt, wsDataTomorrowPrompt])
+                .then(async (predictionsResp) => {
+                    let predictions = predictionsResp.data.predictions
+                    tomorrowPredictionEventHandler(pv, Math.abs(predictions[1]))
+                    await PvData.create({
+                        _id: new ObjectId(),
+                        time: new Date(date.toISOString()),
+                        metadata: {
+                            description: pv.description,
+                            location: pv.location,
+                            installed_power: pv.installed_power,
+                            ws_id: pv.ws_id,
+                            pv_id: pv._id,
+                            price: price
+                        },
+                        power: pvDataTemp.power,
+                        predicted_power: Math.abs(predictions[0]),
+                        tomorrow_predicted_power: Math.abs(predictions[1])
+                    })
+                })
             }
         })
     }
 }
 
+
 function importData() {
     console.log(date.toISOString())
-    // Connessione a MongoDB...
     mongoose.set('strictQuery', true)
-    db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`).then(async () => {
-        
-
-        await loadWsData().then(async () => {
-            /**
-             * Recupero PUN dal simulatore
-             */
-            const response = await fetch('https://simulator-n1ou.onrender.com/api/v1/pun/' + date.toISOString().split('T')[0])
-            const resp = await response.json()
-            let price = 0
-            if (!resp['error']) {
-                price = resp['price']
-            }
-
-            /**
-             * Recupero dati da tutti gli impianti fotovoltaici tramite URL delle API
-             * In questo caso dal simulatore
-             */
-            let pvs = await PvInfo.find({})
-            for (let el of pvs) {
-                console.log('pvdata: ' + el['description'])
-                await axios.get(el['url'] + date.toISOString().split('T')[0]).then(async (resp) => {
-                    const data = resp['data']
-                    date.toISOString().split('T')[0]
-                    await axios
-                        .get('http://server:3000/api/v2/wsdata', {
-                            params: {
-                                startdate: date.toISOString().split('T')[0],
-                                enddate: date.toISOString().split('T')[0],
-                                wsinfo_id: el['ws_id']
-                            },
-                            headers: {
-                                Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwidXNlcm5hbWUiOiJhZG1pbiIsInVzZXJfaWQiOiI2NjM4OTkzN2YwM2IzNTFlZTgzZjFhMzMiLCJyb2xlIjowLCJkaXNhYmxlZCI6ZmFsc2UsImlhdCI6MTcxNTcwMDc2MiwiZXhwIjoyMDE1Nzg3MTYyfQ.fg7DCsuVEjHSKwF1yIcgw942Y5g9GKru5TWgAneDb-8'
-                            }
-                        })
-                        .then(async (response) => {
-                            response.data = response.data[0]
-                            let wsDataPrompt = {
-                                installed_power: el['installed_power'],
-                                rain: response.data.rain,
-                                temperature: response.data.temperature,
-                                humidity: response.data.humidity,
-                                wind_speed: response.data.wind_speed,
-                                solar_power: Number(response.data.solar_power),
-                                wind_direction: response.data.wind_direction
-                            }
-                            await axios.post(process.env.PREDICTION_URL, wsDataPrompt).then(async (res) => {
-                                predicted_power = res.data.predictions[0]
-                                await axios
-                                    .get('http://server:3000/api/v2/wsinfo/' + el['ws_id'], {
-                                        headers: {
-                                            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwidXNlcm5hbWUiOiJhZG1pbiIsInVzZXJfaWQiOiI2NjM4OTkzN2YwM2IzNTFlZTgzZjFhMzMiLCJyb2xlIjowLCJkaXNhYmxlZCI6ZmFsc2UsImlhdCI6MTcxNTcwMDc2MiwiZXhwIjoyMDE1Nzg3MTYyfQ.fg7DCsuVEjHSKwF1yIcgw942Y5g9GKru5TWgAneDb-8'
-                                        }
-                                    })
-                                    .then(async (wsInfo) => {
-                                        date.setUTCDate(date.getUTCDate() + 1)
-                                        let tomorrow = date
-                                        await axios.get(wsInfo.data.url + tomorrow.toISOString().split('T')[0]).then(async (wsData) => {
-                                            let wsDataTomorrowPrompt = {
-                                                installed_power: el['installed_power'],
-                                                rain: wsData.data.rain,
-                                                temperature: wsData.data.temp,
-                                                humidity: wsData.data.umid,
-                                                wind_speed: wsData.data.velVen,
-                                                solar_power: wsData.data.rad * 0.278,
-                                                wind_direction: wsData.data.dirVen
-                                            }
-                                            await axios.post(process.env.PREDICTION_URL, wsDataTomorrowPrompt).then(async (tom_pred) => {
-                                                tomorrow_predicted_power = tom_pred.data.predictions[0]
-                                                date.setUTCDate(date.getUTCDate() - 1)
-                                                if (!data['error']) {
-                                                    let dayData = {
-                                                        _id: new ObjectId(),
-                                                        time: new Date(date.toISOString()),
-                                                        metadata: {
-                                                            description: el['description'],
-                                                            location: el['location'],
-                                                            installed_power: el['installed_power'],
-                                                            ws_id: el['ws_id'],
-                                                            pv_id: el['_id'],
-                                                            price: price
-                                                        },
-                                                        power: data['power'],
-                                                        predicted_power: predicted_power,
-                                                        tomorrow_predicted_power: tomorrow_predicted_power
-                                                    }
-                                                    await PvData.create(dayData)
-                                                }
-                                            })
-                                        })
-                                    })
-                            })
-                        })
-                })
-            }
-        })
+    db = mongoose.connect(`mongodb+srv://${process.env.MONGO_UNAME}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`)
+    .then(async () => {
+        await loadWsData()
+        await loadPvData()
+        weather.today = []
+        weather.tomorrow = []
     })
+    
     date.setUTCDate(date.getUTCDate() + 1)
 }
 
-// avvio della routine e scheduling...
 importData()
 setInterval(importData, 10000)
 
-/**
- * scheduled import of data every day at same time
- */
-
-// TODO importer da sito meteotrentino e Terna...
-
-/*schedule.scheduleJob('0 1 * * *', importData);*/

@@ -5,6 +5,7 @@ const Event = new Schema(
         _id: Schema.ObjectId,
         time: Date,
         description: String,
+        value: Number,
         pv_info: { 
             _id: Schema.ObjectId,
             description: String,
