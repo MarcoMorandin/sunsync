@@ -70,8 +70,12 @@ const createEvent = () => {
                 let pvInfo = await PvInfo.findById(event.pv_info._id)
                 let chats = await TelegramChat.find({})
                 chats.forEach(chat => {
-                    bot.telegram.sendMessage(chat.chatId, `${emoji.get('warning')}${emoji.get('warning')} L'impianto "${pvInfo.description}" ha bisogno di manutenzione`)
-                    bot.telegram.sendLocation(chat.chatId, pvInfo.location.lat, pvInfo.location.long)
+                    if(event.description == 'warning'){
+                        bot.telegram.sendMessage(chat.chatId, `${emoji.get('warning')}${emoji.get('warning')} L'impianto "${pvInfo.description}" ha bisogno di manutenzione ${emoji.get('warning')}${emoji.get('warning')}`)
+                        bot.telegram.sendLocation(chat.chatId, pvInfo.location.lat, pvInfo.location.long)
+                    }else if(event.description == 'peak'){
+                        bot.telegram.sendMessage(chat.chatId, `${emoji.get('zap')}${emoji.get('zap')} L'impianto "${pvInfo.description}" domani produrrà molta energia ${emoji.get('zap')}${emoji.get('zap')}`)
+                    }  
                 })
             })
         botManager()
