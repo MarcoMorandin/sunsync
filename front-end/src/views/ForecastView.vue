@@ -30,15 +30,7 @@ const fillChartData = async () => {
         chartData.value.push({
             name: pv_infos[p].description + ': ' + pv_infos[p].installed_power / 1000 + ' kW',
             pvInfo: pv_infos[p],
-            predicted: await chartConfig.chartData(
-                'info',
-                import.meta.env.VITE_BASE_URL_API + pvDataEndpoint,
-                '',
-                '',
-                pv_infos[p]._id,
-                'tomorrow_predicted_power',
-                'Energy (Wh)'
-            )
+            predicted: await chartConfig.chartData('info', import.meta.env.VITE_BASE_URL_API + pvDataEndpoint, '', '', pv_infos[p]._id, 'tomorrow_predicted_power', 'Energy (Wh)')
         })
     }
     console.log(chartData)

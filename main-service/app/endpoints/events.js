@@ -6,6 +6,11 @@ const { param, validationResult } = require('express-validator');
 const tokenChecker = require('../middlewares/tockenChecker');
 const dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
 
+/**
+ * Get all events filtered by date, pvinfo or type [peak, warning]
+ * If filters are not well formatted returns 400
+ * If no records are found returns 404
+ */
 router.get('', tokenChecker, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

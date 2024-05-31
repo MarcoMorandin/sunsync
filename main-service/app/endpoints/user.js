@@ -248,12 +248,9 @@ router.patch(
                 .status(400)
                 .json({ '400 Bad Request': 'Old password is incorrect' });
         } else if (old_password_in === password_in) {
-            return res
-                .status(400)
-                .json({
-                    '400 Bad Request':
-                        'New password must be different from old',
-                });
+            return res.status(400).json({
+                '400 Bad Request': 'New password must be different from old',
+            });
         }
 
         let salt = crypto.randomBytes(128).toString('hex');
@@ -300,12 +297,9 @@ router.patch(
             },
         );
         if (userId == req.params.id) {
-            return res
-                .status(400)
-                .json({
-                    '400 Bad Request':
-                        "User can't change his own password by id",
-                });
+            return res.status(400).json({
+                '400 Bad Request': "User can't change his own password by id",
+            });
         }
 
         let userOld = await User.findById(req.user._id).exec();
@@ -317,12 +311,9 @@ router.patch(
             .digest('hex');
 
         if (old_password_in === password_in) {
-            return res
-                .status(400)
-                .json({
-                    '400 Bad Request':
-                        'New password must be different from old',
-                });
+            return res.status(400).json({
+                '400 Bad Request': 'New password must be different from old',
+            });
         }
 
         let salt = crypto.randomBytes(128).toString('hex');
@@ -366,24 +357,20 @@ router.post(
 
         let user = await User.findOne({ mail: req.body.mail });
         if (!user) {
-            return res
-                .status(401)
-                .json({
-                    '401 Unauthorized':
-                        'Authentication failed, mail or password error',
-                });
+            return res.status(401).json({
+                '401 Unauthorized':
+                    'Authentication failed, mail or password error',
+            });
         } else {
             let salt = user.salt;
             let password = createHash('sha256')
                 .update(req.body.password + salt)
                 .digest('hex');
             if (user.password !== password)
-                return res
-                    .status(401)
-                    .json({
-                        '401 Unauthorized':
-                            'Authentication failed, mail or password error',
-                    });
+                return res.status(401).json({
+                    '401 Unauthorized':
+                        'Authentication failed, mail or password error',
+                });
         }
 
         let token = jwt.sign(
@@ -423,6 +410,10 @@ router.post(
     },
 );
 
+/**
+ * Get a new JWT access token when refresh token is given
+ * Return 401 if refresh token is missing or not compliant
+ */
 router.post('/refresh', (req, res) => {
     if (req.cookies?.refresh_jwt) {
         let refreshToken = req.cookies.refresh_jwt;
@@ -433,12 +424,10 @@ router.post('/refresh', (req, res) => {
             async (err, decoded) => {
                 if (err) {
                     console.log('a');
-                    return res
-                        .status(401)
-                        .json({
-                            '401 Unauthorized':
-                                'Authentication failed, refresh token error',
-                        });
+                    return res.status(401).json({
+                        '401 Unauthorized':
+                            'Authentication failed, refresh token error',
+                    });
                 } else {
                     let user = await User.findById(decoded.user_id).exec();
 
@@ -464,12 +453,9 @@ router.post('/refresh', (req, res) => {
             },
         );
     } else {
-        return res
-            .status(401)
-            .json({
-                '401 Unauthorized':
-                    'Authentication failed, refresh token error',
-            });
+        return res.status(401).json({
+            '401 Unauthorized': 'Authentication failed, refresh token error',
+        });
     }
 });
 

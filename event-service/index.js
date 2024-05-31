@@ -29,11 +29,14 @@ const botManager = () => {
             if (users.length != 1) ctx.reply('Token non valido');
             else {
                 for (let i = 0; i < 3; i++) {
-                    await ctx.deleteMessage(ctx.message.message_id - i);
+                    try{
+                        await ctx.deleteMessage(ctx.message.message_id - i);
+                    }
+                    catch { }
                 }
                 await ctx.reply('Buongiorno, ' + users[0].username);
                 ctx.reply(
-                    'Da questo momento inizierai a ricevere una notifica ogni qual volta un impianto fotovoltaico avrà bisogno di manutenzione',
+                    'Da questo momento inizierai a ricevere una notifica ogni qual volta un impianto fotovoltaico avrà bisogno di manutenzione o ci sarà un picco di produzione',
                 );
 
                 let telegramChat = await TelegramChat.find({
@@ -41,6 +44,7 @@ const botManager = () => {
                 });
                 if (telegramChat.length == 0 || telegramChat == null) {
                     await TelegramChat.create({
+                        _id: new ObjectId(),
                         chatId: ctx.message.chat.id,
                     });
                 }

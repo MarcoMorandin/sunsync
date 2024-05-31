@@ -8,12 +8,9 @@ const User = require('../schemas/User');
 const tokenChecker = async (req, res, next) => {
     let token = req.headers.authorization.split(' ')[1];
     if (!token) {
-        return res
-            .status(401)
-            .json({
-                '401 Unauthorized':
-                    'You have to authenticate to use this endpoint',
-            });
+        return res.status(401).json({
+            '401 Unauthorized': 'You have to authenticate to use this endpoint',
+        });
     }
     let user;
     const verified = jwt.verify(

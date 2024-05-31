@@ -10,14 +10,19 @@ const WeatherStation = require('./schemas/WeatherStation')
 const WsData = require('./schemas/WeatherData')
 const Event = require('./schemas/Event')
 
-let date = new Date(Date.parse('2013-10-01T01:00:00.000Z'))
+let date = new Date(Date.parse('2015-02-01T01:00:00.000Z'))
 let weather = {
     today: [],
     tomorrow: []
 }
 
+/**
+ * Generate peak event if predicted production is high
+ * @param {*} pv_info pv system related to the event
+ * @param {*} predicted_power power predicted for the next day
+ */
 const tomorrowPredictionEventHandler = async (pv_info, predicted_power) => {
-    if ((predicted_power / (pv_info.installed_power * 5)) * 100 > 20) {
+    if ((predicted_power / (pv_info.installed_power * 5)) * 100 > 30) {
         const event = new Event({
             _id: new ObjectId(),
             time: new Date(),
@@ -29,6 +34,12 @@ const tomorrowPredictionEventHandler = async (pv_info, predicted_power) => {
     }
 }
 
+/**
+ * Parse weather data received from simulator
+ * @param {*} wst weather station
+ * @param {*} wsDataResp response from simulator
+ * @returns parsed weather data or null if error
+ */
 const handleWheaterResponse = async (wst, wsDataResp) => {
     let wsDataTemp = wsDataResp.data
     if (!wsDataTemp['error']) {
@@ -53,6 +64,9 @@ const handleWheaterResponse = async (wst, wsDataResp) => {
     return null
 }
 
+/**
+ * Get Weather data from simulator and insert in Mongo
+ */
 const loadWsData = async () => {
     let wsts = await WeatherStation.find({})
     let tomorrow = new Date(date)
@@ -76,6 +90,11 @@ const loadWsData = async () => {
     }
 }
 
+/**
+ * Load pv data from simulator for the current day
+ * Get prediction for current day and tomorrow to compute maintenance needed
+ * or high power prediction from weather data
+ */
 const loadPvData = async () => {
     const response = await fetch('https://simulator-n1ou.onrender.com/api/v1/pun/' + date.toISOString().split('T')[0])
     const resp = await response.json()
@@ -148,5 +167,84 @@ function importData() {
     date.setUTCDate(date.getUTCDate() + 1)
 }
 
+// avvio della routine e scheduling...
 importData()
 setInterval(importData, 10000)
+
+
+/**
+ * scheduled import of data every day at same time
+ */
+
+/**
+ * Get daily PUN from Terna API
+ * Not used but ready for real scenario
+ * @param {*} date date of the price
+ */
+const getTernaPrice = async (date) => {
+    const params = new URLSearchParams()
+    params.append('client_id', process.env.TERNAUID)
+    params.append('client_secret', process.env.TERNASECRET)
+    params.append('grant_type', 'client_credentials')
+    const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    let credentials = await axios.post('https://api.terna.it/transparency/oauth/accessToken', params, config)
+        .then((resp) => {
+            return resp
+        })
+        .catch((err) => {
+            return {
+                "access_token": null
+            }
+        })
+    
+    let result = await axios.get('https://api.terna.it/market-and-fees/v1.0/daily-prices',
+        {
+            headers: {
+                "Authorization" : "Bearer " + credentials.data.access_token,
+                "Accept": "application/json"
+            },
+            params: {
+                dateFrom: date,
+                dateTo: date,
+                dateType: 'Orario'
+            }
+        }
+    )
+        .then((resp) => {
+            return resp
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                data:{
+                    daily_prices: [
+                        {
+                            base_price_EURxMWh: 0
+                        }
+                    ]
+                }
+            }
+        })
+    
+    let sum = 0
+    let cont = 0
+    for(; cont < result.data.daily_prices.length; cont++) {
+        sum += Number(result.data.daily_prices[cont].base_price_EURxMWh)
+    }
+
+    return (sum/cont)/1000000
+}
+
+var today  = new Date();
+today = new Date(today.setUTCDate(today.getUTCDate() - 1))
+var reqDate = (today.getDate() < 10? '0'+today.getDate(): today.getDate()) + '/' + (today.getMonth()+1 < 10? '0'+(today.getMonth()+1): today.getMonth()+1) + '/' + today.getFullYear()
+
+/*console.log(reqDate)
+getTernaPrice(reqDate).then((res) => {
+    console.log("prezzo: " + res.toFixed(10))
+    return res.toFixed(10)
+})*/
+
+// TODO importer da sito meteotrentino...
+
+/*schedule.scheduleJob('0 1 * * *', importData);*/
