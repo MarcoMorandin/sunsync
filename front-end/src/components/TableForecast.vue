@@ -146,7 +146,7 @@ async function showModal(i) {
                     {{ new Date(item.time).toLocaleString('it-IT') }}
                 </td>
                 <td data-label="description">
-                    {{ item.tomorrow_predicted_power }}
+                    {{ item.tomorrow_predicted_power? item.tomorrow_predicted_power.toFixed(3) + ' Wh': '' }}
                 </td>
                 <td />
             </tr>

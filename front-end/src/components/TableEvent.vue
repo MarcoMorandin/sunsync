@@ -142,7 +142,7 @@ async function showModal(i) {
                     {{ new Date(event.time).toLocaleString('it-IT') }}
                 </td>
                 <td data-label="description">
-                    {{ event.description.charAt(0).toUpperCase() + event.description.slice(1) }}
+                    {{ event.description.charAt(0).toUpperCase() + event.description.slice(1) + (event.description == 'peak'? ': ' + (event.value/1000).toFixed(2) + ' kWh': '') }}
                 </td>
                 <td data-label="pv_description">
                     {{ event.pv_info.description }}

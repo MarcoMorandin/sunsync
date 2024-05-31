@@ -1,7 +1,8 @@
-const { Schema, model } = require('mongoose')
+const { Schema, model } = require('mongoose');
 
 const TelegramChat = new Schema({
-    chatId: String
-})
+    _id: Schema.ObjectId,
+    chatId: String,
+});
 
-module.exports = model('telegramChat', TelegramChat)
+module.exports = model('telegramChat', TelegramChat);

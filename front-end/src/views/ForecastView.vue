@@ -30,9 +30,18 @@ const fillChartData = async () => {
         chartData.value.push({
             name: pv_infos[p].description + ': ' + pv_infos[p].installed_power / 1000 + ' kW',
             pvInfo: pv_infos[p],
-            predicted: await chartConfig.chartData('info', import.meta.env.VITE_BASE_URL_API + pvDataEndpoint, '', '', pv_infos[p]._id, 'tomorrow_predicted_power', 'Energy (Wh)')
+            predicted: await chartConfig.chartData(
+                'info',
+                import.meta.env.VITE_BASE_URL_API + pvDataEndpoint,
+                '',
+                '',
+                pv_infos[p]._id,
+                'tomorrow_predicted_power',
+                'Energy (Wh)'
+            )
         })
     }
+    console.log(chartData)
 }
 
 onMounted(async () => {
@@ -46,7 +55,7 @@ onMounted(async () => {
             <div v-for="(p, index) in chartData">
                 <SectionTitleLineWithButton :icon="mdiHeadSnowflakeOutline" :title="p.name" main class="mt-6"></SectionTitleLineWithButton>
                 <CardBox class="mb-6">
-                    <line-chart :data="p.power" type="pv" class="h-72" />
+                    <line-chart :data="p.predicted" type="pv" class="h-72" />
                 </CardBox>
 
                 <CardBox has-table>
