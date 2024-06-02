@@ -16,7 +16,6 @@ import NotificationBarInCard from '@/components/NotificationBarInCard.vue'
 import { usersEndpoint } from '@/endpoints'
 import { useRouter } from 'vue-router'
 
-
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -34,7 +33,7 @@ const submit = async () => {
     await axios
         .post(
             import.meta.env.VITE_BASE_URL_API + usersEndpoint,
-            {   
+            {
                 username: form.username,
                 mail: form.email,
                 password: form.pass,
@@ -61,23 +60,11 @@ const formStatusOptions = ['none', 'success', 'danger']
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <SectionTitleLineWithButton
-                :icon="mdiAccountPlusOutline"
-                title="Nuovo Utente"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiAccountPlusOutline" title="Nuovo Utente" main></SectionTitleLineWithButton>
             <CardBox is-form @submit.prevent="submit">
-                <NotificationBarInCard
-                    :color="formStatusCurrent"
-                    :is-placed-with-header="formStatusWithHeader"
-                >
-                    <span v-if="formStatusCurrent == 'danger'"
-                        ><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon
-                        fine!</span
-                    >
-                    <span v-if="formStatusCurrent == 'success'"
-                        >Inserimento avvenuto con successo!</span
-                    >
+                <NotificationBarInCard :color="formStatusCurrent" :is-placed-with-header="formStatusWithHeader">
+                    <span v-if="formStatusCurrent == 'danger'"><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon fine!</span>
+                    <span v-if="formStatusCurrent == 'success'">Inserimento avvenuto con successo!</span>
                 </NotificationBarInCard>
                 <FormField label="Username">
                     <FormControl v-model="form.username" :icon="mdiAccount" />
@@ -86,19 +73,10 @@ const formStatusOptions = ['none', 'success', 'danger']
                     <FormControl v-model="form.email" type="email" :icon="mdiEmailOutline" />
                 </FormField>
                 <FormField label="Password">
-                    <FormControl
-                        v-model="form.pass"
-                        type="password"
-                        :icon="mdiFormTextboxPassword"
-                    />
+                    <FormControl v-model="form.pass" type="password" :icon="mdiFormTextboxPassword" />
                 </FormField>
                 <FormField label="Ruolo">
-                    <FormCheckRadioGroup
-                        v-model="form.role"
-                        name="role"
-                        type="radio"
-                        :options="selectOptions"
-                    />
+                    <FormCheckRadioGroup v-model="form.role" name="role" type="radio" :options="selectOptions" />
                 </FormField>
                 <template #footer>
                     <BaseButtons>

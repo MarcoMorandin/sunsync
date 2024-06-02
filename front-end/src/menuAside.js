@@ -1,11 +1,4 @@
-import {
-    mdiMonitor,
-    mdiChartTimelineVariant,
-    mdiAccountPlusOutline,
-    mdiSolarPanelLarge,
-    mdiWeatherPartlyCloudy,
-    mdiHomeOutline
-} from '@mdi/js'
+import { mdiMonitor, mdiChartTimelineVariant, mdiAccountPlusOutline, mdiSolarPanelLarge, mdiWeatherPartlyCloudy, mdiHomeOutline, mdiAccountGroupOutline, mdiChartArc, mdiMessageBadgeOutline, mdiHeadSnowflakeOutline } from '@mdi/js'
 
 export default [
     {
@@ -21,10 +14,34 @@ export default [
         role: 1
     },
     {
-        to: '/grafici',
-        label: 'Grafici',
+        to: '/statistiche',
+        label: 'Statistiche',
         icon: mdiChartTimelineVariant,
         role: 1
+    },
+    {
+        to: '/grafici',
+        label: 'Grafici',
+        icon: mdiChartArc,
+        role: 1
+    },
+    {
+        to: '/previsioni',
+        label: 'Previsioni',
+        icon: mdiHeadSnowflakeOutline,
+        role: 1
+    },
+    {
+        to: '/eventi',
+        label: 'Eventi',
+        icon: mdiMessageBadgeOutline,
+        role: 1
+    },
+    {
+        to: '/users',
+        label: 'Utenti',
+        icon: mdiAccountGroupOutline,
+        role: 0
     },
     {
         to: '/newuser',

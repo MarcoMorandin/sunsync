@@ -33,12 +33,7 @@ const is = computed(() => {
 })
 
 const componentClass = computed(() => {
-    const base = [
-        isDropdownActive.value
-            ? `navbar-item-label-active dark:text-slate-400`
-            : `navbar-item-label dark:text-white dark:hover:text-slate-400`,
-        props.item.menu ? 'lg:py-2 lg:px-3' : 'py-2 px-3'
-    ]
+    const base = [isDropdownActive.value ? `navbar-item-label-active dark:text-slate-400` : `navbar-item-label dark:text-white dark:hover:text-slate-400`, props.item.menu ? 'lg:py-2 lg:px-3' : 'py-2 px-3']
 
     if (props.item.isDesktopNoLabel) {
         base.push('lg:w-16', 'lg:justify-center')
@@ -55,7 +50,7 @@ const iconClass = computed(() => {
     const base = []
 
     if (props.item.bgColor) {
-        base.push("text-slate-300 hover:text-white")
+        base.push('text-slate-300 hover:text-white')
     }
 
     return base
@@ -64,7 +59,7 @@ const iconClass = computed(() => {
 const username = ref('')
 
 const fillUsername = () => {
-    if (authStore.getToken.value != null || authStore.getToken.value != "") {
+    if (authStore.getToken.value != null || authStore.getToken.value != '') {
         axios
             .get(import.meta.env.VITE_BASE_URL_API + meEndpoint, {
                 headers: { Authorization: `Bearer ${authStore.getToken.value}` }
@@ -91,10 +86,6 @@ const menuClick = (event) => {
     }
 }
 
-const menuClickDropdown = (event, item) => {
-    emit('menu-click', event, item)
-}
-
 const root = ref(null)
 
 const forceClose = (event) => {
@@ -104,10 +95,10 @@ const forceClose = (event) => {
 }
 
 function displayFunc(isAuth) {
-    if(isAuth != null) {
-        if(isAuth == true && authStore.getToken.value) {
+    if (isAuth != null) {
+        if (isAuth == true && authStore.getToken.value) {
             return true
-        } else if(isAuth == false && !authStore.getToken.value) {
+        } else if (isAuth == false && !authStore.getToken.value) {
             return true
         } else {
             return false
@@ -132,43 +123,22 @@ onBeforeUnmount(() => {
 
 <template>
     <BaseDivider v-if="item.isDivider" nav-bar />
-    <component
-        :is="is"
-        v-else
-        v-if="displayFunc(item.isAuth)"
-        ref="root"
-        class="block lg:flex items-center relative cursor-pointer"
-        :class="componentClass"
-        :to="item.to ?? null"
-        :href="item.href ?? null"
-        :target="item.target ?? null"
-        @click="menuClick"
-    >
+    <component :is="is" v-else-if="displayFunc(item.isAuth)" ref="root" class="block lg:flex items-center relative cursor-pointer" :class="componentClass" :to="item.to ?? null" :href="item.href ?? null" :target="item.target ?? null" @click="menuClick">
         <div
             class="flex items-center"
-            :class="[{
-                'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0':
-                    item.menu
-            }, iconClass]"
+            :class="[
+                {
+                    'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0': item.menu
+                },
+                iconClass
+            ]"
         >
-            <BaseIcon
-                v-if="item.icon"
-                :path="item.icon"
-                class="transition-colors"
-                h="h-16"
-                :size="20"
-            />
-            <span
-                class="px-2 transition-colors"
-                :class="{ 'lg:hidden': item.isDesktopNoLabel && item.icon }"
-                >{{ itemLabel }}</span
-            >
-            <BaseIcon
-                v-if="item.menu"
-                :path="isDropdownActive ? mdiChevronUp : mdiChevronDown"
-                class="hidden lg:inline-flex transition-colors"
-                :class="iconClass"
-            />
+            <BaseIcon v-if="item.icon" :path="item.icon" class="transition-colors" h="h-16" :size="20" />
+            <span class="px-2 transition-colors" :class="{ 'lg:hidden': item.isDesktopNoLabel && item.icon }">{{ itemLabel }}</span>
+            <BaseIcon v-if="item.menu" :path="isDropdownActive ? mdiChevronUp : mdiChevronDown" class="hidden lg:inline-flex transition-colors" :class="iconClass" />
+            <div v-if="item.menu" class="text-sm border-b border-gray-100 lg:border lg:bg-white lg:absolute lg:top-full lg:left-0 lg:min-w-full lg:z-20 lg:rounded-lg lg:shadow-lg lg:dark:bg-slate-800 dark:border-slate-700" :class="{ 'lg:hidden': !isDropdownActive }">
+                <NavBarMenuList :menu="item.menu" @menu-click="menuClickDropdown" />
+            </div>
         </div>
     </component>
 </template>

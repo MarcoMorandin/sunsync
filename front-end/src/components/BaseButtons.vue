@@ -21,12 +21,7 @@ export default defineComponent({
     render() {
         const hasSlot = this.$slots && this.$slots.default
 
-        const parentClass = [
-            'flex',
-            'items-center',
-            this.type,
-            this.noWrap ? 'flex-nowrap' : 'flex-wrap'
-        ]
+        const parentClass = ['flex', 'items-center', this.type, this.noWrap ? 'flex-nowrap' : 'flex-wrap']
 
         if (this.mb) {
             parentClass.push(this.mb)

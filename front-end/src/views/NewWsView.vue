@@ -1,12 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import {
-    mdiDatabaseArrowLeftOutline,
-    mdiSolarPanelLarge,
-    mdiLatitude,
-    mdiLongitude,
-    mdiImageFilterHdrOutline
-} from '@mdi/js'
+import { mdiDatabaseArrowLeftOutline, mdiSolarPanelLarge, mdiLatitude, mdiLongitude, mdiImageFilterHdrOutline } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
 import FormField from '@/components/FormField.vue'
@@ -71,57 +65,25 @@ const isVisible = ref(true)
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <SectionTitleLineWithButton
-                :icon="mdiSolarPanelLarge"
-                title="Nuova Stazione Meteo"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiSolarPanelLarge" title="Nuova Stazione Meteo" main></SectionTitleLineWithButton>
             <NotificationBar :color="formStatusCurrent">
-                <span v-if="formStatusCurrent == 'danger'"
-                    ><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon
-                    fine!</span
-                >
-                <span v-if="formStatusCurrent == 'success'"
-                    >Inserimento avvenuto con successo!</span
-                >
+                <span v-if="formStatusCurrent == 'danger'"><b class="capitalize">ERRORE: </b> L'inserimento non è andato a buon fine!</span>
+                <span v-if="formStatusCurrent == 'success'">Inserimento avvenuto con successo!</span>
             </NotificationBar>
             <CardBox v-if="isVisible" is-form @submit.prevent="submit">
                 <FormField label="Posizione Stazione Meteo">
-                    <FormControl
-                        v-model="form.wsLat"
-                        type="number"
-                        :icon="mdiLatitude"
-                        placeholder="Latitudine"
-                    />
-                    <FormControl
-                        v-model="form.wsLong"
-                        type="number"
-                        :icon="mdiLongitude"
-                        placeholder="Longintudine"
-                    />
+                    <FormControl v-model="form.wsLat" type="number" :icon="mdiLatitude" placeholder="Latitudine" />
+                    <FormControl v-model="form.wsLong" type="number" :icon="mdiLongitude" placeholder="Longintudine" />
                 </FormField>
                 <FormField>
-                    <FormControl
-                        v-model="form.wsHeight"
-                        type="number"
-                        :icon="mdiImageFilterHdrOutline"
-                        placeholder="Altitudine"
-                    />
+                    <FormControl v-model="form.wsHeight" type="number" :icon="mdiImageFilterHdrOutline" placeholder="Altitudine" />
                 </FormField>
 
                 <FormField label="Descrizione Stazione Meteo">
-                    <FormControl
-                        v-model="form.wsDescription"
-                        type="textarea"
-                        placeholder="Descrizione della stazione meteo"
-                    />
+                    <FormControl v-model="form.wsDescription" type="textarea" placeholder="Descrizione della stazione meteo" />
                 </FormField>
                 <FormField label="Url dati meteo">
-                    <FormControl
-                        v-model="form.wsUrl"
-                        type="url"
-                        :icon="mdiDatabaseArrowLeftOutline"
-                    />
+                    <FormControl v-model="form.wsUrl" type="url" :icon="mdiDatabaseArrowLeftOutline" />
                 </FormField>
                 <template #footer>
                     <BaseButtons>

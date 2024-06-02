@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "prettify": "prettier --write src/"
   },
   "dependencies": {
     "@fawmi/vue-google-maps": "^0.9.79",

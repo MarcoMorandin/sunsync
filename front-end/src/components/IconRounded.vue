@@ -24,12 +24,5 @@ defineProps({
 </script>
 
 <template>
-    <BaseIcon
-        :path="icon"
-        :w="w"
-        :h="h"
-        size="24"
-        class="rounded-full"
-        :class="bg ? colorsBgLight[color] : [colorsText[color], 'bg-gray-50 dark:bg-slate-800']"
-    />
+    <BaseIcon :path="icon" :w="w" :h="h" size="24" class="rounded-full" :class="bg ? colorsBgLight[color] : [colorsText[color], 'bg-gray-50 dark:bg-slate-800']" />
 </template>
