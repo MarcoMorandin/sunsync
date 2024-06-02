@@ -169,7 +169,7 @@ function importData() {
 
 // avvio della routine e scheduling...
 importData()
-setInterval(importData, 10000)
+setInterval(importData, process.env.INTERVAL)
 
 
 /**
