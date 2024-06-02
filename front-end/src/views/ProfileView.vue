@@ -31,17 +31,14 @@ const passwordForm = reactive({
 const submit = async () => {
     if (passwordForm.password === passwordForm.password_confirmation) {
         axios
-            .patch(
-                import.meta.env.VITE_BASE_URL_API + meEndpoint,
-                { old_password: passwordForm.old_password, password: passwordForm.password },
-                { headers: { Authorization: `Bearer ${authStore.getToken.value}` } }
-            ).then(() =>  {
+            .patch(import.meta.env.VITE_BASE_URL_API + meEndpoint, { old_password: passwordForm.old_password, password: passwordForm.password }, { headers: { Authorization: `Bearer ${authStore.getToken.value}` } })
+            .then(() => {
                 router.push('/dashboard')
             })
             .catch((e) => {
                 showErrorNotification.value = true
-                error.value = e.response.data["400 Bad Request"]
-                return;
+                error.value = e.response.data['400 Bad Request']
+                return
             })
     } else {
         showErrorNotification.value = true
@@ -53,52 +50,24 @@ const submit = async () => {
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <SectionTitleLineWithButton
-                :icon="mdiAccount"
-                title="Profilo"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiAccount" title="Profilo" main></SectionTitleLineWithButton>
 
             <UserCard class="mb-6" />
 
             <div class="grid grid-cols-1 gap-6">
                 <CardBox is-form @submit.prevent="submit">
-                    <NotificationBar
-                        v-if="showErrorNotification"
-                        color="danger"
-                        :icon="mdiMonitorCellphone"
-                    >
-                        <b>ERRORE: </b> {{ error }}
-                    </NotificationBar>
+                    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
 
                     <FormField label="Vecchia Password" help="Inserisci la tua vecchia password">
-                        <FormControl
-                            v-model="passwordForm.old_password"
-                            :icon="mdiAsterisk"
-                            type="password"
-                            name="old_password"
-                            autocomplete="old-password"
-                        />
+                        <FormControl v-model="passwordForm.old_password" :icon="mdiAsterisk" type="password" name="old_password" autocomplete="old-password" />
                     </FormField>
 
                     <FormField label="Nuova Password" help="Inserisci la tua nuova password">
-                        <FormControl
-                            v-model="passwordForm.password"
-                            :icon="mdiAsterisk"
-                            type="password"
-                            name="password"
-                            autocomplete="new-password"
-                        />
+                        <FormControl v-model="passwordForm.password" :icon="mdiAsterisk" type="password" name="password" autocomplete="new-password" />
                     </FormField>
 
                     <FormField label="Ripeti Nuova Password" help="Ripeti la tua nuova password">
-                        <FormControl
-                            v-model="passwordForm.password_confirmation"
-                            :icon="mdiAsterisk"
-                            type="password"
-                            name="password_confirmation"
-                            autocomplete="new-password"
-                        />
+                        <FormControl v-model="passwordForm.password_confirmation" :icon="mdiAsterisk" type="password" name="password_confirmation" autocomplete="new-password" />
                     </FormField>
 
                     <template #footer>

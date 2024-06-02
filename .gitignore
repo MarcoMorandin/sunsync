@@ -1,3 +1,5 @@
 */node_modules/*
 */.env
 simulator/.npm
+power-prediction-service/.venv/*
+power-prediction-service/__pycache__/*

@@ -39,9 +39,7 @@ const isModalActive = ref(false)
 
 const currentPageHuman = computed(() => currentPage.value + 1)
 
-const itemsPaginated = computed(() =>
-    items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
-)
+const itemsPaginated = computed(() => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1)))
 
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
 
@@ -84,9 +82,7 @@ async function deleteWs() {
 </script>
 
 <template>
-    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone">
-        <b>ERRORE: </b> {{ error }}
-    </NotificationBar>
+    <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
     <CardBoxModal v-model="isModalActive" title="Dettagli">
         <p>
             Nome: <strong>{{ currentModal.description }}</strong>
@@ -106,11 +102,7 @@ async function deleteWs() {
             map-type-id="terrain"
             class="w-full h-96"
         >
-            <GMapMarker
-                :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }"
-                :clickable="true"
-                :draggable="false"
-            >
+            <GMapMarker :position="{ lat: currentModal.location.lat, lng: currentModal.location.long }" :clickable="true" :draggable="false">
                 <GMapInfoWindow>
                     <svg-icon type="mdi" :path="mdiSolarPanel"></svg-icon>
                 </GMapInfoWindow>
@@ -118,14 +110,7 @@ async function deleteWs() {
         </GMapMap>
     </CardBoxModal>
 
-    <CardBoxModal
-        v-model="isWarningActive"
-        title="Sei sicuro?"
-        button="danger"
-        button-label="Conferma"
-        has-cancel
-        @confirm="deleteWs()"
-    >
+    <CardBoxModal v-model="isWarningActive" title="Sei sicuro?" button="danger" button-label="Conferma" has-cancel @confirm="deleteWs()">
         <p>
             Cliccando il pulsante 'Conferma' <strong>eliminerai definitivamente </strong>
             la stazione meteo e tutti i dati ad essa collegati
@@ -147,13 +132,7 @@ async function deleteWs() {
                 <td class="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" no-wrap>
                         <BaseButton color="info" :icon="mdiEye" small @click="showModal(index)" />
-                        <BaseButton
-                            v-if="authStore.getRole.value == 0"
-                            color="danger"
-                            :icon="mdiTrashCan"
-                            small
-                            @click="showWarning(index)"
-                        />
+                        <BaseButton v-if="authStore.getRole.value == 0" color="danger" :icon="mdiTrashCan" small @click="showWarning(index)" />
                     </BaseButtons>
                 </td>
             </tr>
@@ -162,15 +141,7 @@ async function deleteWs() {
     <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
         <BaseLevel>
             <BaseButtons>
-                <BaseButton
-                    v-for="page in pagesList"
-                    :key="page"
-                    :active="page === currentPage"
-                    :label="page + 1"
-                    :color="page === currentPage ? 'lightDark' : 'whiteDark'"
-                    small
-                    @click="currentPage = page"
-                />
+                <BaseButton v-for="page in pagesList" :key="page" :active="page === currentPage" :label="page + 1" :color="page === currentPage ? 'lightDark' : 'whiteDark'" small @click="currentPage = page" />
             </BaseButtons>
             <small>Pagina {{ currentPageHuman }} di {{ numPages }}</small>
         </BaseLevel>

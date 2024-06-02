@@ -1,13 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import {
-    mdiSolarPowerVariantOutline,
-    mdiCashMultiple,
-    mdiChartTimelineVariant,
-    mdiLightningBoltOutline,
-    mdiSolarPanel,
-    mdiWeatherPartlyCloudy
-} from '@mdi/js'
+import { mdiSolarPowerVariantOutline, mdiCashMultiple, mdiChartTimelineVariant, mdiLightningBoltOutline, mdiSolarPanel, mdiWeatherPartlyCloudy } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBoxWidget from '@/components/CardBoxWidget.vue'
 import CardBox from '@/components/CardBox.vue'
@@ -83,63 +76,22 @@ onMounted(() => {
 <template>
     <LayoutAuthenticated>
         <SectionMain>
-            <NotificationBar
-                v-if="showErrorNotification"
-                color="danger"
-                :icon="mdiMonitorCellphone"
-            >
-                <b>ERRORE: </b> {{ error }}
-            </NotificationBar>
-            <SectionTitleLineWithButton
-                :icon="mdiChartTimelineVariant"
-                title="Overview"
-                main
-            ></SectionTitleLineWithButton>
+            <NotificationBar v-if="showErrorNotification" color="danger" :icon="mdiMonitorCellphone"> <b>ERRORE: </b> {{ error }} </NotificationBar>
+            <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" title="Overview" main></SectionTitleLineWithButton>
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
-                <CardBoxWidget
-                    trend=""
-                    trend-type="up"
-                    color="text-blue-500"
-                    :icon="mdiSolarPowerVariantOutline"
-                    :number="tile.pvNumber"
-                    label="Impianti Fotovoltaici"
-                />
-                <CardBoxWidget
-                    trend=""
-                    trend-type="up"
-                    color="text-emerald-500"
-                    :icon="mdiCashMultiple"
-                    :number="tile.money"
-                    prefix="€ "
-                    label="Soldi Risparmiati"
-                />
-                <CardBoxWidget
-                    trend=""
-                    trend-type="up"
-                    color="text-orange-300"
-                    :icon="mdiLightningBoltOutline"
-                    :number="tile.production"
-                    suffix=" KW/h"
-                    label="Energia Prodotta"
-                />
+                <CardBoxWidget trend="" trend-type="up" color="text-blue-500" :icon="mdiSolarPowerVariantOutline" :number="tile.pvNumber" label="Impianti Fotovoltaici" />
+                <CardBoxWidget trend="" trend-type="up" color="text-emerald-500" :icon="mdiCashMultiple" :number="tile.money" prefix="€ " label="Soldi Risparmiati" />
+                <CardBoxWidget trend="" trend-type="up" color="text-orange-300" :icon="mdiLightningBoltOutline" :number="tile.production" suffix=" KW/h" label="Energia Prodotta" />
             </div>
 
-            <SectionTitleLineWithButton
-                :icon="mdiSolarPanel"
-                title="Impianti Fotovoltaici"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiSolarPanel" title="Impianti Fotovoltaici" main></SectionTitleLineWithButton>
             <CardBox has-table>
                 <TablePv />
             </CardBox>
             <SectionTitleLineWithButton />
 
-            <SectionTitleLineWithButton
-                :icon="mdiWeatherPartlyCloudy"
-                title="Stazioni Metereologiche"
-                main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton :icon="mdiWeatherPartlyCloudy" title="Stazioni Metereologiche" main></SectionTitleLineWithButton>
             <CardBox has-table>
                 <TableWs />
             </CardBox>

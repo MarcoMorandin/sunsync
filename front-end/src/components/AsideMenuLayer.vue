@@ -22,27 +22,17 @@ const asideLgCloseClick = (event) => {
 </script>
 
 <template>
-    <aside
-        id="aside"
-        class="lg:py-2 lg:pl-2 w-60 fixed flex z-40 top-0 h-screen transition-position overflow-hidden"
-    >
+    <aside id="aside" class="lg:py-2 lg:pl-2 w-60 fixed flex z-40 top-0 h-screen transition-position overflow-hidden">
         <div class="aside lg:rounded-2xl flex-1 flex flex-col overflow-hidden dark:bg-slate-900">
-            <div
-                class="aside-brand flex flex-row h-28 items-center justify-center dark:bg-slate-900"
-            >
+            <div class="aside-brand flex flex-row h-28 items-center justify-center dark:bg-slate-900">
                 <div class="justify-center items-center text-center flex">
-                    <img src="/logo.png" alt="" srcset="" class="h-20 w-20">
+                    <img src="/logo.png" alt="" srcset="" class="h-20 w-20" />
                 </div>
-                <button
-                    class="hidden lg:inline-block xl:hidden p-3"
-                    @click.prevent="asideLgCloseClick"
-                >
+                <button class="hidden lg:inline-block xl:hidden p-3" @click.prevent="asideLgCloseClick">
                     <BaseIcon :path="mdiClose" />
                 </button>
             </div>
-            <div
-                class="flex-1 overflow-y-auto overflow-x-hidden aside-scrollbars dark:aside-scrollbars-[slate]"
-            >
+            <div class="flex-1 overflow-y-auto overflow-x-hidden aside-scrollbars dark:aside-scrollbars-[slate]">
                 <AsideMenuList :menu="menu" @menu-click="menuClick" />
             </div>
         </div>

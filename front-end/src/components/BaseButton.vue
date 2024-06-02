@@ -75,20 +75,7 @@ const computedType = computed(() => {
 const labelClass = computed(() => (props.small && props.icon ? 'px-1' : 'px-2'))
 
 const componentClass = computed(() => {
-    const base = [
-        'inline-flex',
-        'justify-center',
-        'items-center',
-        'whitespace-nowrap',
-        'focus:outline-none',
-        'transition-colors',
-        'focus:ring',
-        'duration-150',
-        'border',
-        props.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
-        props.roundedFull ? 'rounded-full' : 'rounded',
-        getButtonColor(props.color, props.outline, !props.disabled, props.active)
-    ]
+    const base = ['inline-flex', 'justify-center', 'items-center', 'whitespace-nowrap', 'focus:outline-none', 'transition-colors', 'focus:ring', 'duration-150', 'border', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer', props.roundedFull ? 'rounded-full' : 'rounded', getButtonColor(props.color, props.outline, !props.disabled, props.active)]
 
     if (!props.label && props.icon) {
         base.push('p-1')
@@ -107,15 +94,7 @@ const componentClass = computed(() => {
 </script>
 
 <template>
-    <component
-        :is="is"
-        :class="componentClass"
-        :href="href"
-        :type="computedType"
-        :to="to"
-        :target="target"
-        :disabled="disabled"
-    >
+    <component :is="is" :class="componentClass" :href="href" :type="computedType" :to="to" :target="target" :disabled="disabled">
         <BaseIcon v-if="icon" :path="icon" :size="iconSize" />
         <span v-if="label" :class="labelClass">{{ label }}</span>
     </component>

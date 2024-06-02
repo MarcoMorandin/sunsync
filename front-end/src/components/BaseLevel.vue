@@ -25,10 +25,7 @@ export default defineComponent({
                 class: parentClass.concat(this.mobile ? parentMobileClass : parentBaseClass)
             },
             this.$slots.default().map((element, index) => {
-                const childClass =
-                    !this.mobile && this.$slots.default().length > index + 1
-                        ? childBaseClass.concat(['mb-6', 'md:mb-0'])
-                        : childBaseClass
+                const childClass = !this.mobile && this.$slots.default().length > index + 1 ? childBaseClass.concat(['mb-6', 'md:mb-0']) : childBaseClass
 
                 return h('div', { class: childClass }, [element])
             })
