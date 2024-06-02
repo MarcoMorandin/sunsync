@@ -2,6 +2,8 @@ const app = require('./app/app.js');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+app.use(cors());
+
 // Collegamento a MongoDB ed avvio del server...
 mongoose.set('strictQuery', true);
 app.locals.db = mongoose
