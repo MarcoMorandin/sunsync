@@ -24,12 +24,10 @@ const menuClick = (event, item) => {
         authStore.setExpire('')
         authStore.setUserId('')
         authStore.setRole('')
-        authStore.setDisabled('')
         router.push({ name: 'home' })
         location.reload()
     }
 }
-
 </script>
 
 <template>
@@ -38,25 +36,16 @@ const menuClick = (event, item) => {
             'overflow-hidden lg:overflow-visible': isAsideMobileExpanded
         }"
     >
-        <div
-            :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-            class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
-        >
-            <NavBar
-                :menu="menuNavBar"
-                :isHome="true"
-                :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]"
-                @menu-click="menuClick"
-                class="bg-slate-900 h-20"
-            >
+        <div :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]" class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100">
+            <NavBar :menu="menuNavBar" :is-home="true" :class="[layoutAsidePadding, { 'ml-60 lg:ml-0': isAsideMobileExpanded }]" class="bg-slate-900 h-20" @menu-click="menuClick">
                 <NavBarItemPlain use-margin>
                     <div class="justify-center items-center text-center flex pt-6 pl-4">
-                        <img src="/logoOrizzontale.png" alt="" class="h-10">
+                        <img src="/logoOrizzontale.png" alt="" class="h-10" />
                     </div>
                 </NavBarItemPlain>
             </NavBar>
             <slot />
-            <FooterBar/>
+            <FooterBar />
         </div>
     </div>
 </template>
