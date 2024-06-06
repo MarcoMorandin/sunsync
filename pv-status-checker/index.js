@@ -63,6 +63,7 @@ async function importData() {
 
 // avvio della routine e scheduling...
 importData()
-setInterval(importData, 600000)
+setInterval(importData, 1200000) // -> 20 min
+//setInterval(importData, 10000) // -> 10 sec
 
 /*schedule.scheduleJob('0 1 * * *', importData);*/

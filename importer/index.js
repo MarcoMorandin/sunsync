@@ -10,7 +10,7 @@ const WeatherStation = require('./schemas/WeatherStation')
 const WsData = require('./schemas/WeatherData')
 const Event = require('./schemas/Event')
 
-let date = new Date(Date.parse('2015-02-01T01:00:00.000Z'))
+let date = new Date(Date.parse('2012-11-18T01:00:00.000Z'))
 let weather = {
     today: [],
     tomorrow: []
@@ -22,7 +22,7 @@ let weather = {
  * @param {*} predicted_power power predicted for the next day
  */
 const tomorrowPredictionEventHandler = async (pv_info, predicted_power) => {
-    if ((predicted_power / (pv_info.installed_power * 5)) * 100 > 30) {
+    if ((predicted_power / (pv_info.installed_power * 8)) * 100 > 35) {
         const event = new Event({
             _id: new ObjectId(),
             time: new Date(),
@@ -169,7 +169,8 @@ function importData() {
 
 // avvio della routine e scheduling...
 importData()
-setInterval(importData, 10000)
+setInterval(importData, 2700000) // -> 45 min
+//setInterval(importData, 10000) // -> 10 sec
 
 
 /**
