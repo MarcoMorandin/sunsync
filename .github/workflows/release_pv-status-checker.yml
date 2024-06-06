@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - sunsync-importer
+name: Build and deploy Node.js app to Azure Web App - pv-status-checker
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          cd importer
+          cd pv-status-checker
           npm install
           npm run build --if-present
 
@@ -42,7 +42,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -51,12 +51,12 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'sunsync-importer'
+          app-name: 'pv-status-checker'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_76DB0DC19FCF4EF0A9182B57883DCE9E }}
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0322FB87537945E3ABB38E225C3D8D94 }}
