@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const compression = require("compression");
 
 const pvInfo = require('./endpoints/pvInfo.js');
 const pvData = require('./endpoints/pvData.js');
@@ -10,7 +11,7 @@ const user = require('./endpoints/user.js');
 const reports = require('./endpoints/reports.js');
 const events = require('./endpoints/events.js');
 
-const tokenChecker = require('./middlewares/tockenChecker.js');
+app.use(compression());
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');

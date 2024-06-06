@@ -5,7 +5,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./main-service
-      target: dev
     ports:
       - 3000:3000
     volumes:
@@ -31,7 +30,7 @@ services:
       dockerfile: Dockerfile
       context: ./front-end
     ports:
-      - 5173:5173
+      - 80:4173
     volumes:
       - ./front-end:/usr/src/app
   
