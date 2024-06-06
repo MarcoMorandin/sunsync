@@ -1,7 +1,7 @@
 const request = require('supertest');
 const assert = require('assert');
 
-const url = 'http://localhost:3000/api/v1'
+const url = 'http://localhost:3000/api/v2'
 require("dotenv").config();
 
 const token = process.env.TOKEN_TEST
