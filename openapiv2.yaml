@@ -1,0 +1,1749 @@
+openapi: 3.0.1
+info:
+  title: sunsync
+  description: ''
+  version: 2.0.0
+tags:
+  - name: PVSystem
+  - name: PVSystem/PvInfo
+  - name: PVSystem/PvData
+  - name: WeatherStation
+  - name: WeatherStation/WsInfo
+  - name: WeatherStation/WsData
+  - name: User
+  - name: Reports
+  - name: External
+  - name: PredictionService
+  - name: Events
+paths:
+  /pvinfo:
+    get:
+      summary: Get all pv system info
+      deprecated: false
+      description: Return the info of all registerd pv systems
+      operationId: GetAllPvSystemInfo
+      tags:
+        - PVSystem/PvInfo
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                        long:
+                          type: number
+                        alt:
+                          type: number
+                      required:
+                        - lat
+                        - long
+                        - alt
+                    installed_power:
+                      type: number
+                    description:
+                      type: string
+                    url:
+                      type: string
+                    ws_id:
+                      type: string
+                    status:
+                      type: string
+                  required:
+                    - _id
+                    - installed_power
+                    - description
+                    - url
+                    - ws_id
+                    - status
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    post:
+      summary: Add new pv system
+      deprecated: false
+      description: Create new Pv System
+      operationId: AddPvSystem
+      tags:
+        - PVSystem/PvInfo
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    long:
+                      type: number
+                    alt:
+                      type: number
+                  required:
+                    - lat
+                    - long
+                    - alt
+                installed_power:
+                  type: number
+                description:
+                  type: string
+                url:
+                  type: string
+                ws_id:
+                  type: integer
+              required:
+                - installed_power
+                - description
+                - url
+                - ws_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /events:
+    get:
+      summary: Get Events
+      deprecated: false
+      description: Get all events in the database
+      operationId: getEvents
+      tags:
+        - Events
+      parameters:
+        - name: startdate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: enddate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: pvinfo_id
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+      security: []
+  /predict:
+    post:
+      summary: PredictPower
+      deprecated: false
+      description: ''
+      tags:
+        - PredictionService
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                installed_power:
+                  type: number
+                rain:
+                  type: number
+                temperature:
+                  type: number
+                humidity:
+                  type: number
+                wind_speed:
+                  type: number
+                solar_power:
+                  type: number
+                wind_direction:
+                  type: number
+              required:
+                - installed_power
+                - rain
+                - temperature
+                - humidity
+                - wind_speed
+                - solar_power
+                - wind_direction
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prediction:
+                    type: number
+                required:
+                  - prediction
+      security: []
+  /transparency/oauth/accessToken:
+    post:
+      summary: Get Terna token
+      deprecated: false
+      description: Return access token for Terna API
+      operationId: getToken
+      tags:
+        - External
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  example: su44a6d3sujt65bb2sajq474
+                  type: string
+                client_secret:
+                  example: GBjX4Swx5p
+                  type: string
+                grant_type:
+                  example: client_credentials
+                  type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      security: []
+  /users:
+    post:
+      summary: Add new user
+      deprecated: false
+      description: Create new user
+      operationId: AddUser
+      tags:
+        - User
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                mail:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: integer
+              required:
+                - username
+                - role
+                - password
+                - mail
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    get:
+      summary: Get all users
+      deprecated: false
+      description: Return all registered users in the system
+      operationId: GetAllUsers
+      tags:
+        - User
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: &ref_0
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /reports/production:
+    get:
+      summary: 'Get pv systems production '
+      deprecated: false
+      description: 'Get total of pv systems production '
+      operationId: 'GetAllPvProduction '
+      tags:
+        - Reports
+      parameters:
+        - name: year
+          in: query
+          description: Filter result by year
+          required: false
+          schema:
+            type: string
+        - name: aggregation
+          in: query
+          description: Aggregate result by all, year or month
+          required: false
+          schema:
+            type: string
+        - name: pvinfo_id
+          in: query
+          description: Id of the pv system
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  production:
+                    type: number
+                required:
+                  - production
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /wsinfo:
+    get:
+      summary: Get all weather station info
+      deprecated: false
+      description: Return the info of all registerd weather stations.
+      operationId: GetAllWSInfo
+      tags:
+        - WeatherStation/WsInfo
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                        long:
+                          type: number
+                        alt:
+                          type: number
+                      required:
+                        - lat
+                        - long
+                        - alt
+                    description:
+                      type: string
+                    url:
+                      type: string
+                  required:
+                    - _id
+                    - location
+                    - description
+                    - url
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    post:
+      summary: Add new weather station
+      deprecated: false
+      description: Create new weather station
+      operationId: AddWS
+      tags:
+        - WeatherStation/WsInfo
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    long:
+                      type: number
+                    alt:
+                      type: number
+                  required:
+                    - lat
+                    - long
+                    - alt
+                description:
+                  type: string
+                url:
+                  type: string
+              required:
+                - location
+                - description
+                - url
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /pvinfo/{pvinfo_id}:
+    get:
+      summary: Get pv system info by id
+      deprecated: false
+      description: Return the info of a registerd pv system by id
+      operationId: GetPvSystemInfoById
+      tags:
+        - PVSystem/PvInfo
+      parameters:
+        - name: pvinfo_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  location:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      long:
+                        type: number
+                      alt:
+                        type: number
+                    required:
+                      - lat
+                      - long
+                      - alt
+                  installed_power:
+                    type: number
+                  description:
+                    type: string
+                  url:
+                    type: string
+                  ws_id:
+                    type: string
+                  status:
+                    type: string
+                required:
+                  - _id
+                  - installed_power
+                  - description
+                  - url
+                  - ws_id
+                  - status
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    delete:
+      summary: Delete pv system
+      deprecated: false
+      description: Delete an existing pv system
+      operationId: DeletePvSystem
+      tags:
+        - PVSystem/PvInfo
+      parameters:
+        - name: pvinfo_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /reports/money:
+    get:
+      summary: Get saved money
+      deprecated: false
+      description: 'Get total of pv systems production '
+      operationId: GetAllMoney
+      tags:
+        - Reports
+      parameters:
+        - name: year
+          in: query
+          description: Filter result by year
+          required: false
+          schema:
+            type: string
+        - name: aggregation
+          in: query
+          description: Aggregate result by all, year or month
+          required: false
+          schema:
+            type: string
+        - name: pvinfo_id
+          in: query
+          description: Id of the pv system
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  production:
+                    type: number
+                required:
+                  - production
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /wsinfo/{wsinfo_id}:
+    get:
+      summary: Get weather station info by id
+      deprecated: false
+      description: Return the info of a registerd weather station by id.
+      operationId: GetWSInfoById
+      tags:
+        - WeatherStation/WsInfo
+      parameters:
+        - name: wsinfo_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  location:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      long:
+                        type: number
+                      alt:
+                        type: number
+                    required:
+                      - lat
+                      - long
+                      - alt
+                  description:
+                    type: string
+                  url:
+                    type: string
+                required:
+                  - _id
+                  - location
+                  - description
+                  - url
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    delete:
+      summary: Delete weather station
+      deprecated: false
+      description: Delete an existing weather station
+      operationId: DeleteWS
+      tags:
+        - WeatherStation/WsInfo
+      parameters:
+        - name: wsinfo_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /market-and-fees/v1.0/daily-prices:
+    get:
+      summary: Get Terna daily prices
+      deprecated: false
+      description: Return daily prices from Terna
+      operationId: getPrices
+      tags:
+        - External
+      parameters:
+        - name: dateFrom
+          in: query
+          description: ''
+          required: false
+          example: 01/10/2012
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          description: ''
+          required: false
+          example: 31/07/2015
+          schema:
+            type: string
+        - name: dataType
+          in: query
+          description: ''
+          required: false
+          example: Orario
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: dtjt7hhq5vrdr7tkx3mxh8un
+          schema:
+            type: string
+        - name: Accept
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      security: []
+  /pvdata:
+    get:
+      summary: Get pv system data
+      deprecated: false
+      description: Return al pv data. Can be filtered by date and pv system.
+      operationId: GetPvSystemData
+      tags:
+        - PVSystem/PvData
+      parameters:
+        - name: startdate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: enddate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: pvinfo_id
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    time:
+                      type: string
+                    power:
+                      type: number
+                    predicted_power:
+                      type: number
+                    tomorrow_predicted_power:
+                      type: number
+                    metadata:
+                      type: object
+                      properties:
+                        pv_id:
+                          type: string
+                        description:
+                          type: string
+                        installed_power:
+                          type: number
+                        price:
+                          type: number
+                        ws_id:
+                          type: string
+                        location:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                            long:
+                              type: number
+                            alt:
+                              type: number
+                          required:
+                            - lat
+                            - long
+                            - alt
+                      required:
+                        - pv_id
+                        - description
+                        - installed_power
+                        - price
+                        - location
+                        - ws_id
+                  required:
+                    - _id
+                    - time
+                    - power
+                    - predicted_power
+                    - tomorrow_predicted_power
+                    - metadata
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /wsdata:
+    get:
+      summary: Get all weather station data
+      deprecated: false
+      description: >-
+        Return all the weather station data. Can be filtered by date and weather
+        station id.
+      operationId: GetWSData
+      tags:
+        - WeatherStation/WsData
+      parameters:
+        - name: startdate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: enddate
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: wsinfo_id
+          in: query
+          description: ''
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                        long:
+                          type: number
+                        alt:
+                          type: number
+                      required:
+                        - lat
+                        - long
+                        - alt
+                    description:
+                      type: string
+                    url:
+                      type: string
+                  required:
+                    - _id
+                    - location
+                    - description
+                    - url
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /pvdata/{pvdata_id}:
+    get:
+      summary: Get pv system data by id
+      deprecated: false
+      description: Return pv data by its id.
+      operationId: GetPvSystemDataById
+      tags:
+        - PVSystem/PvData
+      parameters:
+        - name: pvdata_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    time:
+                      type: string
+                    power:
+                      type: number
+                    predicted_power:
+                      type: number
+                    tomorrow_predicted_power:
+                      type: number
+                    metadata:
+                      type: object
+                      properties:
+                        pv_id:
+                          type: string
+                        description:
+                          type: string
+                        installed_power:
+                          type: number
+                        price:
+                          type: number
+                        ws_id:
+                          type: string
+                        location:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                            long:
+                              type: number
+                            alt:
+                              type: number
+                          required:
+                            - lat
+                            - long
+                            - alt
+                      required:
+                        - pv_id
+                        - description
+                        - installed_power
+                        - price
+                        - location
+                        - ws_id
+                  required:
+                    - _id
+                    - time
+                    - power
+                    - predicted_power
+                    - tomorrow_predicted_power
+                    - metadata
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /users/{id}:
+    get:
+      summary: Get user by id
+      deprecated: false
+      description: Return data of a user by id
+      operationId: GetUserById
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *ref_0
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    patch:
+      summary: Change password user
+      deprecated: false
+      description: Reset password of a user
+      operationId: ChangePasswordUser
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /wsdata/{wsinfo_id}:
+    get:
+      summary: Get weather station data by Id
+      deprecated: false
+      description: Return weather station data by id.
+      operationId: GetWSDataById
+      tags:
+        - WeatherStation/WsData
+      parameters:
+        - name: wsinfo_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    time:
+                      type: string
+                    rain:
+                      type: number
+                    temperature:
+                      type: number
+                    humidity:
+                      type: number
+                    wind_direction:
+                      type: number
+                    wind_speed:
+                      type: number
+                    pressure:
+                      type: number
+                    solar_power:
+                      type: number
+                    metadata:
+                      type: object
+                      properties:
+                        ws_id:
+                          type: string
+                        description:
+                          type: string
+                        location:
+                          type: object
+                          properties:
+                            long:
+                              type: number
+                            lat:
+                              type: number
+                            alt:
+                              type: number
+                          required:
+                            - long
+                            - lat
+                            - alt
+                      required:
+                        - ws_id
+                        - description
+                        - location
+                  required:
+                    - _id
+                    - time
+                    - rain
+                    - temperature
+                    - humidity
+                    - wind_direction
+                    - wind_speed
+                    - pressure
+                    - solar_power
+                    - metadata
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /users/me:
+    get:
+      summary: Get user me
+      deprecated: false
+      description: 'Return data of the current user '
+      operationId: GetUserMe
+      tags:
+        - User
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *ref_0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+    patch:
+      summary: Change password me
+      deprecated: false
+      description: Reset self password
+      operationId: ChangePasswordMe
+      tags:
+        - User
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                password:
+                  type: string
+              required:
+                - password
+                - old_password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /reports/pvnumber:
+    get:
+      summary: Get number of pv systems
+      deprecated: false
+      description: Return the number of pv systems installed
+      operationId: GetPvNumber
+      tags:
+        - Reports
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  number_of_pvs:
+                    type: integer
+                required:
+                  - number_of_pvs
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      security: []
+  /users/{user_id}:
+    delete:
+      summary: Delete user
+      deprecated: false
+      description: Delete an existing user
+      operationId: DeleteUser
+      tags:
+        - User
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /users/authentication:
+    post:
+      summary: Authentication
+      deprecated: false
+      description: Authenticate a user and give JWT
+      operationId: Authentication
+      tags:
+        - User
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mail:
+                  type: string
+                password:
+                  type: string
+              required:
+                - mail
+                - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: string
+                  token:
+                    type: string
+                required:
+                  - info
+                  - token
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+  /users/refresh:
+    post:
+      summary: Refresh Authentication
+      deprecated: false
+      description: Refresh JWT access token with refresh token
+      operationId: AuthenticationRefresh
+      tags:
+        - User
+      parameters:
+        - name: refresh_jwt
+          in: cookie
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: string
+                  token:
+                    type: string
+                required:
+                  - info
+                  - token
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+      security: []
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        _id:
+          type: string
+        time:
+          type: string
+        description:
+          type: string
+        value:
+          type: number
+        pv_info:
+          $ref: '#/components/schemas/PvSystem'
+      required:
+        - _id
+        - time
+        - description
+        - pv_info
+        - value
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        mail:
+          type: string
+        forecast_notification:
+          type: boolean
+        maintenance_notification:
+          type: boolean
+        role:
+          type: integer
+        disabled:
+          type: boolean
+        bot_token:
+          type: string
+      required:
+        - _id
+        - username
+        - forecast_notification
+        - maintenance_notification
+        - role
+        - disabled
+        - mail
+        - bot_token
+    WeatherData:
+      type: object
+      properties:
+        _id:
+          type: string
+        time:
+          type: string
+        rain:
+          type: number
+        temperature:
+          type: number
+        humidity:
+          type: number
+        wind_direction:
+          type: number
+        wind_speed:
+          type: number
+        pressure:
+          type: number
+        solar_power:
+          type: number
+        metadata:
+          type: object
+          properties:
+            ws_id:
+              type: string
+            description:
+              type: string
+            location:
+              type: object
+              properties:
+                long:
+                  type: number
+                lat:
+                  type: number
+                alt:
+                  type: number
+              required:
+                - long
+                - lat
+                - alt
+          required:
+            - ws_id
+            - description
+            - location
+      required:
+        - time
+        - rain
+        - temperature
+        - humidity
+        - wind_direction
+        - wind_speed
+        - pressure
+        - solar_power
+        - metadata
+        - _id
+    PvData:
+      type: object
+      properties:
+        _id:
+          type: string
+        time:
+          type: string
+        power:
+          type: number
+        predicted_power:
+          type: number
+        tomorrow_predicted_power:
+          type: number
+        metadata:
+          type: object
+          properties:
+            pv_id:
+              type: string
+            description:
+              type: string
+            installed_power:
+              type: number
+            price:
+              type: number
+            ws_id:
+              type: string
+            location:
+              type: object
+              properties:
+                lat:
+                  type: number
+                long:
+                  type: number
+                alt:
+                  type: number
+              required:
+                - lat
+                - long
+                - alt
+          required:
+            - pv_id
+            - description
+            - installed_power
+            - price
+            - location
+            - ws_id
+      required:
+        - time
+        - power
+        - metadata
+        - predicted_power
+        - _id
+        - tomorrow_predicted_power
+    WheaterStation:
+      type: object
+      properties:
+        _id:
+          type: string
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+            long:
+              type: number
+            alt:
+              type: number
+          required:
+            - lat
+            - long
+            - alt
+        description:
+          type: string
+        url:
+          type: string
+      required:
+        - _id
+        - location
+        - description
+        - url
+    PvSystem:
+      type: object
+      properties:
+        _id:
+          type: string
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+            long:
+              type: number
+            alt:
+              type: number
+          required:
+            - lat
+            - long
+            - alt
+        installed_power:
+          type: number
+        description:
+          type: string
+        url:
+          type: string
+        ws_id:
+          type: string
+        status:
+          type: string
+      required:
+        - _id
+        - installed_power
+        - description
+        - url
+        - ws_id
+        - status
+  securitySchemes: {}
+servers: []
