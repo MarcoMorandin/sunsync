@@ -19,6 +19,8 @@ test('GET /pvdata should return 200', () => {
         .expect(function(res) {
             assert(!res.body.hasOwnProperty('time'))
             assert(!res.body.hasOwnProperty('power'))
+            assert(!res.body.hasOwnProperty('predicted_power'))
+            assert(!res.body.hasOwnProperty('tomorrow_predicted_power'))
             assert(!res.body.hasOwnProperty('pv_id'))
         })
 });
